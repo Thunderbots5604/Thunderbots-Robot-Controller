@@ -20,6 +20,7 @@ public class Test extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
+
         test = hardwareMap.get(DcMotor.class, "test");
         test.setDirection(DcMotor.Direction.REVERSE);
 
