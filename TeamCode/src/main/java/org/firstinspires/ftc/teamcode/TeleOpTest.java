@@ -3,15 +3,11 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.util.Range;
 
-
-import java.lang.Math;
-
-@TeleOp(name="TeleOp", group="Linear Opmode")
-public class Tele extends LinearOpMode {
+@TeleOp(name="TeleOpTest", group="Linear Opmode")
+public class TeleOpTest extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -20,6 +16,8 @@ public class Tele extends LinearOpMode {
     private DcMotor rightMotorFront = null;
     private DcMotor rightMotorBack = null;
     private DcMotor crane = null;
+    private boolean reversed = false;
+    private int multiplier = 1;
 
     @Override
     public void runOpMode() {
@@ -43,13 +41,27 @@ public class Tele extends LinearOpMode {
             //Stuff to display for Telemetry
             telemetry.addData("Left Motor Power", leftMotorFront.getPower());
             telemetry.addData("Right Motor Power", rightMotorFront.getPower());
+            telemetry.addData("Reversed: ", reversed);
             telemetry.update();
 
+            if(gamepad1.x && runtime.seconds() > 1) {
+                if(reversed == true) {
+                    multiplier = 1;
+                    reversed = false;
+                    runtime.reset();
+                }
+                else if(reversed == false) {
+                    reversed = true;
+                    multiplier = -1;
+                    runtime.reset();
+                }
+            }
+
             if (gamepad1.left_stick_y != 0 && gamepad1.right_stick_x == 0) {
-                leftMotorFront.setPower(gamepad1.left_stick_y);
-                leftMotorBack.setPower(gamepad1.left_stick_y);
-                rightMotorFront.setPower(gamepad1.left_stick_y);
-                rightMotorBack.setPower(gamepad1.left_stick_y);
+                leftMotorFront.setPower(multiplier * gamepad1.left_stick_y);
+                leftMotorBack.setPower(multiplier * gamepad1.left_stick_y);
+                rightMotorFront.setPower(multiplier * gamepad1.left_stick_y);
+                rightMotorBack.setPower(multiplier * gamepad1.left_stick_y);
             }
             if (gamepad1.right_stick_x != 0 && gamepad1.left_stick_y == 0) {
                 leftMotorFront.setPower(gamepad1.right_stick_x);
@@ -57,11 +69,17 @@ public class Tele extends LinearOpMode {
                 rightMotorFront.setPower(-gamepad1.right_stick_x);
                 rightMotorBack.setPower(-gamepad1.right_stick_x);
             }
-            if (gamepad1.left_stick_y < 0 && gamepad1.right_stick_x < 0) {
-                leftMotorFront.setPower(-(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2));
-                leftMotorBack.setPower(-(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2));
+            if (reversed == false && gamepad1.left_stick_y < 0 && gamepad1.right_stick_x < 0) {
+                leftMotorFront.setPower(-(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y) / 2));
+                leftMotorBack.setPower(-(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y) / 2));
                 rightMotorFront.setPower(0);
                 rightMotorBack.setPower(0);
+            }
+            if (reversed == true && gamepad1.left_stick_y < 0 && gamepad1.right_stick_x < 0) {
+                leftMotorFront.setPower(0);
+                leftMotorBack.setPower(0);
+                rightMotorFront.setPower(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2);
+                rightMotorBack.setPower(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2);
             }
             if (gamepad1.left_stick_y > 0 && gamepad1.right_stick_x < 0) {
                 leftMotorFront.setPower(0);
@@ -69,11 +87,17 @@ public class Tele extends LinearOpMode {
                 rightMotorFront.setPower(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2);
                 rightMotorBack.setPower(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2);
             }
-            if (gamepad1.left_stick_y < 0 && gamepad1.right_stick_x > 0) {
+            if (reversed == false && gamepad1.left_stick_y < 0 && gamepad1.right_stick_x > 0) {
                 leftMotorFront.setPower(0);
                 leftMotorBack.setPower(0);
                 rightMotorFront.setPower(-(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2));
                 rightMotorBack.setPower(-(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2));
+            }
+            if (reversed == true && gamepad1.left_stick_y < 0 && gamepad1.right_stick_x > 0) {
+                leftMotorFront.setPower((Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2));
+                leftMotorBack.setPower((Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2));
+                rightMotorFront.setPower(0);
+                rightMotorBack.setPower(0);
             }
             if (gamepad1.left_stick_y > 0 && gamepad1.right_stick_x > 0) {
                 leftMotorFront.setPower(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2);
@@ -84,9 +108,8 @@ public class Tele extends LinearOpMode {
             if(gamepad1.dpad_down || gamepad2.dpad_down){
                 crane.setPower(-1);
             }
-            if(gamepad1.dpad_up || gamepad2.dpad_up) {
+            if(gamepad1.dpad_up || gamepad2.dpad_up)
                 crane.setPower(1);
-            }
             else {
                 leftMotorFront.setPower(0);
                 leftMotorBack.setPower(0);
