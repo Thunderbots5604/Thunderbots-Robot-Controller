@@ -1,14 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
-@Autonomous(name="Ambitious", group="Autonomous Encoder")
+@Disabled
+@Autonomous(name="Ambitious", group="Autonomous")
 public class Ambitious extends LinearOpMode {
 
     // Declare OpMode members.
@@ -36,9 +37,8 @@ public class Ambitious extends LinearOpMode {
 
         waitForStart();
         runtime.reset();
-        //Stuff to display for Telemetry
 
-        //crane.setPower(1);
+
         runtime.reset();
         while (Double.isNaN(distance.getDistance(DistanceUnit.MM))) {
             telemetry.addLine("Phase: Lowering Part 1");

@@ -35,8 +35,6 @@ public class AutoDetach extends LinearOpMode {
         rightMotorBack.setDirection(DcMotor.Direction.REVERSE);
 
         waitForStart();
-        runtime.reset();
-
         //Stuff to display for Telemetry
 
         //crane.setPower(1);
@@ -126,3 +124,4 @@ public class AutoDetach extends LinearOpMode {
         rightMotorBack.setPower(0);
     }
 }
+

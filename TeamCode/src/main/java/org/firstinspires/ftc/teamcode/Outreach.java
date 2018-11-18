@@ -10,8 +10,8 @@ import com.qualcomm.robotcore.util.Range;
 
 import java.lang.Math;
 
-@TeleOp(name="TeleOp", group="Linear Opmode")
-public class Tele extends LinearOpMode {
+@TeleOp(name="Outreach", group="Outreach")
+public class Outreach extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -19,19 +19,18 @@ public class Tele extends LinearOpMode {
     private DcMotor leftMotorBack = null;
     private DcMotor rightMotorFront = null;
     private DcMotor rightMotorBack = null;
-    private DcMotor crane = null;
+
+    private double kids = .4;
 
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-
         leftMotorFront = hardwareMap.get(DcMotor.class, "left_motor_front");
         leftMotorBack = hardwareMap.get(DcMotor.class, "left_motor_back");
         rightMotorFront = hardwareMap.get(DcMotor.class, "right_motor_front");
         rightMotorBack = hardwareMap.get(DcMotor.class, "right_motor_back");
-        crane = hardwareMap.get(DcMotor.class, "crane");
 
         rightMotorFront.setDirection(DcMotor.Direction.REVERSE);
         rightMotorBack.setDirection(DcMotor.Direction.REVERSE);
@@ -41,58 +40,51 @@ public class Tele extends LinearOpMode {
 
         while (opModeIsActive()) {
             //Stuff to display for Telemetry
-            telemetry.addData("Left Motor Power", leftMotorFront.getCurrentPosition());
+            telemetry.addData("Left Motor Power", leftMotorFront.getPower());
             telemetry.addData("Right Motor Power", rightMotorFront.getPower());
             telemetry.update();
 
             if (gamepad1.left_stick_y != 0 && gamepad1.right_stick_x == 0) {
-                leftMotorFront.setPower(gamepad1.left_stick_y);
-                leftMotorBack.setPower(gamepad1.left_stick_y);
-                rightMotorFront.setPower(gamepad1.left_stick_y);
-                rightMotorBack.setPower(gamepad1.left_stick_y);
+                leftMotorFront.setPower(kids * gamepad1.left_stick_y);
+                leftMotorBack.setPower(kids * gamepad1.left_stick_y);
+                rightMotorFront.setPower(kids * gamepad1.left_stick_y);
+                rightMotorBack.setPower(kids * gamepad1.left_stick_y);
             }
             if (gamepad1.right_stick_x != 0 && gamepad1.left_stick_y == 0) {
-                leftMotorFront.setPower(gamepad1.right_stick_x);
-                leftMotorBack.setPower(gamepad1.right_stick_x);
-                rightMotorFront.setPower(-gamepad1.right_stick_x);
-                rightMotorBack.setPower(-gamepad1.right_stick_x);
+                leftMotorFront.setPower(kids * gamepad1.right_stick_x);
+                leftMotorBack.setPower(kids * gamepad1.right_stick_x);
+                rightMotorFront.setPower(kids * -gamepad1.right_stick_x);
+                rightMotorBack.setPower(kids * -gamepad1.right_stick_x);
             }
             if (gamepad1.left_stick_y < 0 && gamepad1.right_stick_x < 0) {
-                leftMotorFront.setPower(-(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2));
-                leftMotorBack.setPower (-(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2));
+                leftMotorFront.setPower(kids * -(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2));
+                leftMotorBack.setPower(kids * -(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2));
                 rightMotorFront.setPower(0);
                 rightMotorBack.setPower(0);
             }
             if (gamepad1.left_stick_y > 0 && gamepad1.right_stick_x < 0) {
                 leftMotorFront.setPower(0);
                 leftMotorBack.setPower(0);
-                rightMotorFront.setPower(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2);
-                rightMotorBack.setPower((Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2));
+                rightMotorFront.setPower(kids * Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2);
+                rightMotorBack.setPower(kids * Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2);
             }
             if (gamepad1.left_stick_y < 0 && gamepad1.right_stick_x > 0) {
                 leftMotorFront.setPower(0);
                 leftMotorBack.setPower(0);
-                rightMotorFront.setPower(-(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2));
-                rightMotorBack.setPower((-(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2)));
+                rightMotorFront.setPower(kids * -(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2));
+                rightMotorBack.setPower(kids * -(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2));
             }
             if (gamepad1.left_stick_y > 0 && gamepad1.right_stick_x > 0) {
-                leftMotorFront.setPower(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2);
-                leftMotorBack.setPower (Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2);
+                leftMotorFront.setPower(kids * Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2);
+                leftMotorBack.setPower(kids * Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2);
                 rightMotorFront.setPower(0);
                 rightMotorBack.setPower(0);
-            }
-            if(gamepad1.dpad_down || gamepad2.dpad_down){
-                crane.setPower(-1);
-            }
-            if(gamepad1.dpad_up || gamepad2.dpad_up) {
-                crane.setPower(1);
             }
             else {
                 leftMotorFront.setPower(0);
                 leftMotorBack.setPower(0);
                 rightMotorFront.setPower(0);
                 rightMotorBack.setPower(0);
-                crane.setPower(0);
             }
         }
     }
