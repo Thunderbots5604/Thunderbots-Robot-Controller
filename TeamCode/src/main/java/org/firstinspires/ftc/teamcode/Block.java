@@ -57,8 +57,7 @@ import java.util.List;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@Disabled
-@Autonomous(name = "Concept: TensorFlow Object Detection", group = "Concept")
+@Autonomous(name = "Object Detection Test", group = "Autonomous Test")
 public class Block extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private int location = -1;
@@ -187,7 +186,7 @@ public class Block extends LinearOpMode {
         //If object is on the left
         if (objects == 3 && location == 0) {
             runtime.reset();
-            while(runtime.seconds() < 1) {
+            while(runtime.seconds() < .5) {
                 telemetry.addLine("Going Left");
                 telemetry.update();
                 leftMotorFront.setPower(-.7);
@@ -199,7 +198,7 @@ public class Block extends LinearOpMode {
         //If objects is in the middle
         else if (objects == 3 && location == 1) {
             runtime.reset();
-            while(runtime.seconds() < 1) {
+            while(runtime.seconds() < .5) {
                 telemetry.addLine("Going Center");
                 telemetry.update();
                 leftMotorFront.setPower(-.5);
@@ -211,7 +210,7 @@ public class Block extends LinearOpMode {
         //If objects is on the right
         else if (objects == 3 && location == 2) {
             runtime.reset();
-            while(runtime.seconds() < 1) {
+            while(runtime.seconds() < .5) {
                 telemetry.addLine("Going Right");
                 telemetry.update();
                 leftMotorFront.setPower(-.4);

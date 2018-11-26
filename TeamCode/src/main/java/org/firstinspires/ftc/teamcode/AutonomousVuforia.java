@@ -54,7 +54,7 @@ import java.util.List;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@Autonomous(name = "Autonomous", group = "Fail")
+@Autonomous(name = "Autonomous_Fail", group = "Fail")
 public class AutonomousVuforia extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private int location = -1;
@@ -219,7 +219,7 @@ public class AutonomousVuforia extends LinearOpMode {
 
         sleep(1000);
         runtime.reset();
-        while (runtime.milliseconds() < 1000) {
+        while (runtime.milliseconds() < 1500) {
             telemetry.addLine("Turning");
             telemetry.update();
             leftMotorFront.setPower(.35);
@@ -249,7 +249,7 @@ public class AutonomousVuforia extends LinearOpMode {
 
         sleep(1000);
         runtime.reset();
-        while (runtime.milliseconds() < 1000) {
+        while (runtime.milliseconds() < 1500) {
             telemetry.addLine("Turning Back");
             telemetry.update();
             leftMotorFront.setPower(-.35);
@@ -273,13 +273,6 @@ public class AutonomousVuforia extends LinearOpMode {
                 leftMotorBack.setPower(-.6);
                 rightMotorFront.setPower(-.3);
                 rightMotorBack.setPower(-.3);
-                sleep(1500);
-                telemetry.addLine("Going Right");
-                telemetry.update();
-                leftMotorFront.setPower(-.3);
-                leftMotorBack.setPower(-.3);
-                rightMotorFront.setPower(-.6);
-                rightMotorBack.setPower(-.6);
             }
         }
         //If objects is in the middle
@@ -305,13 +298,6 @@ public class AutonomousVuforia extends LinearOpMode {
                 leftMotorBack.setPower(-.3);
                 rightMotorFront.setPower(-.6);
                 rightMotorBack.setPower(-.6);
-                sleep(1500);
-                telemetry.addLine("Going Left");
-                telemetry.update();
-                leftMotorFront.setPower(-.6);
-                leftMotorBack.setPower(-.6);
-                rightMotorFront.setPower(-.3);
-                rightMotorBack.setPower(-.3);
             }
         }
         else {
@@ -323,50 +309,10 @@ public class AutonomousVuforia extends LinearOpMode {
             rightMotorBack.setPower(-.5);
             telemetry.update();
         }
-        sleep(2000);
         leftMotorFront.setPower(0);
         leftMotorBack.setPower(0);
         rightMotorFront.setPower(0);
         rightMotorBack.setPower(0);
-
-        //getting marker in
-        sleep(1000);
-        telemetry.addLine("Getting marker in depot");
-        telemetry.update();
-        leftMotorFront.setPower(-1);
-        leftMotorBack.setPower(-1);
-        rightMotorFront.setPower(-1);
-        rightMotorBack.setPower(-1);
-
-        sleep(1000);
-        leftMotorFront.setPower(0);
-        leftMotorBack.setPower(0);
-        rightMotorFront.setPower(0);
-        rightMotorBack.setPower(0);
-
-        sleep(500);
-        leftMotorFront.setPower(1);
-        leftMotorBack.setPower(1);
-        rightMotorFront.setPower(1);
-        rightMotorBack.setPower(1);
-
-        sleep(800);
-        leftMotorFront.setPower(-.5);
-        leftMotorBack.setPower(-.5);
-        rightMotorFront.setPower(-.5);
-        rightMotorBack.setPower(-.5);
-
-        sleep(300);
-        leftMotorFront.setPower(0);
-        leftMotorBack.setPower(0);
-        rightMotorFront.setPower(0);
-        rightMotorBack.setPower(0);
-
-        telemetry.addLine("Hopefully the marker is in depot");
-        telemetry.update();
-        sleep(500);
-        telemetry.addLine("Going for crater");
-        telemetry.update();
     }
 
 

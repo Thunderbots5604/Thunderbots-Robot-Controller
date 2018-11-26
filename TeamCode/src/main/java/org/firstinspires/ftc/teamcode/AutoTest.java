@@ -9,8 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import java.lang.Math;
-@Disabled
-@Autonomous(name="AutoTest", group="Autonomous Encoder")
+@Autonomous(name="AutoTest", group="Autonomous Test")
 public class AutoTest extends LinearOpMode {
 
     // Declare OpMode members.
@@ -19,6 +18,8 @@ public class AutoTest extends LinearOpMode {
     private DcMotor leftMotorBack = null;
     private DcMotor rightMotorFront = null;
     private DcMotor rightMotorBack = null;
+    private final double INCHES_PER_TICK = .0215524172;
+    private final double DEGREES_PER_TICK = .1525087903;
 
     @Override
     public void runOpMode() {
@@ -34,70 +35,149 @@ public class AutoTest extends LinearOpMode {
 
         waitForStart();
         runtime.reset();
+        turnRight(45, .25);
+        sleep(5000);
+        turnLeft(45, .25);
+        sleep(5000);
+        turnRight(90, .25);
+        sleep(5000);
+        turnLeft(90, .25);
+        sleep(5000);
+        turnRight(180, .25);
+        sleep(5000);
+        turnLeft(180, .25);
+        sleep(5000);
+        turnRight(360, .25);
+    }
+    private void runTo(double inches, double power) {
+        //Just do 40 inches
 
-        while (opModeIsActive()) {
-            //Stuff to display for Telemetry
-            telemetry.addData("Left Motor Position", leftMotorFront.getCurrentPosition());
-            telemetry.addData("Right Motor Position", rightMotorBack.getCurrentPosition());
-            telemetry.addData("Left Motor Target", leftMotorFront.getCurrentPosition());
-            telemetry.addData("Right Motor Target", rightMotorBack.getTargetPosition());
-            telemetry.update();
-
-            sleep(1000);
-            leftMotorFront.setTargetPosition(1000);
-            leftMotorBack.setTargetPosition(1000);
-            rightMotorFront.setTargetPosition(1000);
-            rightMotorBack.setTargetPosition(1000);
-            leftMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            leftMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            rightMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            rightMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            while (leftMotorFront.isBusy() && rightMotorFront.isBusy()) {
-                telemetry.addData("Left Motor Position", leftMotorFront.getCurrentPosition());
-                telemetry.addData("Right Motor Position", rightMotorBack.getCurrentPosition());
-                telemetry.addData("Left Motor Target", leftMotorFront.getCurrentPosition());
-                telemetry.addData("Right Motor Target", rightMotorBack.getTargetPosition());
-                telemetry.update();
-                leftMotorFront.setPower(1);
-                leftMotorBack.setPower(1);
-                rightMotorFront.setPower(1);
-                rightMotorBack.setPower(1);
-            }
-            leftMotorFront.setPower(0);
-            leftMotorBack.setPower(0);
-            rightMotorFront.setPower(0);
-            rightMotorBack.setPower(0);
-            sleep(10000);
-
-            leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-            sleep(5000);
-            leftMotorFront.setTargetPosition(-1000);
-            leftMotorBack.setTargetPosition(-1000);
-            rightMotorFront.setTargetPosition(-1000);
-            rightMotorBack.setTargetPosition(-1000);
-            leftMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            leftMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            rightMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            rightMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            while (leftMotorFront.isBusy() && rightMotorFront.isBusy()) {
-                telemetry.addData("Left Motor Position", leftMotorFront.getCurrentPosition());
-                telemetry.addData("Right Motor Position", rightMotorBack.getCurrentPosition());
-                telemetry.addData("Left Motor Target", leftMotorFront.getCurrentPosition());
-                telemetry.addData("Right Motor Target", rightMotorBack.getTargetPosition());
-                telemetry.update();
-                leftMotorFront.setPower(-1);
-                leftMotorBack.setPower(-1);
-                rightMotorFront.setPower(-1);
-                rightMotorBack.setPower(-1);
-            }
-            leftMotorFront.setPower(0);
-            leftMotorBack.setPower(0);
-            rightMotorFront.setPower(0);
-            rightMotorBack.setPower(0);
+        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        int negative = -1;
+        if (inches < 0) {
+            negative = 1;
         }
+        inches *= -1;
+        leftMotorFront.setTargetPosition((int)(inches / INCHES_PER_TICK));
+        leftMotorBack.setTargetPosition((int)(inches / INCHES_PER_TICK));
+        rightMotorFront.setTargetPosition((int)(inches / INCHES_PER_TICK));
+        rightMotorBack.setTargetPosition((int)(inches / INCHES_PER_TICK));
+        leftMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while (leftMotorFront.isBusy() && rightMotorFront.isBusy()) {
+            telemetry.addData("Target Position", leftMotorFront.getTargetPosition());
+            telemetry.addData("Left Motor Position", leftMotorFront.getCurrentPosition());
+            telemetry.addData("Right Motor Position", rightMotorFront.getCurrentPosition());
+            telemetry.update();
+            leftMotorFront.setPower(negative * power);
+            leftMotorBack.setPower(negative * power);
+            rightMotorFront.setPower(negative * power);
+            rightMotorBack.setPower(negative * power);
+        }
+        runtime.reset();
+        while(runtime.milliseconds() < 100) {
+            leftMotorFront.setPower(-1 * negative * .1);
+            leftMotorBack.setPower(-1 * negative * .1);
+            rightMotorFront.setPower(-1 * negative * .1);
+            rightMotorBack.setPower(-1 * negative * .1);
+        }
+        leftMotorFront.setPower(0);
+        leftMotorBack.setPower(0);
+        rightMotorFront.setPower(0);
+        rightMotorBack.setPower(0);
+        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+    }
+    private void turnRight(double degrees, double power) {
+        degrees *= .95;
+
+        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftMotorFront.setTargetPosition((int)((degrees) / DEGREES_PER_TICK));
+        leftMotorBack.setTargetPosition((int)((degrees) / DEGREES_PER_TICK));
+        rightMotorFront.setTargetPosition((int)((-degrees) / DEGREES_PER_TICK));
+        rightMotorBack.setTargetPosition((int)((-degrees) / DEGREES_PER_TICK));
+        leftMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while (leftMotorFront.isBusy() && rightMotorFront.isBusy()) {
+            telemetry.addData("Target Turn", degrees);
+            telemetry.addData("Left Motor Position", leftMotorFront.getCurrentPosition());
+            telemetry.addData("Right Motor Position", rightMotorFront.getCurrentPosition());
+            telemetry.update();
+            leftMotorFront.setPower(power);
+            leftMotorBack.setPower(power);
+            rightMotorFront.setPower(-power);
+            rightMotorBack.setPower(-power);
+        }
+        runtime.reset();
+        while(runtime.milliseconds() < 100) {
+            leftMotorFront.setPower(-.1);
+            leftMotorBack.setPower(-.1);
+            rightMotorFront.setPower(.1);
+            rightMotorBack.setPower(.1);
+        }
+        leftMotorFront.setPower(0);
+        leftMotorBack.setPower(0);
+        rightMotorFront.setPower(0);
+        rightMotorBack.setPower(0);
+        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+    private void turnLeft(double degrees, double power) {
+        degrees *= .95;
+
+        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftMotorFront.setTargetPosition((int)((-degrees) / DEGREES_PER_TICK));
+        leftMotorBack.setTargetPosition((int)((-degrees) / DEGREES_PER_TICK));
+        rightMotorFront.setTargetPosition((int)((degrees) / DEGREES_PER_TICK));
+        rightMotorBack.setTargetPosition((int)((degrees) / DEGREES_PER_TICK));
+        leftMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while (leftMotorFront.isBusy() && rightMotorFront.isBusy()) {
+            telemetry.addData("Target Turn", degrees);
+            telemetry.addData("Left Motor Position", leftMotorFront.getCurrentPosition());
+            telemetry.addData("Right Motor Position", rightMotorFront.getCurrentPosition());
+            telemetry.update();
+            leftMotorFront.setPower(-power);
+            leftMotorBack.setPower(-power);
+            rightMotorFront.setPower(power);
+            rightMotorBack.setPower(power);
+        }
+        runtime.reset();
+        while(runtime.milliseconds() < 100) {
+            leftMotorFront.setPower(.1);
+            leftMotorBack.setPower(.1);
+            rightMotorFront.setPower(-.1);
+            rightMotorBack.setPower(-.1);
+        }
+        leftMotorFront.setPower(0);
+        leftMotorBack.setPower(0);
+        rightMotorFront.setPower(0);
+        rightMotorBack.setPower(0);
+        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 }

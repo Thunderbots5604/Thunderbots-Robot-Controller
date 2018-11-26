@@ -4,8 +4,16 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.util.Range;
 
-@TeleOp(name="TeleOpNegative", group="Linear Opmode")
+
+import java.lang.Math;
+
+//Left motors are now right physically
+//Right motors are now left physically
+
+@TeleOp(name="TeleOpEncoderValues", group="Linear Opmode")
 public class TeleNegative extends LinearOpMode {
 
     // Declare OpMode members.
@@ -15,6 +23,8 @@ public class TeleNegative extends LinearOpMode {
     private DcMotor rightMotorFront = null;
     private DcMotor rightMotorBack = null;
     private DcMotor crane = null;
+    private final double INCHES_PER_TICK = .0215524171;
+    private final double DEGREES_PER_TICK = .1525087902;
 
     @Override
     public void runOpMode() {
@@ -35,33 +45,26 @@ public class TeleNegative extends LinearOpMode {
         runtime.reset();
 
         while (opModeIsActive()) {
-            //Stuff to display for Telemetry
-            telemetry.addData("Left Motor Power", leftMotorFront.getCurrentPosition());
-            telemetry.addData("Right Motor Power", rightMotorFront.getPower());
+
+            telemetry.addData("Left Motor Position", leftMotorFront.getCurrentPosition());
+            telemetry.addData("Right Motor Position", rightMotorFront.getCurrentPosition());
             telemetry.update();
 
             if (gamepad1.left_stick_y != 0 && gamepad1.right_stick_x == 0) {
                 leftMotorFront.setPower(gamepad1.left_stick_y);
-                //leftMotorFront no change
-                leftMotorBack.setPower(-gamepad1.left_stick_y);
-                //leftMotorBack power negative
+                leftMotorBack.setPower(gamepad1.left_stick_y);
                 rightMotorFront.setPower(gamepad1.left_stick_y);
                 rightMotorBack.setPower(gamepad1.left_stick_y);
-                //rightMotorBack no change
             }
             if (gamepad1.right_stick_x != 0 && gamepad1.left_stick_y == 0) {
                 leftMotorFront.setPower(gamepad1.right_stick_x);
-                //switched leftMotorFront no change
-                leftMotorBack.setPower(-gamepad1.right_stick_x);
-                //leftMotorBack power negative
+                leftMotorBack.setPower(gamepad1.right_stick_x);
                 rightMotorFront.setPower(-gamepad1.right_stick_x);
                 rightMotorBack.setPower(-gamepad1.right_stick_x);
-                //rightMotorBack no change
             }
             if (gamepad1.left_stick_y < 0 && gamepad1.right_stick_x < 0) {
                 leftMotorFront.setPower(-(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2));
-                leftMotorBack.setPower(-(-(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2)));
-                //leftMotorBack power negative
+                leftMotorBack.setPower (-(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2));
                 rightMotorFront.setPower(0);
                 rightMotorBack.setPower(0);
             }
@@ -70,20 +73,16 @@ public class TeleNegative extends LinearOpMode {
                 leftMotorBack.setPower(0);
                 rightMotorFront.setPower(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2);
                 rightMotorBack.setPower((Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2));
-                //rightMotorBack no change
             }
             if (gamepad1.left_stick_y < 0 && gamepad1.right_stick_x > 0) {
                 leftMotorFront.setPower(0);
                 leftMotorBack.setPower(0);
                 rightMotorFront.setPower(-(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2));
                 rightMotorBack.setPower((-(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2)));
-                //rightMotorBack no change
             }
             if (gamepad1.left_stick_y > 0 && gamepad1.right_stick_x > 0) {
                 leftMotorFront.setPower(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2);
-                //switched leftMotorFront no change
-                leftMotorBack.setPower(-(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2));
-                //leftMotorBack power negative
+                leftMotorBack.setPower (Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y)/2);
                 rightMotorFront.setPower(0);
                 rightMotorBack.setPower(0);
             }

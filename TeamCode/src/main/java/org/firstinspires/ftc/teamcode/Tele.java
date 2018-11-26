@@ -10,6 +10,9 @@ import com.qualcomm.robotcore.util.Range;
 
 import java.lang.Math;
 
+//Left motors are now right physically
+//Right motors are now left physically
+
 @TeleOp(name="TeleOp", group="Linear Opmode")
 public class Tele extends LinearOpMode {
 
@@ -20,6 +23,8 @@ public class Tele extends LinearOpMode {
     private DcMotor rightMotorFront = null;
     private DcMotor rightMotorBack = null;
     private DcMotor crane = null;
+    private final double INCHES_PER_TICK = .0215524171;
+    private final double DEGREES_PER_TICK = .1525087902;
 
     @Override
     public void runOpMode() {
@@ -40,9 +45,9 @@ public class Tele extends LinearOpMode {
         runtime.reset();
 
         while (opModeIsActive()) {
-            //Stuff to display for Telemetry
-            telemetry.addData("Left Motor Power", leftMotorFront.getCurrentPosition());
-            telemetry.addData("Right Motor Power", rightMotorFront.getPower());
+
+            telemetry.addData("Left Power: ", leftMotorFront.getPower());
+            telemetry.addData("Right Power: ", rightMotorFront.getPower());
             telemetry.update();
 
             if (gamepad1.left_stick_y != 0 && gamepad1.right_stick_x == 0) {

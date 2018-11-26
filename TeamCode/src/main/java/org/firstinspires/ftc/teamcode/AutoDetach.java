@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous(name="AutonomousDetachOnly", group="Autonomous Encoder")
+@Autonomous(name="AutonomousDetachOnly", group="Autonomous Competition")
 public class AutoDetach extends LinearOpMode {
 
     // Declare OpMode members.
@@ -19,6 +19,8 @@ public class AutoDetach extends LinearOpMode {
     private DcMotor rightMotorBack = null;
     private DcMotor crane = null;
     private DistanceSensor distance = null;
+    private final double INCHES_PER_TICK = .0215524172;
+    private final double DEGREES_PER_TICK = .1525087903;
 
     @Override
     public void runOpMode() {
@@ -80,7 +82,7 @@ public class AutoDetach extends LinearOpMode {
 
         sleep(1000);
         runtime.reset();
-        while(runtime.milliseconds() < 1000) {
+        while(runtime.milliseconds() < 1500) {
             telemetry.addLine("Turning");
             telemetry.update();
             leftMotorFront.setPower(.35);
@@ -110,7 +112,7 @@ public class AutoDetach extends LinearOpMode {
 
         sleep(1000);
         runtime.reset();
-        while(runtime.milliseconds() < 1000) {
+        while(runtime.milliseconds() < 1500) {
             telemetry.addLine("Turning Back");
             telemetry.update();
             leftMotorFront.setPower(-.35);
