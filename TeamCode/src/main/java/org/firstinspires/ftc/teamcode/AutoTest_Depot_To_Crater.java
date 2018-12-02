@@ -6,14 +6,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -23,8 +15,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
 
-@Autonomous(name="AutonomousBlock", group="Autonomous Competition")
-public class AutoTest extends LinearOpMode {
+@Autonomous(name="AutonomousBlockDepotToCrater", group="Autonomous Competition")
+public class AutoTest_Depot_To_Crater extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -125,7 +117,6 @@ public class AutoTest extends LinearOpMode {
             runTo(-7, .25);
             sleep(500);
             //increased from 15 due to not turning enough all of a sudden
-            turnRight(18,.4);
             runTo(-.5, .25);
             // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
             // first.
@@ -194,7 +185,7 @@ public class AutoTest extends LinearOpMode {
                                         location = 2;
                                     }
                                 }
-                                else{
+                                else {
                                     telemetry.addData("Gold Mineral Position", "Left");
                                     telemetry.update();
                                     location = 2;
@@ -210,41 +201,86 @@ public class AutoTest extends LinearOpMode {
             }
 
             if (location == 0 ) {
-                turnRight(15, .5);
+                turnRight(25, .35);
                 runTo(25, .25);
+                //block should be hit and going for scoring marker
                 //increased left angle from 30
                 turnLeft(45, .35);
                 runTo(15, .25);
+                //scoring marker
+                sleep(100);
+                crater.setPower(-.65);
+                sleep(200);
+                crater.setPower(0);
+                sleep(250);
+                crater.setPower(.65);
+                sleep(750);
+                crater.setPower(.1);
+                //Going for crater
+                turnRight(135, .25);
+                runTo(50, .35);
+                //lowering scoring arm
+                crater.setPower(-.65);
+                sleep(100);
+                crater.setPower(0);
             }
             else if (location == 1) {
-                turnLeft(25, .35);
-                runTo(25, .25);
-                turnRight(15, .35);
+                turnLeft(10, .35);
+                runTo(30, .25);
+                //block should be hit and going for scoring marker
+                turnRight(12, .35);
                 runTo(15, .25);
+                //scoring marker
+                sleep(100);
+                crater.setPower(-.65);
+                sleep(200);
+                crater.setPower(0);
+                sleep(250);
+                crater.setPower(.65);
+                sleep(750);
+                crater.setPower(.1);
+                //Going for crater
+                turnRight(75, .25);
+                runTo(12, .35);
+                turnRight(35, .25);
+                runTo(44, .35);
+                //lowering scoring arm
+                crater.setPower(-1);
+                sleep(100);
+                crater.setPower(0);
+
             }
-            //still needs work
             else if (location == 2) {
-                //Increased left degree turn from 50
-                turnLeft(60, .4);
+                turnLeft(35, .4);
                 //May need to be increased
-                runTo(34, .25);
+                runTo(39, .35);
+                //marker should be hit here, now just turning to depot for scoring marker
                 //increased turn right degree from 40
                 turnRight(50, .35);
-                runTo(3, .2);
-                turnRight(25,.25);
-                runTo(11,.25);
-                //final turning to get ready for going to crater may need slight readjustment
+                runTo(5, .35);
+                //scoring marker
+                sleep(100);
+                crater.setPower(-.65);
+                sleep(200);
+                crater.setPower(0);
+                sleep(250);
+                crater.setPower(.65);
+                sleep(750);
+                crater.setPower(.1);
                 turnRight(25,.35);
-                //this one is set up for backing up straight into crater
+                runTo(10,.35);
+                //Turning to get ready for going to crater may need slight readjustment
+                turnRight(5,.35);
+                turnRight(30,.35);
+                runTo(20,.25);
+                turnRight(35,.35);
+                //going to our crater
+                runTo(55,1);
+                //lowering scoring arm
+                crater.setPower(-1);
+                sleep(100);
+                crater.setPower(0);
             }
-            sleep(500);
-            crater.setPower(-.15);
-            sleep(2000);
-            crater.setPower(0);
-            sleep(500);
-            crater.setPower(.75);
-            sleep(900);
-            crater.setPower(0);
         }
     }
     private void runTo(double inches, double power) {

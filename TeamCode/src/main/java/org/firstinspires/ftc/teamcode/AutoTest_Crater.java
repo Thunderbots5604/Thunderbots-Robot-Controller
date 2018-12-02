@@ -6,10 +6,17 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
-@Autonomous(name="AutonomousDetachOnly", group="Autonomous Competition")
-public class AutoDetach extends LinearOpMode {
+import java.util.List;
+
+@Autonomous(name="AutonomousDetachBall(Crater)", group="Autonomous Competition")
+public class AutoTest_Crater extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -18,9 +25,43 @@ public class AutoDetach extends LinearOpMode {
     private DcMotor rightMotorFront = null;
     private DcMotor rightMotorBack = null;
     private DcMotor crane = null;
+    //positive brings crater up
+    private DcMotor crater = null;
     private DistanceSensor distance = null;
     private final double INCHES_PER_TICK = .0215524172;
     private final double DEGREES_PER_TICK = .1525087903;
+
+    private int location = -1;
+    private int objects = 0;
+    private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
+    private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
+    private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
+
+    /*
+     * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
+     * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
+     * A Vuforia 'Development' license key, can be obtained free of charge from the Vuforia developer
+     * web site at https://developer.vuforia.com/license-manager.
+     *
+     * Vuforia license keys are always 380 characters long, and look as if they contain mostly
+     * random data. As an example, here is a example of a fragment of a valid key:
+     *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
+     * Once you've obtained a license key, copy the string from the Vuforia web site
+     * and paste it in to your code on the next line, between the double quotes.
+     */
+    private static final String VUFORIA_KEY = "AfDTG3b/////AAABmQnAWkqPDkVztdcIurPa8w5lO6BWlTpltO5r1m4s9oA9w3cfFdIBqJ4rjZB0We4YHcRMdc5LkWwOvJk+xcDr2VFpLP8m6zEqLWlrVNQvBnNxmGO8BeZ+xRQeQ34AgPhrqQQqeheWJbfoOn+lekIz2ZMm9f+j+1ng/X0vKDHyFGfxbtXbJuUx4Qh6E3t0esH0b3VQtbuJiOOTpWi9xFAqBsHWp+DQbwub+a6HZV5q42OabnOAyr0GZ7u1vJZs+I/Vlnf7qEMLD4RTIYA5OmMyzOdl5aikZqDSgG223ETSwcbwd3QFKewYE3oXXxkpI0vmsxCiaqBJ1oL9e6n0RXbC8Zdvn2VYwh6oSemcpp+fSjGa";
+
+    /**
+     * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
+     * localization engine.
+     */
+    private VuforiaLocalizer vuforia;
+
+    /**
+     * {@link #tfod} is the variable we will use to store our instance of the Tensor Flow Object
+     * Detection engine.
+     */
+    private TFObjectDetector tfod;
 
     @Override
     public void runOpMode() {
@@ -32,6 +73,7 @@ public class AutoDetach extends LinearOpMode {
         rightMotorFront = hardwareMap.get(DcMotor.class, "right_motor_front");
         rightMotorBack = hardwareMap.get(DcMotor.class, "right_motor_back");
         crane = hardwareMap.get(DcMotor.class, "crane");
+        crater = hardwareMap.get(DcMotor.class, "crater");
         distance = hardwareMap.get(DistanceSensor.class, "distance");
         rightMotorFront.setDirection(DcMotor.Direction.REVERSE);
         rightMotorBack.setDirection(DcMotor.Direction.REVERSE);
@@ -57,81 +99,140 @@ public class AutoDetach extends LinearOpMode {
             crane.setPower(.75);
         }
         crane.setPower(0);
-        sleep(100);
+        sleep(500);
         runtime.reset();
+        //changed from negetive to positive power due to going down too much and getting stuck that way
         while(runtime.milliseconds() < 50) {
             crane.setPower(-.85);
         }
         crane.setPower(0);
 
-        sleep(1000);
+        sleep(500);
 
         if(Double.isNaN(distance.getDistance(DistanceUnit.MM)) != true) {
             runTo(1.5, .25);
             turnRight(35, .35);
             runTo(10, .25);
             turnLeft(40, .35);
-            runTo(-6, .25);
-            runTo(-3, .25);
-        }
-        /*runtime.reset();
-        while(runtime.milliseconds() < 150) {
-            telemetry.addLine("Move forward");
-            telemetry.update();
-            leftMotorFront.setPower(-.25);
-            leftMotorBack.setPower(-.25);
-            rightMotorFront.setPower(-.25);
-            rightMotorBack.setPower(-.25);
-        }
-        leftMotorFront.setPower(0);
-        leftMotorBack.setPower(0);
-        rightMotorFront.setPower(0);
-        rightMotorBack.setPower(0);
+            runTo(-7, .25);
+            sleep(500);
+            //increased from 15 due to not turning enough all of a sudden
+            runTo(-.5, .25);
+            turnRight(5, .35);
+            // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
+            // first.
+            initVuforia();
 
-        sleep(1000);
-        runtime.reset();
-        while(runtime.milliseconds() < 1500) {
-            telemetry.addLine("Turning");
-            telemetry.update();
-            leftMotorFront.setPower(.35);
-            leftMotorBack.setPower(.35);
-            rightMotorFront.setPower(-.35);
-            rightMotorBack.setPower(-.35);
-        }
-        leftMotorFront.setPower(0);
-        leftMotorBack.setPower(0);
-        rightMotorFront.setPower(0);
-        rightMotorBack.setPower(0);
+            if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
+                initTfod();
+            } else {
+                telemetry.addData("Sorry!", "This device is not compatible with TFOD");
+            }
 
-        sleep(1000);
-        runtime.reset();
-        while(runtime.milliseconds() < 500) {
-            telemetry.addLine("Move Forward");
-            telemetry.update();
-            leftMotorFront.setPower(-.25);
-            leftMotorBack.setPower(-.25);
-            rightMotorFront.setPower(-.25);
-            rightMotorBack.setPower(-.25);
-        }
-        leftMotorFront.setPower(0);
-        leftMotorBack.setPower(0);
-        rightMotorFront.setPower(0);
-        rightMotorBack.setPower(0);
+            if (tfod != null) {
+                tfod.activate();
+            }
 
-        sleep(1000);
-        runtime.reset();
-        while(runtime.milliseconds() < 1500) {
-            telemetry.addLine("Turning Back");
-            telemetry.update();
-            leftMotorFront.setPower(-.35);
-            leftMotorBack.setPower(-.35);
-            rightMotorFront.setPower(.35);
-            rightMotorBack.setPower(.35);
+            if (opModeIsActive()) {
+                /** Activate Tensor Flow Object Detection. */
+                if (tfod != null) {
+                    tfod.activate();
+                }
+                runtime.reset();
+                while (runtime.seconds() < 3) {
+                    if (tfod != null) {
+                        // getUpdatedRecognitions() will return null if no new information is available since
+                        // the last time that call was made.
+
+                        List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                        if (updatedRecognitions != null) {
+                            telemetry.addData("# Object Detected", updatedRecognitions.size());
+                            objects = updatedRecognitions.size();
+                            if (updatedRecognitions.size() == 2) {
+                                int goldMineralX = -1;
+                                int silverMineral1X = -1;
+                                int silverMineral2X = -1;
+
+                                for (Recognition recognition : updatedRecognitions) {
+                                    if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                                        goldMineralX = (int) recognition.getTop();
+                                        telemetry.addLine("Right");
+                                        telemetry.addData("getTop?", recognition.getTop());
+                                        telemetry.update();
+                                    } else if (silverMineral1X == -1) {
+                                        silverMineral1X = (int) recognition.getTop();
+                                        telemetry.addLine("Center");
+                                        telemetry.addData("getTop?", recognition.getTop());
+                                        telemetry.update();
+                                    } else {
+                                        silverMineral2X = (int) recognition.getTop();
+                                        telemetry.addLine("Left");
+                                        telemetry.addData("getTop?", recognition.getTop());
+                                        telemetry.update();
+                                    }
+                                }
+                                if (goldMineralX != -1 && silverMineral1X != -1) {
+                                    if (goldMineralX < silverMineral1X) {
+                                        telemetry.addData("Gold Mineral Position", "Center");
+                                        telemetry.update();
+                                        location = 1;
+                                    } else if (goldMineralX > silverMineral1X) {
+                                        telemetry.addData("Gold Mineral Position", "Right");
+                                        telemetry.update();
+                                        location = 0;
+                                    } else {
+                                        telemetry.addData("Gold Mineral Position", "Left");
+                                        telemetry.update();
+                                        location = 2;
+                                    }
+                                }
+                                else{
+                                    telemetry.addLine("Rip Society");
+                                    telemetry.update();
+                                    location = 2;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (tfod != null) {
+                tfod.shutdown();
+            }
+
+            if (location == 0 ) {
+                turnRight(25, .35);
+                runTo(25, .25);
+                //increased left angle from 30
+                turnLeft(30, .35);
+                runTo(3, 1);
+                crater.setPower(-0.2);
+                sleep(1000);
+                crater.setPower(0);
+            }
+            else if (location == 1) {
+                turnLeft(18, .35);
+                runTo(25, .25);
+                turnRight(15, .35);
+                crater.setPower(-0.2);
+                sleep(1000);
+                crater.setPower(0);
+            }
+            //still needs work
+            else if (location == 2) {
+                //lowered from 60 to 45
+                turnLeft(45, .4);
+                //May need to be increased
+                runTo(37, .25);
+                //lowered turn right from 100
+                turnRight(70, .35);
+                runTo(3,.25);
+                crater.setPower(-0.2);
+                sleep(1000);
+                crater.setPower(0);
+            }
         }
-        leftMotorFront.setPower(0);
-        leftMotorBack.setPower(0);
-        rightMotorFront.setPower(0);
-        rightMotorBack.setPower(0);*/
     }
     private void runTo(double inches, double power) {
         //Just do 40 inches
@@ -263,6 +364,34 @@ public class AutoDetach extends LinearOpMode {
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+    /**
+     * Initialize the Vuforia localization engine.
+     */
+    private void initVuforia() {
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         */
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraDirection = CameraDirection.BACK;
+
+        //  Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        // Loading trackables is not necessary for the Tensor Flow Object Detection engine.
+    }
+
+    /**
+     * Initialize the Tensor Flow Object Detection engine.
+     */
+    private void initTfod() {
+        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
     }
 }
 
