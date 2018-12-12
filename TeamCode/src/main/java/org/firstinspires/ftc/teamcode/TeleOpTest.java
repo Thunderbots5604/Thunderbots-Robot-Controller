@@ -29,7 +29,7 @@ public class TeleOpTest extends LinearOpMode {
     private Servo elevator = null;*/
     private boolean reversed = false;
     private int multiplier = 1;
-    private final double INCHES_PER_TICK = .0215524171;
+    private final double INCHES_PER_TICK = .0223147377;
     private final double DEGREES_PER_TICK = .1525087902;
 
     @Override

@@ -28,8 +28,8 @@ public class AutoTest_Depot_To_Crater extends LinearOpMode {
     //positive brings crater up
     private DcMotor crater = null;
     private DistanceSensor distance = null;
-    private final double INCHES_PER_TICK = .0215524172;
-    private final double DEGREES_PER_TICK = .1525087903;
+    private final double INCHES_PER_TICK = .0223147377;
+    private final double DEGREES_PER_TICK = .17106201;
 
     private int location = -1;
     private int objects = 0;

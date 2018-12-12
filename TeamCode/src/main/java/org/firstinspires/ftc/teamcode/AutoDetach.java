@@ -19,8 +19,8 @@ public class AutoDetach extends LinearOpMode {
     private DcMotor rightMotorBack = null;
     private DcMotor crane = null;
     private DistanceSensor distance = null;
-    private final double INCHES_PER_TICK = .0215524172;
-    private final double DEGREES_PER_TICK = .1525087903;
+    private final double INCHES_PER_TICK = .0223147377;
+    private final double DEGREES_PER_TICK = .17106201;
 
     @Override
     public void runOpMode() {
@@ -74,64 +74,7 @@ public class AutoDetach extends LinearOpMode {
             runTo(-6, .25);
             runTo(-3, .25);
         }
-        /*runtime.reset();
-        while(runtime.milliseconds() < 150) {
-            telemetry.addLine("Move forward");
-            telemetry.update();
-            leftMotorFront.setPower(-.25);
-            leftMotorBack.setPower(-.25);
-            rightMotorFront.setPower(-.25);
-            rightMotorBack.setPower(-.25);
-        }
-        leftMotorFront.setPower(0);
-        leftMotorBack.setPower(0);
-        rightMotorFront.setPower(0);
-        rightMotorBack.setPower(0);
 
-        sleep(1000);
-        runtime.reset();
-        while(runtime.milliseconds() < 1500) {
-            telemetry.addLine("Turning");
-            telemetry.update();
-            leftMotorFront.setPower(.35);
-            leftMotorBack.setPower(.35);
-            rightMotorFront.setPower(-.35);
-            rightMotorBack.setPower(-.35);
-        }
-        leftMotorFront.setPower(0);
-        leftMotorBack.setPower(0);
-        rightMotorFront.setPower(0);
-        rightMotorBack.setPower(0);
-
-        sleep(1000);
-        runtime.reset();
-        while(runtime.milliseconds() < 500) {
-            telemetry.addLine("Move Forward");
-            telemetry.update();
-            leftMotorFront.setPower(-.25);
-            leftMotorBack.setPower(-.25);
-            rightMotorFront.setPower(-.25);
-            rightMotorBack.setPower(-.25);
-        }
-        leftMotorFront.setPower(0);
-        leftMotorBack.setPower(0);
-        rightMotorFront.setPower(0);
-        rightMotorBack.setPower(0);
-
-        sleep(1000);
-        runtime.reset();
-        while(runtime.milliseconds() < 1500) {
-            telemetry.addLine("Turning Back");
-            telemetry.update();
-            leftMotorFront.setPower(-.35);
-            leftMotorBack.setPower(-.35);
-            rightMotorFront.setPower(.35);
-            rightMotorBack.setPower(.35);
-        }
-        leftMotorFront.setPower(0);
-        leftMotorBack.setPower(0);
-        rightMotorFront.setPower(0);
-        rightMotorBack.setPower(0);*/
     }
     private void runTo(double inches, double power) {
         //Just do 40 inches

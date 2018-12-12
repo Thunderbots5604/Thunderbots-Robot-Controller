@@ -15,8 +15,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
 
-@Autonomous(name="AutonomousDetachBall(Crater)", group="Autonomous Competition")
-public class AutoTest_Crater extends LinearOpMode {
+@Autonomous(name="Testing Autonomous Values", group="Autonomous Competition")
+public class TestingAutonomousValues extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -81,205 +81,85 @@ public class AutoTest_Crater extends LinearOpMode {
         waitForStart();
         //Stuff to display for Telemetry
 
-        //crane.setPower(1);
-        runtime.reset();
-        while (Double.isNaN(distance.getDistance(DistanceUnit.MM))) {
-            telemetry.addLine("Phase: Lowering Part 1");
-            telemetry.addData("Distance", distance.getDistance(DistanceUnit.MM));
-            telemetry.update();
-            crane.setPower(1);
-        }
-        sleep(900);
-        crane.setPower(0);
-        runtime.reset();
-        while (distance.getDistance(DistanceUnit.MM) > 70) {
-            telemetry.addLine("Phase: Lowering Part 2");
-            telemetry.addData("Distance", distance.getDistance(DistanceUnit.MM));
-            telemetry.update();
-            crane.setPower(.75);
-        }
-        crane.setPower(0);
-        sleep(500);
-        runtime.reset();
-        //changed from negetive to positive power due to going down too much and getting stuck that way
-        while(runtime.milliseconds() < 50) {
-            crane.setPower(-.85);
-        }
-        crane.setPower(0);
-
-        sleep(500);
-
-        if(Double.isNaN(distance.getDistance(DistanceUnit.MM)) != true) {
-            runTo(1.5, .25);
-            turnRight(35, .35);
-            runTo(10, .25);
-            turnLeft(40, .35);
-            runTo(-7, .25);
-            sleep(500);
-            //increased from 15 due to not turning enough all of a sudden
-            runTo(-.5, .25);
-            turnRight(5, .35);
-            // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
-            // first.
-            initVuforia();
-
-            if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
-                initTfod();
-            } else {
-                telemetry.addData("Sorry!", "This device is not compatible with TFOD");
-            }
-
-            if (tfod != null) {
-                tfod.activate();
-            }
-
-            if (opModeIsActive()) {
-                /** Activate Tensor Flow Object Detection. */
-                if (tfod != null) {
-                    tfod.activate();
-                }
-                runtime.reset();
-                while (runtime.seconds() < 3) {
-                    if (tfod != null) {
-                        // getUpdatedRecognitions() will return null if no new information is available since
-                        // the last time that call was made.
-
-                        List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                        if (updatedRecognitions != null) {
-                            telemetry.addData("# Object Detected", updatedRecognitions.size());
-                            objects = updatedRecognitions.size();
-                            if (updatedRecognitions.size() == 2) {
-                                int goldMineralX = -1;
-                                int silverMineral1X = -1;
-                                int silverMineral2X = -1;
-
-                                for (Recognition recognition : updatedRecognitions) {
-                                    if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
-                                        goldMineralX = (int) recognition.getTop();
-                                        telemetry.addLine("Right");
-                                        telemetry.addData("getTop?", recognition.getTop());
-                                        telemetry.update();
-                                    } else if (silverMineral1X == -1) {
-                                        silverMineral1X = (int) recognition.getTop();
-                                        telemetry.addLine("Center");
-                                        telemetry.addData("getTop?", recognition.getTop());
-                                        telemetry.update();
-                                    } else {
-                                        silverMineral2X = (int) recognition.getTop();
-                                        telemetry.addLine("Left");
-                                        telemetry.addData("getTop?", recognition.getTop());
-                                        telemetry.update();
-                                    }
-                                }
-                                if (goldMineralX != -1 && silverMineral1X != -1) {
-                                    if (goldMineralX < silverMineral1X) {
-                                        telemetry.addData("Gold Mineral Position", "Center");
-                                        telemetry.update();
-                                        location = 1;
-                                    } else if (goldMineralX > silverMineral1X) {
-                                        telemetry.addData("Gold Mineral Position", "Right");
-                                        telemetry.update();
-                                        location = 0;
-                                    } else {
-                                        telemetry.addData("Gold Mineral Position", "Left");
-                                        telemetry.update();
-                                        location = 2;
-                                    }
-                                }
-                                else{
-                                    telemetry.addLine("Rip Society");
-                                    telemetry.update();
-                                    location = 2;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (tfod != null) {
-                tfod.shutdown();
-            }
-
-            if (location == 0 ) {
-                turnRight(25, .35);
-                runTo(25, .25);
-                //increased left angle from 30
-                turnLeft(30, .35);
-                runTo(3, 1);
-                crater.setPower(-0.2);
-                sleep(1000);
-                crater.setPower(0);
-            }
-            else if (location == 1) {
-                turnLeft(18, .35);
-                runTo(25, .25);
-                turnRight(15, .35);
-                crater.setPower(-0.2);
-                sleep(1000);
-                crater.setPower(0);
-            }
-            //still needs work
-            else if (location == 2) {
-                //lowered from 60 to 45
-                turnLeft(45, .4);
-                //May need to be increased
-                runTo(37, .25);
-                //lowered turn right from 100
-                turnRight(70, .35);
-                runTo(3,.25);
-                crater.setPower(-0.2);
-                sleep(1000);
-                crater.setPower(0);
-            }
-        }
+        turnRight(45, .5);
+        sleep(2500);
+        turnLeft(90,.5);
+        sleep(2500);
+        turnLeft(180, .5);
+        sleep(2500);
+        turnRight(360, .5);
     }
+
     private void runTo(double inches, double power) {
-        //Just do 40 inches
-
         leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         int negative = -1;
-        if (inches < 0) {
+        int targetPosition = (int)(inches / INCHES_PER_TICK);
+        if (inches > 0) {
+            while ((leftMotorFront.getCurrentPosition() < targetPosition) && (rightMotorFront.getCurrentPosition() < targetPosition)) {
+                telemetry.addData("Target Position", targetPosition);
+                telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
+                telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
+                telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
+                telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
+                telemetry.update();
+                leftMotorFront.setPower(negative * power);
+                leftMotorBack.setPower(negative * power);
+                rightMotorFront.setPower(negative * power);
+                rightMotorBack.setPower(negative * power);
+            }
+            runtime.reset();
+            while(runtime.milliseconds() < 500) {
+                leftMotorFront.setPower(-1 * negative * .1);
+                leftMotorBack.setPower(-1 * negative * .1);
+                rightMotorFront.setPower(-1 * negative * .1);
+                rightMotorBack.setPower(-1 * negative * .1);
+            }
+            leftMotorFront.setPower(0);
+            leftMotorBack.setPower(0);
+            rightMotorFront.setPower(0);
+            rightMotorBack.setPower(0);
+            leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
+        else {
             negative = 1;
+            while ((leftMotorFront.getCurrentPosition() > targetPosition) && (rightMotorFront.getCurrentPosition() > targetPosition)) {
+                telemetry.addData("Target Position", targetPosition);
+                telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
+                telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
+                telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
+                telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
+                telemetry.update();
+                leftMotorFront.setPower(negative * power);
+                leftMotorBack.setPower(negative * power);
+                rightMotorFront.setPower(negative * power);
+                rightMotorBack.setPower(negative * power);
+            }
+            runtime.reset();
+            while(runtime.milliseconds() < 500) {
+                leftMotorFront.setPower(-1 * negative * .1);
+                leftMotorBack.setPower(-1 * negative * .1);
+                rightMotorFront.setPower(-1 * negative * .1);
+                rightMotorBack.setPower(-1 * negative * .1);
+            }
+            leftMotorFront.setPower(0);
+            leftMotorBack.setPower(0);
+            rightMotorFront.setPower(0);
+            rightMotorBack.setPower(0);
+            leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
-        inches *= -1;
-        leftMotorFront.setTargetPosition((int)(inches / INCHES_PER_TICK));
-        leftMotorBack.setTargetPosition((int)(inches / INCHES_PER_TICK));
-        rightMotorFront.setTargetPosition((int)(inches / INCHES_PER_TICK));
-        rightMotorBack.setTargetPosition((int)(inches / INCHES_PER_TICK));
-        leftMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        while (leftMotorFront.isBusy() && rightMotorFront.isBusy()) {
-            telemetry.addData("Target Position", leftMotorFront.getTargetPosition());
-            telemetry.addData("Left Motor Position", leftMotorFront.getCurrentPosition());
-            telemetry.addData("Right Motor Position", rightMotorFront.getCurrentPosition());
-            telemetry.update();
-            leftMotorFront.setPower(negative * power);
-            leftMotorBack.setPower(negative * power);
-            rightMotorFront.setPower(negative * power);
-            rightMotorBack.setPower(negative * power);
-        }
-        runtime.reset();
-        while(runtime.milliseconds() < 100) {
-            leftMotorFront.setPower(-1 * negative * .1);
-            leftMotorBack.setPower(-1 * negative * .1);
-            rightMotorFront.setPower(-1 * negative * .1);
-            rightMotorBack.setPower(-1 * negative * .1);
-        }
-        leftMotorFront.setPower(0);
-        leftMotorBack.setPower(0);
-        rightMotorFront.setPower(0);
-        rightMotorBack.setPower(0);
-        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
     }
     private void turnRight(double degrees, double power) {
         degrees *= .95;
