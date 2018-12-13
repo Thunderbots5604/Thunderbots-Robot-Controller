@@ -2,8 +2,10 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -24,9 +26,13 @@ public class TestingAutonomousValues extends LinearOpMode {
     private DcMotor leftMotorBack = null;
     private DcMotor rightMotorFront = null;
     private DcMotor rightMotorBack = null;
-    private DcMotor crane = null;
-    //positive brings crater up
     private DcMotor crater = null;
+    private DcMotor horizontal = null;
+    private DcMotor crane1 = null;
+    private DcMotor crane2 = null;
+
+    private CRServo wheel = null;
+    private Servo elevator = null;
     private DistanceSensor distance = null;
     private final double INCHES_PER_TICK = .0223147377;
     private final double DEGREES_PER_TICK = .17106201;
@@ -72,25 +78,31 @@ public class TestingAutonomousValues extends LinearOpMode {
         leftMotorBack = hardwareMap.get(DcMotor.class, "left_motor_back");
         rightMotorFront = hardwareMap.get(DcMotor.class, "right_motor_front");
         rightMotorBack = hardwareMap.get(DcMotor.class, "right_motor_back");
-        crane = hardwareMap.get(DcMotor.class, "crane");
+        horizontal = hardwareMap.get(DcMotor.class, "horizontal");
         crater = hardwareMap.get(DcMotor.class, "crater");
-        distance = hardwareMap.get(DistanceSensor.class, "distance");
+        wheel = hardwareMap.get(CRServo.class, "wheel");
+        crane1 = hardwareMap.get(DcMotor.class, "crane_a");
+        crane2 = hardwareMap.get(DcMotor.class, "crane_b");
+        elevator = hardwareMap.get(Servo.class, "elevator");
+
         rightMotorFront.setDirection(DcMotor.Direction.REVERSE);
         rightMotorBack.setDirection(DcMotor.Direction.REVERSE);
 
+        distance = hardwareMap.get(DistanceSensor.class, "distance");
+
         waitForStart();
         //Stuff to display for Telemetry
-
-        turnRight(45, .5);
+        turnRight(45, .35);
         sleep(2500);
-        turnLeft(90,.5);
+        turnLeft(90,.45);
         sleep(2500);
-        turnLeft(180, .5);
+        turnLeft(180, .55);
         sleep(2500);
-        turnRight(360, .5);
+        turnRight(360, .65);
     }
 
     private void runTo(double inches, double power) {
+        //.75 is max accurate
         leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -99,6 +111,7 @@ public class TestingAutonomousValues extends LinearOpMode {
         leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        inches *= .925925;
         int negative = -1;
         int targetPosition = (int)(inches / INCHES_PER_TICK);
         if (inches > 0) {
@@ -162,8 +175,17 @@ public class TestingAutonomousValues extends LinearOpMode {
         }
     }
     private void turnLeft(double degrees, double power) {
-        degrees *= .95;
-        
+        degrees *= 1.27;
+
+        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         int targetTurn = (int)(degrees / DEGREES_PER_TICK);
         
         while ((leftMotorFront.getCurrentPosition() < targetTurn) && (rightMotorFront.getCurrentPosition() > -targetTurn)) {
@@ -178,25 +200,34 @@ public class TestingAutonomousValues extends LinearOpMode {
                 rightMotorFront.setPower(power);
                 rightMotorBack.setPower(power);
             }
-            runtime.reset();
-            while(runtime.milliseconds() < 500) {
-                leftMotorFront.setPower(.1);
-                leftMotorBack.setPower(.1);
-                rightMotorFront.setPower(-.1);
-                rightMotorBack.setPower(-.1);
-            }
-            leftMotorFront.setPower(0);
-            leftMotorBack.setPower(0);
-            rightMotorFront.setPower(0);
-            rightMotorBack.setPower(0);
-            leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        runtime.reset();
+        while(runtime.milliseconds() < 500) {
+            leftMotorFront.setPower(.1);
+            leftMotorBack.setPower(.1);
+            rightMotorFront.setPower(-.1);
+            rightMotorBack.setPower(-.1);
+        }
+        leftMotorFront.setPower(0);
+        leftMotorBack.setPower(0);
+        rightMotorFront.setPower(0);
+        rightMotorBack.setPower(0);
+        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
     private void turnRight(double degrees, double power) {
-        degrees *= .95;
-        
+        degrees *= 1.27;
+
+        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         int targetTurn = (int)(degrees / DEGREES_PER_TICK);
         
         while ((leftMotorFront.getCurrentPosition() > -targetTurn) && (rightMotorFront.getCurrentPosition() < targetTurn)) {
@@ -211,21 +242,21 @@ public class TestingAutonomousValues extends LinearOpMode {
                 rightMotorFront.setPower(-power);
                 rightMotorBack.setPower(-power);
             }
-            runtime.reset();
-            while(runtime.milliseconds() < 500) {
-                leftMotorFront.setPower(-.1);
-                leftMotorBack.setPower(-.1);
-                rightMotorFront.setPower(.1);
-                rightMotorBack.setPower(.1);
-            }
-            leftMotorFront.setPower(0);
-            leftMotorBack.setPower(0);
-            rightMotorFront.setPower(0);
-            rightMotorBack.setPower(0);
-            leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        runtime.reset();
+        while(runtime.milliseconds() < 500) {
+            leftMotorFront.setPower(-.1);
+            leftMotorBack.setPower(-.1);
+            rightMotorFront.setPower(.1);
+            rightMotorBack.setPower(.1);
+        }
+        leftMotorFront.setPower(0);
+        leftMotorBack.setPower(0);
+        rightMotorFront.setPower(0);
+        rightMotorBack.setPower(0);
+        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
     /**
      * Initialize the Vuforia localization engine.
