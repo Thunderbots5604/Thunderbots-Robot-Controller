@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,25 +11,46 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous(name="Detach Only", group="Autonomous Competition")
-public class AutoDetach extends LinearOpMode {
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+
+import java.util.List;
+@Disabled
+@Autonomous(name="No Use", group="Autonomous Competition")
+public class GodfatherOfAllAutonomous extends LinearOpMode {
 
     // Declare OpMode members.
-    private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor leftMotorFront = null;
-    private DcMotor leftMotorBack = null;
-    private DcMotor rightMotorFront = null;
-    private DcMotor rightMotorBack = null;
-    private DcMotor crater = null;
-    private DcMotor horizontal = null;
-    private DcMotor crane1 = null;
-    private DcMotor crane2 = null;
+    public ElapsedTime runtime = new ElapsedTime();
+    public DcMotor leftMotorFront = null;
+    public DcMotor leftMotorBack = null;
+    public DcMotor rightMotorFront = null;
+    public DcMotor rightMotorBack = null;
+    public DcMotor crater = null;
+    public DcMotor horizontal = null;
+    public DcMotor crane1 = null;
+    public DcMotor crane2 = null;
 
-    private CRServo wheel = null;
-    private Servo elevator = null;
-    private DistanceSensor distance = null;
-    private final double INCHES_PER_TICK = .0223147377;
-    private final double DEGREES_PER_TICK = .17106201;
+    public CRServo wheel = null;
+    public Servo elevator = null;
+    public DistanceSensor distance = null;
+    public final double INCHES_PER_TICK = .0223147377;
+    public final double DEGREES_PER_TICK = .17106201;
+
+    public int location = -1;
+    public int objects = 0;
+    public static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
+    public static final String LABEL_GOLD_MINERAL = "Gold Mineral";
+    public static final String LABEL_SILVER_MINERAL = "Silver Mineral";
+
+    public static final String VUFORIA_KEY = "AfDTG3b/////AAABmQnAWkqPDkVztdcIurPa8w5lO6BWlTpltO5r1m4s9oA9w3cfFdIBqJ4rjZB0We4YHcRMdc5LkWwOvJk+xcDr2VFpLP8m6zEqLWlrVNQvBnNxmGO8BeZ+xRQeQ34AgPhrqQQqeheWJbfoOn+lekIz2ZMm9f+j+1ng/X0vKDHyFGfxbtXbJuUx4Qh6E3t0esH0b3VQtbuJiOOTpWi9xFAqBsHWp+DQbwub+a6HZV5q42OabnOAyr0GZ7u1vJZs+I/Vlnf7qEMLD4RTIYA5OmMyzOdl5aikZqDSgG223ETSwcbwd3QFKewYE3oXXxkpI0vmsxCiaqBJ1oL9e6n0RXbC8Zdvn2VYwh6oSemcpp+fSjGa";
+
+    public VuforiaLocalizer vuforia;
+
+    public TFObjectDetector tfod;
 
     @Override
     public void runOpMode() {
@@ -53,6 +75,9 @@ public class AutoDetach extends LinearOpMode {
 
         waitForStart();
 
+        detach();
+    }
+    public void detach() {
         while (distance.getDistance(DistanceUnit.MM) > 100) {
             telemetry.addLine("Phase: Lowering Part 1");
             telemetry.addData("Distance", distance.getDistance(DistanceUnit.MM));
@@ -68,33 +93,133 @@ public class AutoDetach extends LinearOpMode {
             crane1.setPower(.55);
             crane2.setPower(-.55);
         }
-        sleep(250);
+        sleep(300);
         crane1.setPower(0);
         crane2.setPower(0);
         sleep(100);
         runtime.reset();
-        while(runtime.milliseconds() < 75) {
+        while(runtime.milliseconds() < 70) {
             crane1.setPower(-.55);
             crane2.setPower(.55);
         }
         crane1.setPower(0);
         crane2.setPower(0);
-
-        sleep(500);
-
+        sleep(100);
         if(distance.getDistance(DistanceUnit.MM) < 80) {
             runTo(1.5, .25);
             sleep(100);
-            turnRight(45, .55);
-            runTo(10, .25);
+            turnRight(120, .55);
+            //160 deg is 180 deg
+            runTo(10, .45);
             sleep(100);
-            turnLeft(170, .55);
-            runTo(-6, .25);
-            runTo(-3, .25);
+            turnRight(33, .45);
         }
     }
+    public int tfodDetection(double timeOut) {
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         */
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
-    private void runTo(double inches, double power) {
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraDirection = CameraDirection.BACK;
+
+        //  Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+
+        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
+            int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                    "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+            TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+            tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+            tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
+        } else {
+            telemetry.addData("Sorry!", "This device is not compatible with TFOD");
+        }
+        // Loading trackables is not necessary for the Tensor Flow Object Detection engine.
+
+        if (tfod != null) {
+            tfod.activate();
+        }
+
+        runtime.reset();
+        while (runtime.seconds() < timeOut) {
+            if (tfod != null) {
+                // getUpdatedRecognitions() will return null if no new information is available since
+                // the last time that call was made.
+
+                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                if (updatedRecognitions != null) {
+                    telemetry.addData("# Object Detected", updatedRecognitions.size());
+                    objects = updatedRecognitions.size();
+                    if (updatedRecognitions.size() == 2) {
+                        int goldMineralX = -1;
+                        int silverMineral1X = -1;
+                        int silverMineral2X = -1;
+
+                        for (Recognition recognition : updatedRecognitions) {
+                            if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                                goldMineralX = (int) recognition.getTop();
+                                telemetry.addLine("Right");
+                                telemetry.addData("getTop?", recognition.getTop());
+                                telemetry.update();
+                            } else if (silverMineral1X == -1) {
+                                silverMineral1X = (int) recognition.getTop();
+                                telemetry.addLine("Center");
+                                telemetry.addData("getTop?", recognition.getTop());
+                                telemetry.update();
+                            } else {
+                                silverMineral2X = (int) recognition.getTop();
+                                telemetry.addLine("Left");
+                                telemetry.addData("getTop?", recognition.getTop());
+                                telemetry.update();
+                            }
+                        }
+                        if (goldMineralX != -1 && silverMineral1X != -1) {
+                            if (goldMineralX < silverMineral1X) {
+                                telemetry.addData("Gold Mineral Position", "Center");
+                                telemetry.update();
+                                location = 1;
+                            } else if (goldMineralX > silverMineral1X) {
+                                telemetry.addData("Gold Mineral Position", "Right");
+                                telemetry.update();
+                                location = 0;
+                            } else {
+                                telemetry.addData("Gold Mineral Position", "Left");
+                                telemetry.update();
+                                location = 2;
+                            }
+                        }
+                        else {
+                            telemetry.addData("Gold Mineral Position", "Left");
+                            telemetry.update();
+                            location = 2;
+                        }
+                    }
+                }
+            }
+        }
+        if (tfod != null) {
+            tfod.shutdown();
+        }
+        if (location == 0) {
+            turnRight(13, .45);
+            runTo(-26, .45);
+        }
+        else if (location == 1) {
+            turnLeft(15, .45);
+            runTo(-26, .45);
+        }
+        else {
+            location = 2;
+            turnLeft(50, .45);
+            runTo(-40, .45);
+        }
+        return location;
+    }
+
+    public void runTo(double inches, double power) {
         //.75 is max accurate
         leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -167,7 +292,7 @@ public class AutoDetach extends LinearOpMode {
             rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
     }
-    private void turnLeft(double degrees, double power) {
+    public void turnLeft(double degrees, double power) {
         degrees *= 1.27;
 
         leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -209,7 +334,7 @@ public class AutoDetach extends LinearOpMode {
         rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
-    private void turnRight(double degrees, double power) {
+    public void turnRight(double degrees, double power) {
         degrees *= 1.27;
 
         leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

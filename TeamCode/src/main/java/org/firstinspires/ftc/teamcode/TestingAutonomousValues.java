@@ -91,14 +91,100 @@ public class TestingAutonomousValues extends LinearOpMode {
         distance = hardwareMap.get(DistanceSensor.class, "distance");
 
         waitForStart();
-        //Stuff to display for Telemetry
-        turnRight(45, .35);
-        sleep(2500);
-        turnLeft(90,.45);
-        sleep(2500);
-        turnLeft(180, .55);
-        sleep(2500);
-        turnRight(360, .65);
+
+        initVuforia();
+
+        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
+            initTfod();
+        } else {
+            telemetry.addData("Sorry!", "This device is not compatible with TFOD");
+        }
+
+        if (tfod != null) {
+            tfod.activate();
+        }
+
+        if (opModeIsActive()) {
+            /** Activate Tensor Flow Object Detection. */
+            if (tfod != null) {
+                tfod.activate();
+            }
+            runtime.reset();
+            while (runtime.seconds() < 4) {
+                if (tfod != null) {
+                    // getUpdatedRecognitions() will return null if no new information is available since
+                    // the last time that call was made.
+
+                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                    if (updatedRecognitions != null) {
+                        telemetry.addData("# Object Detected", updatedRecognitions.size());
+                        objects = updatedRecognitions.size();
+                        if (updatedRecognitions.size() == 2) {
+                            int goldMineralX = -1;
+                            int silverMineral1X = -1;
+                            int silverMineral2X = -1;
+
+                            for (Recognition recognition : updatedRecognitions) {
+                                if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                                    goldMineralX = (int) recognition.getTop();
+                                    telemetry.addLine("Right");
+                                    telemetry.addData("getTop?", recognition.getTop());
+                                    telemetry.update();
+                                } else if (silverMineral1X == -1) {
+                                    silverMineral1X = (int) recognition.getTop();
+                                    telemetry.addLine("Center");
+                                    telemetry.addData("getTop?", recognition.getTop());
+                                    telemetry.update();
+                                } else {
+                                    silverMineral2X = (int) recognition.getTop();
+                                    telemetry.addLine("Left");
+                                    telemetry.addData("getTop?", recognition.getTop());
+                                    telemetry.update();
+                                }
+                            }
+                            if (goldMineralX != -1 && silverMineral1X != -1) {
+                                if (goldMineralX < silverMineral1X) {
+                                    telemetry.addData("Gold Mineral Position", "Center");
+                                    telemetry.update();
+                                    location = 1;
+                                } else if (goldMineralX > silverMineral1X) {
+                                    telemetry.addData("Gold Mineral Position", "Right");
+                                    telemetry.update();
+                                    location = 0;
+                                } else {
+                                    telemetry.addData("Gold Mineral Position", "Left");
+                                    telemetry.update();
+                                    location = 2;
+                                }
+                            }
+                            else {
+                                telemetry.addData("Gold Mineral Position", "Left");
+                                telemetry.update();
+                                location = 2;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (tfod != null) {
+            tfod.shutdown();
+        }
+
+        if (location == 0) {
+            telemetry.addData("Gold Mineral Position", "Right");
+            telemetry.update();
+        }
+        else if (location == 1) {
+            telemetry.addData("Gold Mineral Position", "Center");
+            telemetry.update();
+        }
+        else {
+            telemetry.addData("Gold Mineral Position", "Left");
+            telemetry.update();
+        }
+        sleep(20000);
     }
 
     private void runTo(double inches, double power) {
