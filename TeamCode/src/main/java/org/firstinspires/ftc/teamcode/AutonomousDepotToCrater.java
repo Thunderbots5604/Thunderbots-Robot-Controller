@@ -32,44 +32,56 @@ public class AutonomousDepotToCrater extends GodfatherOfAllAutonomous {
 
         distance = hardwareMap.get(DistanceSensor.class, "distance");
 
-        waitForStart();
+        initVuforia();
 
+        waitForStart();
         detach();
         location = tfodDetection(3);
 
         if(location == 2) {
-            turnRight(60, .45);
-            runTo(-10, .5);
+            turnRight(55, .45);
+            runTo(-15, .5);
         }
         else if (location == 1) {
-            runTo(-7,.5);
+            turnRight(10,.5);
+            runTo(-20,.5);
         }
         else {
-            turnLeft(30, .45);
-            runTo(-10,.5);
+            turnLeft(50, .5);
+            runTo(-5,.5);
         }
 
         crater.setPower(.5);
-        sleep(600);
-        crater.setPower(0);
-        sleep(200);
-        elevator.setPosition(0.85);
-        crater.setPower(-.65);
+        elevator.setPosition(0.6);
         sleep(500);
         crater.setPower(0);
+        sleep(1500);
+        elevator.setPosition(.15);
+        sleep(500);
 
-        //This part is not tested yet
-        /*
+        crater.setPower(-1);
+        sleep(700);
+        crater.setPower(0);
+
         if(location == 2) {
-            turnRight(95, .45);
-            runTo(60, .5);
+            turnRight(15, .5);
+            runTo(50, 1);
+            runTo(30, .5);
         }
         else if (location == 1) {
-            turnRight(135, .45);
-            runTo(60,.5);
+            turnLeft(65, .5);
+            runTo(50, 1);
+            turnRight(10, .5);
+            runTo(30, .5);
         }
         else {
-            runTo(60,.5);
-        }*/
+            turnLeft(25,.5);
+            runTo(50,1);
+            turnRight(15,.5);
+            runTo(30, .5);
+        }
+        crater.setPower(.8);
+        sleep(500);
+        crater.setPower(0);
     }
 }

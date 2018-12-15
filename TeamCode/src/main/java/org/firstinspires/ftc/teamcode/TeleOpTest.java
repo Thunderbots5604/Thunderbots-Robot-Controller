@@ -19,7 +19,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class TeleOpTest extends LinearOpMode {
 
     // Declare OpMode members.
-    private ElapsedTime runtime = new ElapsedTime();
+    private ElapsedTime reversedCooldown = new ElapsedTime();
+    private ElapsedTime halfSpeedCooldown = new ElapsedTime();
     private DcMotor leftMotorFront = null;
     private DcMotor leftMotorBack = null;
     private DcMotor rightMotorFront = null;
@@ -33,6 +34,8 @@ public class TeleOpTest extends LinearOpMode {
     private Servo elevator = null;
 
     private boolean reversed = false;
+    private boolean halfSpeed = false;
+    private double halfSpeedMultiplier = .5;
     private int multiplier = 1;
 
     @Override
@@ -56,39 +59,62 @@ public class TeleOpTest extends LinearOpMode {
         rightMotorBack.setDirection(DcMotor.Direction.REVERSE);
 
         waitForStart();
-        runtime.reset();/*
-        elevator.setPosition(.15);*/
+        halfSpeedCooldown.reset();
+        reversedCooldown.reset();
 
         while (opModeIsActive()) {
 
             telemetry.addData("Left Power: ", leftMotorFront.getPower());
             telemetry.addData("Right Power: ", rightMotorFront.getPower());
             telemetry.addData("Reversed: ", reversed);
+            telemetry.addData("Half Speed: ", halfSpeed);
             telemetry.update();
 
-            if(gamepad1.b && runtime.seconds() > 1) {
+            if(gamepad1.b && reversedCooldown.seconds() > .5) {
                 if(reversed == true) {
                     multiplier = 1;
                     reversed = false;
-                    runtime.reset();
+                    reversedCooldown.reset();
                 }
                 else if(reversed == false) {
                     reversed = true;
                     multiplier = -1;
-                    runtime.reset();
+                    reversedCooldown.reset();
                 }
             }
-            if (gamepad1.left_stick_y != 0 && gamepad1.right_stick_x == 0) {
+            if(gamepad2.b && halfSpeedCooldown.seconds() > .5) {
+                if(halfSpeed == true) {
+                    halfSpeed = false;
+                    halfSpeedCooldown.reset();
+                }
+                else if(halfSpeed == false) {
+                    halfSpeed = true;
+                    halfSpeedCooldown.reset();
+                }
+            }
+            if (gamepad1.left_stick_y != 0 && gamepad1.right_stick_x == 0 && halfSpeed == false) {
                 leftMotorFront.setPower(multiplier * gamepad1.left_stick_y);
                 leftMotorBack.setPower(multiplier * gamepad1.left_stick_y);
                 rightMotorFront.setPower(multiplier * gamepad1.left_stick_y);
                 rightMotorBack.setPower(multiplier * gamepad1.left_stick_y);
             }
-            else if (gamepad1.right_stick_x != 0 && gamepad1.left_stick_y == 0) {
+            else if (gamepad1.right_stick_x != 0 && gamepad1.left_stick_y == 0 && halfSpeed == false) {
                 leftMotorFront.setPower(gamepad1.right_stick_x);
                 leftMotorBack.setPower(gamepad1.right_stick_x);
                 rightMotorFront.setPower(-gamepad1.right_stick_x);
                 rightMotorBack.setPower(-gamepad1.right_stick_x);
+            }
+            else if (gamepad1.left_stick_y != 0 && gamepad1.right_stick_x == 0 && halfSpeed == true) {
+                leftMotorFront.setPower(halfSpeedMultiplier * multiplier * gamepad1.left_stick_y);
+                leftMotorBack.setPower(halfSpeedMultiplier * multiplier * gamepad1.left_stick_y);
+                rightMotorFront.setPower(halfSpeedMultiplier * multiplier * gamepad1.left_stick_y);
+                rightMotorBack.setPower(halfSpeedMultiplier * multiplier * gamepad1.left_stick_y);
+            }
+            else if (gamepad1.right_stick_x != 0 && gamepad1.left_stick_y == 0 && halfSpeed == true) {
+                leftMotorFront.setPower(halfSpeedMultiplier * gamepad1.right_stick_x);
+                leftMotorBack.setPower(halfSpeedMultiplier * gamepad1.right_stick_x);
+                rightMotorFront.setPower(-halfSpeedMultiplier * gamepad1.right_stick_x);
+                rightMotorBack.setPower(-halfSpeedMultiplier * gamepad1.right_stick_x);
             }
             else if (reversed == false && gamepad1.left_stick_y < 0 && gamepad1.right_stick_x < 0) {
                 leftMotorFront.setPower(-(Math.abs(gamepad1.right_stick_x) + Math.abs(gamepad1.left_stick_y) / 2));
@@ -175,10 +201,10 @@ public class TeleOpTest extends LinearOpMode {
 
 
             if (gamepad1.x || gamepad2.x) {
-                elevator.setPosition(.25);
+                elevator.setPosition(.15);
             }
             else if (gamepad1.y || gamepad2.y) {
-                elevator.setPosition(0.85);
+                elevator.setPosition(.6);
             }
 
 

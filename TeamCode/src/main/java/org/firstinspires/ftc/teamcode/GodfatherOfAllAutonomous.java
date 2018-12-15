@@ -12,7 +12,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
@@ -77,45 +76,7 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
 
         detach();
     }
-    public void detach() {
-        while (distance.getDistance(DistanceUnit.MM) > 100) {
-            telemetry.addLine("Phase: Lowering Part 1");
-            telemetry.addData("Distance", distance.getDistance(DistanceUnit.MM));
-            telemetry.update();
-            crane1.setPower(.75);
-            crane2.setPower(-.75);
-        }
-        runtime.reset();
-        while (distance.getDistance(DistanceUnit.MM) > 46) {
-            telemetry.addLine("Phase: Lowering Part 2");
-            telemetry.addData("Distance", distance.getDistance(DistanceUnit.MM));
-            telemetry.update();
-            crane1.setPower(.55);
-            crane2.setPower(-.55);
-        }
-        sleep(300);
-        crane1.setPower(0);
-        crane2.setPower(0);
-        sleep(100);
-        runtime.reset();
-        while(runtime.milliseconds() < 70) {
-            crane1.setPower(-.55);
-            crane2.setPower(.55);
-        }
-        crane1.setPower(0);
-        crane2.setPower(0);
-        sleep(100);
-        if(distance.getDistance(DistanceUnit.MM) < 80) {
-            runTo(1.5, .25);
-            sleep(100);
-            turnRight(120, .55);
-            //160 deg is 180 deg
-            runTo(10, .45);
-            sleep(100);
-            turnRight(33, .45);
-        }
-    }
-    public int tfodDetection(double timeOut) {
+    public void initVuforia() {
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
          */
@@ -143,6 +104,49 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
             tfod.activate();
         }
 
+    }
+
+
+    public void detach() {
+
+        while (distance.getDistance(DistanceUnit.MM) > 100) {
+            telemetry.addLine("Phase: Lowering Part 1");
+            telemetry.addData("Distance", distance.getDistance(DistanceUnit.MM));
+            telemetry.update();
+            crane1.setPower(1);
+            crane2.setPower(-1);
+        }
+        runtime.reset();
+        while (distance.getDistance(DistanceUnit.MM) > 46) {
+            telemetry.addLine("Phase: Lowering Part 2");
+            telemetry.addData("Distance", distance.getDistance(DistanceUnit.MM));
+            telemetry.update();
+            crane1.setPower(.75);
+            crane2.setPower(-.75);
+        }
+        runtime.reset();
+        while(runtime.milliseconds() < 300) {
+            crane1.setPower(.75);
+            crane2.setPower(-.75);
+        }
+        runtime.reset();
+        while(runtime.milliseconds() < 150) {
+            crane1.setPower(-.55);
+            crane2.setPower(.55);
+        }
+        crane1.setPower(0);
+        crane2.setPower(0);
+        sleep(100);
+        if(distance.getDistance(DistanceUnit.MM) < 80) {
+            runTo(1, .25);
+            sleep(100);
+            turnRight(120, .55);
+            //160 deg is 180 deg
+            runTo(10, .45);
+            turnRight(36, .45);
+        }
+    }
+    public int tfodDetection(double timeOut) {
         runtime.reset();
         while (runtime.seconds() < timeOut) {
             if (tfod != null) {
@@ -205,16 +209,16 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
         }
         if (location == 0) {
             turnRight(13, .45);
-            runTo(-26, .45);
+            runTo(-45, .45);
         }
         else if (location == 1) {
-            turnLeft(15, .45);
-            runTo(-26, .45);
+            turnLeft(16, .45);
+            runTo(-28, .45);
         }
         else {
             location = 2;
-            turnLeft(50, .45);
-            runTo(-40, .45);
+            turnLeft(48, .45);
+            runTo(-42, .45);
         }
         return location;
     }

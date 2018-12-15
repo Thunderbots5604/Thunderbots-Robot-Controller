@@ -37,20 +37,18 @@ public class AutonomousCrater extends GodfatherOfAllAutonomous {
 
         distance = hardwareMap.get(DistanceSensor.class, "distance");
 
+        initVuforia();
+
         waitForStart();
 
         detach();
-        location = tfodDetection(3);
+        location = tfodDetection(4);
 
         if(location == 2) {
-            turnRight(37, .45);
+            turnRight(37, .4);
         }
+        runTo(5,.1);
         telemetry.addData("Location: ", location);
         telemetry.update();
-        crater.setPower(.5);
-        sleep(500);
-        crater.setPower(0);
-        elevator.setPosition(0.85);
-        sleep(1500);
     }
 }

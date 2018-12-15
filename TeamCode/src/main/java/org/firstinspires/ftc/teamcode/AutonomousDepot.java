@@ -32,27 +32,32 @@ public class AutonomousDepot extends GodfatherOfAllAutonomous {
 
         distance = hardwareMap.get(DistanceSensor.class, "distance");
 
+        initVuforia();
+
         waitForStart();
 
         detach();
         location = tfodDetection(3);
 
         if(location == 2) {
-            turnRight(37, .45);
-            runTo(10, .5);
+            turnRight(55, .45);
+            runTo(-15, .5);
         }
         else if (location == 1) {
-            runTo(7,.5);
+            turnRight(10,.5);
+            runTo(-20,.5);
         }
         else {
-            turnLeft(15, .45);
-            runTo(10,.5);
+            turnLeft(50, .5);
+            runTo(-5,.5);
         }
 
         crater.setPower(.5);
+        elevator.setPosition(0.6);
         sleep(500);
         crater.setPower(0);
-        elevator.setPosition(0.85);
         sleep(1500);
+        elevator.setPosition(.15);
+        sleep(750);
     }
 }
