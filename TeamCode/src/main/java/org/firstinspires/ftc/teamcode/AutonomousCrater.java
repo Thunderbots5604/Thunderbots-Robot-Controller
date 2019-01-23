@@ -42,12 +42,13 @@ public class AutonomousCrater extends GodfatherOfAllAutonomous {
         waitForStart();
 
         detach();
-        location = tfodDetection(4);
-
-        if(location == 2) {
-            turnRight(37, .4);
+        location = tfodDetection(5);
+        if (location == 1){
+            turnRight(8,45);
         }
-        runTo(5,.1);
+
+
+        runTo(-5,.4);
         telemetry.addData("Location: ", location);
         telemetry.update();
     }

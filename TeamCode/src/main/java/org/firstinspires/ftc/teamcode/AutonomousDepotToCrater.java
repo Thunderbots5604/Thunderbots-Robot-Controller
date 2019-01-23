@@ -36,10 +36,10 @@ public class AutonomousDepotToCrater extends GodfatherOfAllAutonomous {
 
         waitForStart();
         detach();
-        location = tfodDetection(3);
+        location = tfodDetection(3.75);
 
         if(location == 2) {
-            turnRight(55, .45);
+            turnRight(60, .45);
             runTo(-15, .5);
         }
         else if (location == 1) {
@@ -64,20 +64,21 @@ public class AutonomousDepotToCrater extends GodfatherOfAllAutonomous {
         crater.setPower(0);
 
         if(location == 2) {
-            turnRight(15, .5);
-            runTo(50, 1);
+            turnRight(21, .5);
+            runTo(50, .8);
             runTo(30, .5);
         }
         else if (location == 1) {
-            turnLeft(65, .5);
-            runTo(50, 1);
-            turnRight(10, .5);
+            turnLeft(80, .5);
+            runTo(30, .75);
+            turnRight(70, .5);
+            runTo(40,1);
             runTo(30, .5);
         }
         else {
             turnLeft(25,.5);
             runTo(50,1);
-            turnRight(15,.5);
+            turnRight(25,.5);
             runTo(30, .5);
         }
         crater.setPower(.8);

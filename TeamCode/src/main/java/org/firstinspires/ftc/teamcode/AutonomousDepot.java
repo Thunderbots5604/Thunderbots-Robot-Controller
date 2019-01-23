@@ -37,7 +37,7 @@ public class AutonomousDepot extends GodfatherOfAllAutonomous {
         waitForStart();
 
         detach();
-        location = tfodDetection(3);
+        location = tfodDetection(5);
 
         if(location == 2) {
             turnRight(55, .45);

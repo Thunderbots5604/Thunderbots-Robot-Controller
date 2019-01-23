@@ -143,7 +143,7 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
             turnRight(120, .55);
             //160 deg is 180 deg
             runTo(10, .45);
-            turnRight(36, .45);
+            turnRight(32, .45);
         }
     }
     public int tfodDetection(double timeOut) {
@@ -208,16 +208,16 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
             tfod.shutdown();
         }
         if (location == 0) {
-            turnRight(13, .45);
+            turnRight(14, .45);
             runTo(-45, .45);
         }
         else if (location == 1) {
-            turnLeft(16, .45);
-            runTo(-28, .45);
+            turnLeft(10, .45);
+            runTo(-25, .45);
         }
         else {
             location = 2;
-            turnLeft(48, .45);
+            turnLeft(38, .45);
             runTo(-42, .45);
         }
         return location;
