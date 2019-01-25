@@ -6,10 +6,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 
 import java.lang.Math;
-
+@Disabled
 @TeleOp(name="Outreach", group="Outreach")
 public class Outreach extends LinearOpMode {
 
