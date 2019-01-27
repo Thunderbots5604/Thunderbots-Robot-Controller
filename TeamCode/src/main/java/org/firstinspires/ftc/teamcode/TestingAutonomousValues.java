@@ -71,7 +71,8 @@ public class TestingAutonomousValues extends LinearOpMode {
             tfod.activate();
         }
 
-        int silverPosition = 0;
+        int silverOnePosition = 0;
+        int silverTwoPosition = 0;
         int goldPosition = 0;
 
         while (opModeIsActive()) {
@@ -82,25 +83,38 @@ public class TestingAutonomousValues extends LinearOpMode {
             if (updatedRecognitions != null) {
                 telemetry.addData("# Object Detected", updatedRecognitions.size());
 
-                for(Recognition r : updatedRecognitions) {
-                    if(r.getLabel().equals(LABEL_GOLD_MINERAL)) {
-                        goldPosition = (int) r.getTop();
-                    }
-                    else {
-                        silverPosition = (int) r.getTop();
+                if (updatedRecognitions.size() == 2) {
+                    for(Recognition r : updatedRecognitions) {
+                        if(r.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                            goldPosition = (int) r.getTop();
+                        }
+                        else if(silverOnePosition == 0){
+                            silverOnePosition = (int) r.getTop();
+                        }
+                        else {
+                            silverTwoPosition = (int) r.getTop();
+                        }
                     }
                 }
             }
 
-            if(goldPosition > silverPosition) {
-                telemetry.addLine("Gold Mineral is on left");
+            if(goldPosition == 0) {
+                telemetry.addLine("Gold Mineral is on Left");
                 telemetry.addData("Gold Top", goldPosition);
-                telemetry.addData("Silver Top", silverPosition);
+                telemetry.addData("Silver One Top", silverOnePosition);
+                telemetry.addData("Silver Two Top", silverTwoPosition);
             }
-            else {
-                telemetry.addLine("Gold Mineral is on right");
+            else if(goldPosition > silverOnePosition) {
+                telemetry.addLine("Gold Mineral is Center");
                 telemetry.addData("Gold Top", goldPosition);
-                telemetry.addData("Silver Top", silverPosition);
+                telemetry.addData("Silver One Top", silverOnePosition);
+                telemetry.addData("Silver Two Top", silverTwoPosition);
+            }
+            else if (goldPosition < silverOnePosition){
+                telemetry.addLine("Gold Mineral is on Right");
+                telemetry.addData("Gold Top", goldPosition);
+                telemetry.addData("Silver One Top", silverOnePosition);
+                telemetry.addData("Silver Two Top", silverTwoPosition);
             }
 
             telemetry.update();
