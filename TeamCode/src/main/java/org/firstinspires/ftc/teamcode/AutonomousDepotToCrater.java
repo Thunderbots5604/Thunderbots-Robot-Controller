@@ -21,16 +21,21 @@ public class AutonomousDepotToCrater extends GodfatherOfAllAutonomous {
         rightMotorFront = hardwareMap.get(DcMotor.class, "right_motor_front");
         rightMotorBack = hardwareMap.get(DcMotor.class, "right_motor_back");
         horizontal = hardwareMap.get(DcMotor.class, "horizontal");
-        crater = hardwareMap.get(DcMotor.class, "crater");
         wheel = hardwareMap.get(CRServo.class, "wheel");
         crane1 = hardwareMap.get(DcMotor.class, "crane_a");
         crane2 = hardwareMap.get(DcMotor.class, "crane_b");
+        box1 = hardwareMap.get(CRServo.class, "right_crater");
+        box2 = hardwareMap.get(CRServo.class, "left_crater");
         elevator = hardwareMap.get(Servo.class, "elevator");
+        distance = hardwareMap.get(DistanceSensor.class, "distance");
 
         rightMotorFront.setDirection(DcMotor.Direction.REVERSE);
         rightMotorBack.setDirection(DcMotor.Direction.REVERSE);
 
-        distance = hardwareMap.get(DistanceSensor.class, "distance");
+        leftMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         initVuforia();
 
@@ -38,51 +43,6 @@ public class AutonomousDepotToCrater extends GodfatherOfAllAutonomous {
         detach();
         location = tfodDetection(3.75);
 
-        if(location == 2) {
-            turnRight(60, .45);
-            runTo(-15, .5);
-        }
-        else if (location == 1) {
-            turnRight(10,.5);
-            runTo(-20,.5);
-        }
-        else {
-            turnLeft(50, .5);
-            runTo(-5,.5);
-        }
 
-        crater.setPower(.5);
-        elevator.setPosition(0.6);
-        sleep(500);
-        crater.setPower(0);
-        sleep(1500);
-        elevator.setPosition(.15);
-        sleep(500);
-
-        crater.setPower(-1);
-        sleep(700);
-        crater.setPower(0);
-
-        if(location == 2) {
-            turnRight(21, .5);
-            runTo(50, .8);
-            runTo(30, .5);
-        }
-        else if (location == 1) {
-            turnLeft(80, .5);
-            runTo(30, .75);
-            turnRight(70, .5);
-            runTo(40,1);
-            runTo(30, .5);
-        }
-        else {
-            turnLeft(25,.5);
-            runTo(50,1);
-            turnRight(25,.5);
-            runTo(30, .5);
-        }
-        crater.setPower(.8);
-        sleep(500);
-        crater.setPower(0);
     }
 }

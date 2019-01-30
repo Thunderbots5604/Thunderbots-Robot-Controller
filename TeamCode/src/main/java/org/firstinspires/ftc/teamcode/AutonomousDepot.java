@@ -21,16 +21,21 @@ public class AutonomousDepot extends GodfatherOfAllAutonomous {
         rightMotorFront = hardwareMap.get(DcMotor.class, "right_motor_front");
         rightMotorBack = hardwareMap.get(DcMotor.class, "right_motor_back");
         horizontal = hardwareMap.get(DcMotor.class, "horizontal");
-        crater = hardwareMap.get(DcMotor.class, "crater");
         wheel = hardwareMap.get(CRServo.class, "wheel");
         crane1 = hardwareMap.get(DcMotor.class, "crane_a");
         crane2 = hardwareMap.get(DcMotor.class, "crane_b");
+        box1 = hardwareMap.get(CRServo.class, "right_crater");
+        box2 = hardwareMap.get(CRServo.class, "left_crater");
         elevator = hardwareMap.get(Servo.class, "elevator");
+        distance = hardwareMap.get(DistanceSensor.class, "distance");
 
         rightMotorFront.setDirection(DcMotor.Direction.REVERSE);
         rightMotorBack.setDirection(DcMotor.Direction.REVERSE);
 
-        distance = hardwareMap.get(DistanceSensor.class, "distance");
+        leftMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         initVuforia();
 
@@ -39,25 +44,6 @@ public class AutonomousDepot extends GodfatherOfAllAutonomous {
         detach();
         location = tfodDetection(5);
 
-        if(location == 2) {
-            turnRight(55, .45);
-            runTo(-15, .5);
-        }
-        else if (location == 1) {
-            turnRight(10,.5);
-            runTo(-20,.5);
-        }
-        else {
-            turnLeft(50, .5);
-            runTo(-5,.5);
-        }
 
-        crater.setPower(.5);
-        elevator.setPosition(0.6);
-        sleep(500);
-        crater.setPower(0);
-        sleep(1500);
-        elevator.setPosition(.15);
-        sleep(750);
     }
 }

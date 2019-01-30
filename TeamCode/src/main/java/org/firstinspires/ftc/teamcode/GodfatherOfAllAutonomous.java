@@ -28,16 +28,21 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
     public DcMotor leftMotorBack = null;
     public DcMotor rightMotorFront = null;
     public DcMotor rightMotorBack = null;
-    public DcMotor crater = null;
+
     public DcMotor horizontal = null;
+
     public DcMotor crane1 = null;
     public DcMotor crane2 = null;
 
     public CRServo wheel = null;
+    public CRServo box1 = null;
+    public CRServo box2 = null;
+
     public Servo elevator = null;
     public DistanceSensor distance = null;
-    public final double INCHES_PER_TICK = .0223147377;
-    public final double DEGREES_PER_TICK = .17106201;
+
+    public final float TICKS_PER_INCH = 42.99308433F;
+    public final float TICKS_PER_DEGREE = 7.889583333F;
 
     public int location = -1;
     public int objects = 0;
@@ -55,26 +60,6 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-
-        leftMotorFront = hardwareMap.get(DcMotor.class, "left_motor_front");
-        leftMotorBack = hardwareMap.get(DcMotor.class, "left_motor_back");
-        rightMotorFront = hardwareMap.get(DcMotor.class, "right_motor_front");
-        rightMotorBack = hardwareMap.get(DcMotor.class, "right_motor_back");
-        horizontal = hardwareMap.get(DcMotor.class, "horizontal");
-        crater = hardwareMap.get(DcMotor.class, "crater");
-        wheel = hardwareMap.get(CRServo.class, "wheel");
-        crane1 = hardwareMap.get(DcMotor.class, "crane_a");
-        crane2 = hardwareMap.get(DcMotor.class, "crane_b");
-        elevator = hardwareMap.get(Servo.class, "elevator");
-
-        rightMotorFront.setDirection(DcMotor.Direction.REVERSE);
-        rightMotorBack.setDirection(DcMotor.Direction.REVERSE);
-
-        distance = hardwareMap.get(DistanceSensor.class, "distance");
-
-        waitForStart();
-
-        detach();
     }
     public void initVuforia() {
         /*
@@ -113,38 +98,38 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
             telemetry.addLine("Phase: Lowering Part 1");
             telemetry.addData("Distance", distance.getDistance(DistanceUnit.MM));
             telemetry.update();
-            crane1.setPower(1);
-            crane2.setPower(-1);
+            crane1.setPower(-1);
+            crane2.setPower(1);
         }
         runtime.reset();
         while (distance.getDistance(DistanceUnit.MM) > 46) {
             telemetry.addLine("Phase: Lowering Part 2");
             telemetry.addData("Distance", distance.getDistance(DistanceUnit.MM));
             telemetry.update();
-            crane1.setPower(.75);
-            crane2.setPower(-.75);
-        }
-        runtime.reset();
-        while(runtime.milliseconds() < 300) {
-            crane1.setPower(.75);
-            crane2.setPower(-.75);
+            crane1.setPower(-.75);
+            crane2.setPower(.75);
         }
         runtime.reset();
         while(runtime.milliseconds() < 150) {
-            crane1.setPower(-.55);
-            crane2.setPower(.55);
+            crane1.setPower(-.75);
+            crane2.setPower(.75);
+        }
+        runtime.reset();
+        while(runtime.milliseconds() < 50) {
+            crane1.setPower(.75);
+            crane2.setPower(-.75);
         }
         crane1.setPower(0);
         crane2.setPower(0);
         sleep(100);
-        if(distance.getDistance(DistanceUnit.MM) < 80) {
+        /*if(distance.getDistance(DistanceUnit.MM) < 80) {
             runTo(1, .25);
             sleep(100);
             turnRight(120, .55);
             //160 deg is 180 deg
             runTo(10, .45);
             turnRight(32, .45);
-        }
+        }*/
     }
     public int tfodDetection(double timeOut) {
         runtime.reset();
@@ -224,161 +209,100 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
     }
 
     public void runTo(double inches, double power) {
-        //.75 is max accurate
         leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        inches *= .925925;
-        int negative = -1;
-        int targetPosition = (int)(inches / INCHES_PER_TICK);
-        if (inches > 0) {
-            while ((leftMotorFront.getCurrentPosition() < targetPosition) && (rightMotorFront.getCurrentPosition() < targetPosition)) {
-                telemetry.addData("Target Position", targetPosition);
-                telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
-                telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
-                telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
-                telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
-                telemetry.update();
-                leftMotorFront.setPower(negative * power);
-                leftMotorBack.setPower(negative * power);
-                rightMotorFront.setPower(negative * power);
-                rightMotorBack.setPower(negative * power);
-            }
-            runtime.reset();
-            while(runtime.milliseconds() < 500) {
-                leftMotorFront.setPower(-1 * negative * .1);
-                leftMotorBack.setPower(-1 * negative * .1);
-                rightMotorFront.setPower(-1 * negative * .1);
-                rightMotorBack.setPower(-1 * negative * .1);
-            }
-            leftMotorFront.setPower(0);
-            leftMotorBack.setPower(0);
-            rightMotorFront.setPower(0);
-            rightMotorBack.setPower(0);
-            leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftMotorFront.setTargetPosition(-(int)(TICKS_PER_INCH * inches));
+        leftMotorBack.setTargetPosition((int)(TICKS_PER_INCH * inches));
+        rightMotorFront.setTargetPosition(-(int)(TICKS_PER_INCH * inches));
+        rightMotorBack.setTargetPosition((int)(TICKS_PER_INCH * inches));
+
+        leftMotorFront.setPower(power);
+        leftMotorBack.setPower(power);
+        rightMotorFront.setPower(power);
+        rightMotorBack.setPower(power);
+
+        leftMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while(leftMotorFront.isBusy() || leftMotorBack.isBusy() || rightMotorFront.isBusy() || rightMotorBack.isBusy()) {
+            telemetry.addData("Target Position", ((int)(TICKS_PER_INCH * inches)));
+            telemetry.addData("% Completion", (leftMotorFront.getCurrentPosition() / leftMotorFront.getTargetPosition() * 100));
+            telemetry.update();
         }
-        else {
-            negative = 1;
-            while ((leftMotorFront.getCurrentPosition() > targetPosition) && (rightMotorFront.getCurrentPosition() > targetPosition)) {
-                telemetry.addData("Target Position", targetPosition);
-                telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
-                telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
-                telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
-                telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
-                telemetry.update();
-                leftMotorFront.setPower(negative * power);
-                leftMotorBack.setPower(negative * power);
-                rightMotorFront.setPower(negative * power);
-                rightMotorBack.setPower(negative * power);
-            }
-            runtime.reset();
-            while(runtime.milliseconds() < 500) {
-                leftMotorFront.setPower(-1 * negative * .1);
-                leftMotorBack.setPower(-1 * negative * .1);
-                rightMotorFront.setPower(-1 * negative * .1);
-                rightMotorBack.setPower(-1 * negative * .1);
-            }
-            leftMotorFront.setPower(0);
-            leftMotorBack.setPower(0);
-            rightMotorFront.setPower(0);
-            rightMotorBack.setPower(0);
-            leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        }
+
+        leftMotorFront.setPower(0);
+        leftMotorBack.setPower(0);
+        rightMotorFront.setPower(0);
+        rightMotorBack.setPower(0);
     }
     public void turnLeft(double degrees, double power) {
-        degrees *= 1.27;
-
         leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        int targetTurn = (int)(degrees / DEGREES_PER_TICK);
+        leftMotorFront.setTargetPosition(-(int)(TICKS_PER_DEGREE * degrees));
+        leftMotorBack.setTargetPosition(-(int)(TICKS_PER_DEGREE * degrees));
+        rightMotorFront.setTargetPosition((int)(TICKS_PER_DEGREE * degrees));
+        rightMotorBack.setTargetPosition((int)(TICKS_PER_DEGREE * degrees));
 
-        while ((leftMotorFront.getCurrentPosition() < targetTurn) && (rightMotorFront.getCurrentPosition() > -targetTurn)) {
-            telemetry.addData("Target Position", targetTurn);
-            telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
-            telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
-            telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
-            telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
+        leftMotorFront.setPower(power);
+        leftMotorBack.setPower(power);
+        rightMotorFront.setPower(power);
+        rightMotorBack.setPower(power);
+
+        leftMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while(leftMotorFront.isBusy() || leftMotorBack.isBusy() || rightMotorFront.isBusy() || rightMotorBack.isBusy()) {
+            telemetry.addData("Target Position", ((int)(TICKS_PER_DEGREE * degrees)));
+            telemetry.addData("% Completion", (leftMotorFront.getCurrentPosition() / leftMotorFront.getTargetPosition() * 100));
             telemetry.update();
-            leftMotorFront.setPower(-power);
-            leftMotorBack.setPower(-power);
-            rightMotorFront.setPower(power);
-            rightMotorBack.setPower(power);
         }
-        runtime.reset();
-        while(runtime.milliseconds() < 500) {
-            leftMotorFront.setPower(.1);
-            leftMotorBack.setPower(.1);
-            rightMotorFront.setPower(-.1);
-            rightMotorBack.setPower(-.1);
-        }
+
         leftMotorFront.setPower(0);
         leftMotorBack.setPower(0);
         rightMotorFront.setPower(0);
         rightMotorBack.setPower(0);
-        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
     public void turnRight(double degrees, double power) {
-        degrees *= 1.27;
-
         leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        int targetTurn = (int)(degrees / DEGREES_PER_TICK);
+        leftMotorFront.setTargetPosition((int)(TICKS_PER_DEGREE * degrees));
+        leftMotorBack.setTargetPosition((int)(TICKS_PER_DEGREE * degrees));
+        rightMotorFront.setTargetPosition(-(int)(TICKS_PER_DEGREE * degrees));
+        rightMotorBack.setTargetPosition(-(int)(TICKS_PER_DEGREE * degrees));
 
-        while ((leftMotorFront.getCurrentPosition() > -targetTurn) && (rightMotorFront.getCurrentPosition() < targetTurn)) {
-            telemetry.addData("Target Position", targetTurn);
-            telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
-            telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
-            telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
-            telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
+        leftMotorFront.setPower(power);
+        leftMotorBack.setPower(power);
+        rightMotorFront.setPower(power);
+        rightMotorBack.setPower(power);
+
+        leftMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while(leftMotorFront.isBusy() || leftMotorBack.isBusy() || rightMotorFront.isBusy() || rightMotorBack.isBusy()) {
+            telemetry.addData("Target Position", ((int)(TICKS_PER_DEGREE * degrees)));
+            telemetry.addData("% Completion", (leftMotorFront.getCurrentPosition() / leftMotorFront.getTargetPosition() * 100));
             telemetry.update();
-            leftMotorFront.setPower(power);
-            leftMotorBack.setPower(power);
-            rightMotorFront.setPower(-power);
-            rightMotorBack.setPower(-power);
         }
-        runtime.reset();
-        while(runtime.milliseconds() < 500) {
-            leftMotorFront.setPower(-.1);
-            leftMotorBack.setPower(-.1);
-            rightMotorFront.setPower(.1);
-            rightMotorBack.setPower(.1);
-        }
+
         leftMotorFront.setPower(0);
         leftMotorBack.setPower(0);
         rightMotorFront.setPower(0);
         rightMotorBack.setPower(0);
-        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 }
 

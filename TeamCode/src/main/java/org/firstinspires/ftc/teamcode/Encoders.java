@@ -3,12 +3,11 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name="Detach Only", group="Autonomous Competition")
-public class DetachOnly extends GodfatherOfAllAutonomous {
+@Autonomous(name="Test Encoder Values", group="Autonomous Competition")
+public class Encoders extends GodfatherOfAllAutonomous {
 
     @Override
     public void runOpMode() {
@@ -38,7 +37,13 @@ public class DetachOnly extends GodfatherOfAllAutonomous {
 
         waitForStart();
 
-        detach();
+        runTo(55, .35);
+        sleep(5000);
+        runTo(20, .35);
+        sleep(5000);
+        turnRight(90, .35);
+        sleep(5000);
+        turnLeft(180, .35);
 
     }
 }

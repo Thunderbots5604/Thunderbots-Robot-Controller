@@ -26,15 +26,21 @@ public class AutonomousCrater extends GodfatherOfAllAutonomous {
         rightMotorFront = hardwareMap.get(DcMotor.class, "right_motor_front");
         rightMotorBack = hardwareMap.get(DcMotor.class, "right_motor_back");
         horizontal = hardwareMap.get(DcMotor.class, "horizontal");
-        crater = hardwareMap.get(DcMotor.class, "crater");
         wheel = hardwareMap.get(CRServo.class, "wheel");
         crane1 = hardwareMap.get(DcMotor.class, "crane_a");
         crane2 = hardwareMap.get(DcMotor.class, "crane_b");
+        box1 = hardwareMap.get(CRServo.class, "right_crater");
+        box2 = hardwareMap.get(CRServo.class, "left_crater");
         elevator = hardwareMap.get(Servo.class, "elevator");
+        distance = hardwareMap.get(DistanceSensor.class, "distance");
 
         rightMotorFront.setDirection(DcMotor.Direction.REVERSE);
         rightMotorBack.setDirection(DcMotor.Direction.REVERSE);
 
+        leftMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         distance = hardwareMap.get(DistanceSensor.class, "distance");
 
         initVuforia();
