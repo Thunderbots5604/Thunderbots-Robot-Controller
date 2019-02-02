@@ -200,10 +200,10 @@ public class TeleOpTest extends LinearOpMode {
 
 
             if (gamepad1.left_trigger > 0 || gamepad2.left_trigger > 0) {
-                wheel.setPower(-1);
+                wheel.setPower(1);
             }
             else if (gamepad1.right_trigger > 0 || gamepad2.right_trigger > 0) {
-                wheel.setPower(1);
+                wheel.setPower(-1);
             }
             else {
                 wheel.setPower(0);
@@ -223,12 +223,12 @@ public class TeleOpTest extends LinearOpMode {
 
 
             if (gamepad1.dpad_left || gamepad2.dpad_left) {
-                box1.setPower(-.5);
-                box2.setPower(.5);
+                box1.setPower(-1);
+                box2.setPower(1);
             }
             else if (gamepad1.dpad_right || gamepad2.dpad_right) {
-                box1.setPower(.5);
-                box2.setPower(-.5);
+                box1.setPower(1);
+                box2.setPower(-1);
             }
             else {
                 box1.setPower(0);

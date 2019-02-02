@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -17,12 +18,22 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.Came
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import com.qualcomm.hardware.bosch.BNO055IMU;
+
 import java.util.List;
 @Disabled
 @Autonomous(name="No Use", group="Autonomous Competition")
 public class GodfatherOfAllAutonomous extends LinearOpMode {
 
     // Declare OpMode members.
+
+    public BNO055IMU imu;
+    public Orientation angles;
+
     public ElapsedTime runtime = new ElapsedTime();
     public DcMotor leftMotorFront = null;
     public DcMotor leftMotorBack = null;
@@ -126,7 +137,6 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
             runTo(1, .25);
             sleep(100);
             turnRight(120, .55);
-            //160 deg is 180 deg
             runTo(10, .45);
             turnRight(32, .45);
         }*/
@@ -209,30 +219,42 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
     }
 
     public void runTo(double inches, double power) {
+        double targetPosition = inches * TICKS_PER_INCH;
+
         leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftMotorFront.setTargetPosition(-(int)(TICKS_PER_INCH * inches));
-        leftMotorBack.setTargetPosition((int)(TICKS_PER_INCH * inches));
-        rightMotorFront.setTargetPosition(-(int)(TICKS_PER_INCH * inches));
-        rightMotorBack.setTargetPosition((int)(TICKS_PER_INCH * inches));
+        leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        leftMotorFront.setPower(power);
-        leftMotorBack.setPower(power);
-        rightMotorFront.setPower(power);
-        rightMotorBack.setPower(power);
-
-        leftMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        while(leftMotorFront.isBusy() || leftMotorBack.isBusy() || rightMotorFront.isBusy() || rightMotorBack.isBusy()) {
-            telemetry.addData("Target Position", ((int)(TICKS_PER_INCH * inches)));
-            telemetry.addData("% Completion", (leftMotorFront.getCurrentPosition() / leftMotorFront.getTargetPosition() * 100));
-            telemetry.update();
+        if (inches > 0) {
+            while (leftMotorFront.getCurrentPosition() < targetPosition && leftMotorBack.getCurrentPosition() < targetPosition && rightMotorFront.getCurrentPosition() < targetPosition && rightMotorBack.getCurrentPosition() < targetPosition){
+                telemetry.addData("Target Position", ((int)(targetPosition)));
+                telemetry.addData("% Completion", (leftMotorFront.getCurrentPosition() / targetPosition * 100));
+                telemetry.addData("LeftMotorFront: ", leftMotorFront.getCurrentPosition());
+                telemetry.addData("LeftMotorBack: ", leftMotorBack.getCurrentPosition());
+                telemetry.addData("RightMotorFront: ", rightMotorFront.getCurrentPosition());
+                telemetry.addData("RightMotorBack: ", rightMotorBack.getCurrentPosition());
+                telemetry.update();
+                leftMotorFront.setPower(power);
+                leftMotorBack.setPower(power);
+                rightMotorFront.setPower(power);
+                rightMotorBack.setPower(power);
+            }
+        } else if (inches < 0){
+            while (leftMotorFront.getCurrentPosition() > targetPosition && leftMotorBack.getCurrentPosition() > targetPosition && rightMotorFront.getCurrentPosition() > targetPosition && rightMotorBack.getCurrentPosition() > targetPosition) {
+                telemetry.addData("Target Position", ((int)(targetPosition)));
+                telemetry.addData("% Completion", (leftMotorFront.getCurrentPosition() / targetPosition * 100));
+                telemetry.update();
+                leftMotorFront.setPower(-power);
+                leftMotorBack.setPower(-power);
+                rightMotorFront.setPower(-power);
+                rightMotorBack.setPower(-power);
+            }
         }
 
         leftMotorFront.setPower(0);
@@ -241,30 +263,87 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
         rightMotorBack.setPower(0);
     }
     public void turnLeft(double degrees, double power) {
+        double targetPosition = degrees * TICKS_PER_DEGREE;
         leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftMotorFront.setTargetPosition(-(int)(TICKS_PER_DEGREE * degrees));
-        leftMotorBack.setTargetPosition(-(int)(TICKS_PER_DEGREE * degrees));
-        rightMotorFront.setTargetPosition((int)(TICKS_PER_DEGREE * degrees));
-        rightMotorBack.setTargetPosition((int)(TICKS_PER_DEGREE * degrees));
+        leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        leftMotorFront.setPower(power);
-        leftMotorBack.setPower(power);
-        rightMotorFront.setPower(power);
-        rightMotorBack.setPower(power);
-
-        leftMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        while(leftMotorFront.isBusy() || leftMotorBack.isBusy() || rightMotorFront.isBusy() || rightMotorBack.isBusy()) {
-            telemetry.addData("Target Position", ((int)(TICKS_PER_DEGREE * degrees)));
-            telemetry.addData("% Completion", (leftMotorFront.getCurrentPosition() / leftMotorFront.getTargetPosition() * 100));
+        while (leftMotorFront.getCurrentPosition() < targetPosition || leftMotorBack.getCurrentPosition() < targetPosition || rightMotorFront.getCurrentPosition() < targetPosition || rightMotorBack.getCurrentPosition() < targetPosition) {
+            telemetry.addData("Target Position", ((int) (targetPosition)));
+            telemetry.addData("% Completion", (leftMotorFront.getCurrentPosition() / targetPosition * 100));
             telemetry.update();
+            leftMotorFront.setPower(-power);
+            leftMotorBack.setPower(-power);
+            rightMotorFront.setPower(power);
+            rightMotorBack.setPower(power);
+        }
+        leftMotorFront.setPower(0);
+        leftMotorBack.setPower(0);
+        rightMotorFront.setPower(0);
+        rightMotorBack.setPower(0);
+    }
+    public void turnRight(double degrees, double power) {
+        double targetPosition = degrees * TICKS_PER_DEGREE;
+        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        while (leftMotorFront.getCurrentPosition() < targetPosition || leftMotorBack.getCurrentPosition() < targetPosition || rightMotorFront.getCurrentPosition() < targetPosition || rightMotorBack.getCurrentPosition() < targetPosition) {
+            telemetry.addData("Target Position", ((int) (targetPosition)));
+            telemetry.addData("% Completion", (leftMotorFront.getCurrentPosition() / targetPosition * 100));
+            telemetry.update();
+            leftMotorFront.setPower(power);
+            leftMotorBack.setPower(power);
+            rightMotorFront.setPower(-power);
+            rightMotorBack.setPower(-power);
+        }
+        leftMotorFront.setPower(0);
+        leftMotorBack.setPower(0);
+        rightMotorFront.setPower(0);
+        rightMotorBack.setPower(0);
+    }
+    public void turnTo (double degrees, double power, String direction){
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double heading = formatAngle(angles.angleUnit, angles.firstAngle);
+
+        if (direction.equals("Right")) {
+            while (heading > degrees + 5 || heading < degrees - 5){
+                leftMotorFront.setPower(power);
+                leftMotorBack.setPower(power);
+                rightMotorFront.setPower(-power);
+                rightMotorBack.setPower(-power);
+            }
+            while (heading > degrees + 1 || heading < degrees - 1) {
+                leftMotorFront.setPower(0.1);
+                leftMotorBack.setPower(0.1);
+                rightMotorFront.setPower(-0.1);
+                rightMotorBack.setPower(-0.1);
+            }
+        } else if (direction.equals("Left")) {
+            while (heading > degrees + 5 || heading < degrees - 5){
+                leftMotorFront.setPower(-power);
+                leftMotorBack.setPower(-power);
+                rightMotorFront.setPower(power);
+                rightMotorBack.setPower(power);
+            }
+            while (heading > degrees + 1 || heading < degrees - 1) {
+                leftMotorFront.setPower(-0.1);
+                leftMotorBack.setPower(-0.1);
+                rightMotorFront.setPower(0.1);
+                rightMotorBack.setPower(0.1);
+            }
         }
 
         leftMotorFront.setPower(0);
@@ -272,37 +351,8 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
         rightMotorFront.setPower(0);
         rightMotorBack.setPower(0);
     }
-    public void turnRight(double degrees, double power) {
-        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        leftMotorFront.setTargetPosition((int)(TICKS_PER_DEGREE * degrees));
-        leftMotorBack.setTargetPosition((int)(TICKS_PER_DEGREE * degrees));
-        rightMotorFront.setTargetPosition(-(int)(TICKS_PER_DEGREE * degrees));
-        rightMotorBack.setTargetPosition(-(int)(TICKS_PER_DEGREE * degrees));
-
-        leftMotorFront.setPower(power);
-        leftMotorBack.setPower(power);
-        rightMotorFront.setPower(power);
-        rightMotorBack.setPower(power);
-
-        leftMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        while(leftMotorFront.isBusy() || leftMotorBack.isBusy() || rightMotorFront.isBusy() || rightMotorBack.isBusy()) {
-            telemetry.addData("Target Position", ((int)(TICKS_PER_DEGREE * degrees)));
-            telemetry.addData("% Completion", (leftMotorFront.getCurrentPosition() / leftMotorFront.getTargetPosition() * 100));
-            telemetry.update();
-        }
-
-        leftMotorFront.setPower(0);
-        leftMotorBack.setPower(0);
-        rightMotorFront.setPower(0);
-        rightMotorBack.setPower(0);
+    Double formatAngle(AngleUnit angleUnit, double angle) {
+        return AngleUnit.DEGREES.fromUnit(angleUnit, angle);
     }
 }
 

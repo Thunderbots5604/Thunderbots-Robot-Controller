@@ -1,16 +1,33 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
 @Autonomous(name="Test Encoder Values", group="Autonomous Competition")
 public class Encoders extends GodfatherOfAllAutonomous {
 
     @Override
     public void runOpMode() {
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         leftMotorFront = hardwareMap.get(DcMotor.class, "left_motor_front");
         leftMotorBack = hardwareMap.get(DcMotor.class, "left_motor_back");
         rightMotorFront = hardwareMap.get(DcMotor.class, "right_motor_front");
@@ -38,12 +55,13 @@ public class Encoders extends GodfatherOfAllAutonomous {
         waitForStart();
 
         runTo(55, .35);
-        sleep(5000);
-        runTo(20, .35);
-        sleep(5000);
+        sleep(3000);
+        runTo(-20, .35);
+        sleep(3000);
         turnRight(90, .35);
-        sleep(5000);
+        sleep(3000);
         turnLeft(180, .35);
-
+        sleep(3000);
+        turnTo(0,.35, "Right");
     }
 }
