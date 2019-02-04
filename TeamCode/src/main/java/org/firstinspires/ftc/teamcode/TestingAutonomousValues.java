@@ -96,6 +96,19 @@ public class TestingAutonomousValues extends LinearOpMode {
                         }
                     }
                 }
+                if (updatedRecognitions.size() == 3) {
+                    for(Recognition r : updatedRecognitions) {
+                        if(r.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                            goldPosition = (int) r.getTop();
+                        }
+                        else if(silverOnePosition == 0){
+                            silverOnePosition = (int) r.getTop();
+                        }
+                        else {
+                            silverTwoPosition = (int) r.getTop();
+                        }
+                    }
+                }
             }
 
             if(goldPosition == 0) {

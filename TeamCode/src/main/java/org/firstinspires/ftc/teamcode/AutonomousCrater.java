@@ -42,9 +42,6 @@ public class AutonomousCrater extends GodfatherOfAllAutonomous {
         rightMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         distance = hardwareMap.get(DistanceSensor.class, "distance");
-
-        initVuforia();
-
         waitForStart();
 
         detach();
@@ -52,9 +49,6 @@ public class AutonomousCrater extends GodfatherOfAllAutonomous {
         if (location == 1){
             turnRight(8,45);
         }
-
-
-        runTo(-5,.4);
         telemetry.addData("Location: ", location);
         telemetry.update();
     }
