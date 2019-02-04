@@ -230,10 +230,6 @@ public class TeleOpTest extends LinearOpMode {
                 box1.setPower(1);
                 box2.setPower(-1);
             }
-            else {
-                box1.setPower(0);
-                box2.setPower(0);
-            }
         }
     }
 }

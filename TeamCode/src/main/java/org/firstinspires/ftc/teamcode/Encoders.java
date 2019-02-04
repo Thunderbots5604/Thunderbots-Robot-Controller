@@ -54,7 +54,7 @@ public class Encoders extends GodfatherOfAllAutonomous {
 
         waitForStart();
 
-        runTo(55, .35);
+        runTo(30 .35);
         sleep(3000);
         runTo(-20, .35);
         sleep(3000);
@@ -62,6 +62,5 @@ public class Encoders extends GodfatherOfAllAutonomous {
         sleep(3000);
         turnLeft(180, .35);
         sleep(3000);
-        turnTo(0,.35, "Right");
     }
 }
