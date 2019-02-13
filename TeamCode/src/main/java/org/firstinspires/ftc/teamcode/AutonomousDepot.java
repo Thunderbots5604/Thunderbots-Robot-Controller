@@ -18,18 +18,21 @@ public class AutonomousDepot extends GodfatherOfAllAutonomous {
 
         location = tfodDetection(6);
         if (location == 2) {
-            turnRight(10, allPower);
-            runTo(25, allPower);
+            turnRight(25,allPower);
+            runTo(31, allPower);
+            sleep(500);
             turnLeft(60,allPower);
             runTo(20,allPower);
         }
         if (location == 1) {
-            turnLeft(8, allPower);
-            runTo(35, allPower);
+            turnLeft(12, allPower);
+            runTo(21,allPower);
+            sleep(500);
         }
         if (location == 0) {
-            turnLeft(56, allPower);
-            runTo(41, allPower);
+            turnLeft(50, allPower);
+            runTo(32,allPower);
+            sleep(250);
             turnRight(110,allPower);
             runTo(20,allPower);
         }

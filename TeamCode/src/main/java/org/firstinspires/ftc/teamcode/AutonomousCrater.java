@@ -23,36 +23,36 @@ public class AutonomousCrater extends GodfatherOfAllAutonomous {
         if (location == 2) {
             //Hit Marker
             turnRight(25,allPower);
-            runTo(23, allPower);
+            runTo(21, allPower);
             sleep(500);
             //Go Back
-            runTo(-19,allPower);
+            runTo(-15,allPower);
             sleep(300);
             //Adjust
-            turnLeft(48,allPower);
-            runTo(5,allPower);
-            turnLeft(53,allPower);
-            runTo(48,allPower);
+            turnLeft(46,allPower);
+            runTo(3.5,allPower);
+            turnLeft(52,allPower);
+            runTo(50,allPower);
             // Go to Depot
             turnLeft(42.0,allPower);
-            runTo(42.0,allPower);
+            runTo(36.0,allPower);
         }
         if (location == 1) {
             //Hit Marker
-            turnLeft(12, allPower);
+            turnLeft(18, allPower);
             runTo(21,allPower);
             sleep(500);
             //Go Back
             turnLeft(5,allPower);
-            runTo(-20,allPower);
+            runTo(-15,allPower);
             //Adjust
             turnRight(8,allPower);
-            runTo(3,allPower);
+            runTo(2.5,allPower);
             //Go to Depot
             turnLeft(66.6,allPower);
-            runTo(47,allPower);
-            turnLeft(50,allPower);
-            runTo(32,allPower);
+            runTo(50,allPower);
+            turnLeft(40,allPower);
+            runTo(34,allPower);
         }
         if (location == 0){
             //Hit Marker
@@ -63,12 +63,12 @@ public class AutonomousCrater extends GodfatherOfAllAutonomous {
             runTo(-15,allPower);
             sleep(250);
             turnLeft(42.0,allPower);
-            runTo(25,allPower);
+            runTo(28,allPower);
             //Go to Depot
             turnLeft(33.33,allPower);
-            runTo(10,allPower);
-            turnLeft(15,allPower);
-            runTo(33.33,allPower);
+            runTo(16,allPower);
+            turnLeft(5,allPower);
+            runTo(30,allPower);
         }
 
         telemetry.addData("Location: ", location);
@@ -81,6 +81,6 @@ public class AutonomousCrater extends GodfatherOfAllAutonomous {
         turnLeft(5,allPower);
         runTo(-45,1);
         sleep(200);
-        runTo(-10,.3);
+        runTo(-5,.3);
     }
 }

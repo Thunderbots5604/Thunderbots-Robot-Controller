@@ -102,8 +102,8 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
             telemetry.addLine("Phase: Lowering Part 1");
             telemetry.addData("Distance", distance.getDistance(DistanceUnit.MM));
             telemetry.update();
-            crane1.setPower(-.6);
-            crane2.setPower(.6);
+            crane1.setPower(-1);
+            crane2.setPower(1);
         }
         runtime.reset();
         while (distance.getDistance(DistanceUnit.MM) > 46) {
@@ -145,7 +145,23 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
         runTo(7,allPower);
         sleep(250);
         //Adjust angle for scanning
-        turnTo(-8,allPower,"Left");
+        runtime.reset();
+        double heading = 0;
+        while (runtime.milliseconds() < 3000 && heading > -30) {
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            heading = formatAngle(angles.angleUnit, angles.firstAngle);
+            telemetry.addData("Heading: ", heading);
+            telemetry.update();
+        }
+        double turn = Math.abs(heading);
+        if (turn > 30) {
+            telemetry.addData("Turning: ", turn*.95);
+            telemetry.update();
+            turnLeft(turn * .95, allPower);
+        }
+        else {
+            turnLeft(36,allPower);
+        }
         //Back up for more space
         runTo(-3, allPower);
     }
@@ -315,7 +331,7 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
     public void dropMarker(){
         box1.setPower(.8);
         box2.setPower(-.8);
-        sleep(1500);
+        sleep(1200);
         box1.setPower(0);
         box2.setPower(0);
         wheel.setPower(1);
@@ -408,7 +424,7 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
                 telemetry.addData("Degrees - 5: ",degrees - 5);
                 telemetry.update();
             }
-            while (heading < degrees + 3) {
+            while (heading < degrees + 2) {
                 angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                 heading = formatAngle(angles.angleUnit, angles.firstAngle);
                 leftMotorFront.setPower(power / 1.3);

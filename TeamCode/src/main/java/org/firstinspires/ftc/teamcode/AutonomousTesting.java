@@ -8,6 +8,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+
 
 @Autonomous(name="Testing autonomous", group="Autonomous Competition")
 public class AutonomousTesting extends GodfatherOfAllAutonomous {
@@ -41,10 +45,12 @@ public class AutonomousTesting extends GodfatherOfAllAutonomous {
 
         waitForStart();
 
-        turnTo(-45,allPower,"Right");
-        sleep(2000);
-        turnTo(45,allPower,"Left");
-        sleep(2000);
-        turnTo(0,allPower,"Right");
+
+        while (opModeIsActive()){
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            double heading = formatAngle(angles.angleUnit, angles.firstAngle);
+            telemetry.addData("Heading: ", heading);
+            telemetry.update();
+        }
     }
 }
