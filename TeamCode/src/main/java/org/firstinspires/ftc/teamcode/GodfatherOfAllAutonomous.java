@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -8,21 +10,19 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import com.qualcomm.hardware.bosch.BNO055IMU;
 
 import java.util.List;
 @Disabled
@@ -30,10 +30,6 @@ import java.util.List;
 public class GodfatherOfAllAutonomous extends LinearOpMode {
 
     // Declare OpMode members.
-
-    public BNO055IMU imu;
-    public Orientation angles;
-
     public ElapsedTime runtime = new ElapsedTime();
     public DcMotor leftMotorFront = null;
     public DcMotor leftMotorBack = null;
@@ -55,6 +51,8 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
     public final float TICKS_PER_INCH = 42.99308433F;
     public final float TICKS_PER_DEGREE = 7.889583333F;
 
+    private final float pi = 3.1415926535897932384626433832F;
+
     public int location = -1;
     public int objects = 0;
     public static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
@@ -66,6 +64,11 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
     public VuforiaLocalizer vuforia;
 
     public TFObjectDetector tfod;
+
+    public double allPower = .65;
+
+    public BNO055IMU imu;
+    public Orientation angles;
 
     @Override
     public void runOpMode() {
@@ -83,23 +86,6 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
-
-        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
-            int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                    "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-            TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-            tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-            tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
-        } else {
-            telemetry.addData("Sorry!", "This device is not compatible with TFOD");
-        }
-        // Loading trackables is not necessary for the Tensor Flow Object Detection engine.
-
-        if (tfod != null) {
-            tfod.activate();
-        }
-
     }
     public void initTfod() {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
@@ -116,65 +102,69 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
             telemetry.addLine("Phase: Lowering Part 1");
             telemetry.addData("Distance", distance.getDistance(DistanceUnit.MM));
             telemetry.update();
-            crane1.setPower(-1);
-            crane2.setPower(1);
+            crane1.setPower(-.6);
+            crane2.setPower(.6);
         }
         runtime.reset();
         while (distance.getDistance(DistanceUnit.MM) > 46) {
             telemetry.addLine("Phase: Lowering Part 2");
             telemetry.addData("Distance", distance.getDistance(DistanceUnit.MM));
             telemetry.update();
-            crane1.setPower(-.75);
-            crane2.setPower(.75);
+            crane1.setPower(-(allPower + .18));
+            crane2.setPower(allPower + .18);
         }
         runtime.reset();
-        while(runtime.milliseconds() < 190) {
-            crane1.setPower(-.75);
-            crane2.setPower(.75);
+        while(runtime.milliseconds() < 300) {
+            crane1.setPower(-(allPower + .18));
+            crane2.setPower(allPower + .18);
         }
         runtime.reset();
         while(runtime.milliseconds() < 20) {
-            crane1.setPower(.75);
-            crane2.setPower(-.75);
+            crane1.setPower(allPower);
+            crane2.setPower(-(allPower));
         }
         crane1.setPower(0);
         crane2.setPower(0);
-        sleep(1000);
-        runTo(1,.2);
-        sleep(1000);
-        turnRight(50,.35);
-        sleep(2000);
-        runTo(8,.35);
+        //Bringing box  back up in case it fell down
+        box1.setPower(-.5);
+        box2.setPower(.5);
+        sleep(400);
+        box1.setPower(0);
+        box2.setPower(0);
+        //Getting out of pesky hook
+        sleep(250);
+        runTo(1.9,allPower + .1);
+        sleep(500);
+        turnRight(15,allPower);
+        sleep(500);
+        turnRight(28,allPower);
+        runTo(3,allPower - .2);
+        //Going to right side to scan 2 blocks on right
+        turnRight(42,allPower);
+        sleep(500);
+        runTo(7,allPower);
+        sleep(250);
+        //Adjust angle for scanning
+        turnTo(-8,allPower,"Left");
+        //Back up for more space
+        runTo(-3, allPower);
     }
     public int tfodDetection(double timeOut) {
-        initVuforia();
-
-        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
-            initTfod();
-        } else {
-            telemetry.addData("Sorry!", "This device is not compatible with TFOD");
-        }
-
-        if (tfod != null) {
-            tfod.activate();
-        }
-
-        int silverOnePosition = 0;
-        int silverTwoPosition = 0;
+        int silverPosition = 0;
         int goldPosition = 0;
-        while(runtime.seconds() < timeOut) {
+        location = 0;
+        runtime.reset();
+        while(runtime.seconds() < timeOut && objects != 2) {
             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
             if (updatedRecognitions != null) {
+                objects = updatedRecognitions.size();
                 telemetry.addData("# Object Detected", updatedRecognitions.size());
-
-                if (updatedRecognitions.size() == 2 || updatedRecognitions.size() == 3) {
+                if (updatedRecognitions.size() == 2) {
                     for (Recognition r : updatedRecognitions) {
                         if (r.getLabel().equals(LABEL_GOLD_MINERAL)) {
                             goldPosition = (int) r.getTop();
-                        } else if (silverOnePosition == 0) {
-                            silverOnePosition = (int) r.getTop();
                         } else {
-                            silverTwoPosition = (int) r.getTop();
+                            silverPosition = (int) r.getTop();
                         }
                     }
                 }
@@ -184,23 +174,21 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
         if (goldPosition == 0) {
             telemetry.addLine("Gold Mineral is on Left");
             telemetry.addData("Gold Top", goldPosition);
-            telemetry.addData("Silver One Top", silverOnePosition);
-            telemetry.addData("Silver Two Top", silverTwoPosition);
+            telemetry.addData("Silver Top", silverPosition);
             location = 0;
-        } else if (goldPosition > silverOnePosition) {
+        } else if (goldPosition < silverPosition) {
             telemetry.addLine("Gold Mineral is Center");
             telemetry.addData("Gold Top", goldPosition);
-            telemetry.addData("Silver One Top", silverOnePosition);
-            telemetry.addData("Silver Two Top", silverTwoPosition);
+            telemetry.addData("Silver Top", silverPosition);
             location = 1;
-        } else if (goldPosition < silverOnePosition) {
+        } else if (goldPosition > silverPosition) {
             telemetry.addLine("Gold Mineral is on Right");
             telemetry.addData("Gold Top", goldPosition);
-            telemetry.addData("Silver One Top", silverOnePosition);
-            telemetry.addData("Silver Two Top", silverTwoPosition);
+            telemetry.addData("Silver Top", silverPosition);
             location = 2;
         }
         telemetry.update();
+        tfod.shutdown();
         return location;
     }
     public void runTo(double inches, double power) {
@@ -213,29 +201,26 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
         leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        int negative = -1;
         int targetPosition = (int)(inches * TICKS_PER_INCH);
         if (inches > 0) {
-            while ((leftMotorBack.getCurrentPosition() < targetPosition) && (rightMotorBack.getCurrentPosition() < targetPosition)) {
+            while ((leftMotorBack.getCurrentPosition() < targetPosition) && (rightMotorBack.getCurrentPosition() > -targetPosition)) {
                 telemetry.addData("Target Position", targetPosition);
                 telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
                 telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
                 telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
                 telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
                 telemetry.update();
-                leftMotorFront.setPower(-negative * power);
-                leftMotorBack.setPower(negative * power);
-                rightMotorFront.setPower(-negative * power);
-                rightMotorBack.setPower(negative * power);
+                leftMotorFront.setPower(power);
+                leftMotorBack.setPower(-power);
+                rightMotorFront.setPower(-power);
+                rightMotorBack.setPower(power);
             }
-            runtime.reset();
             leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
         else {
-            negative = 1;
             while ((leftMotorBack.getCurrentPosition() > targetPosition) && (rightMotorBack.getCurrentPosition() > targetPosition)) {
                 telemetry.addData("Target Position", targetPosition);
                 telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
@@ -243,16 +228,20 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
                 telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
                 telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
                 telemetry.update();
-                leftMotorFront.setPower(-negative * power);
-                leftMotorBack.setPower(negative * power);
-                rightMotorFront.setPower(-negative * power);
-                rightMotorBack.setPower(negative * power);
+                leftMotorFront.setPower(-power);
+                leftMotorBack.setPower(power);
+                rightMotorFront.setPower(power);
+                rightMotorBack.setPower(-power);
             }
             leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
+        leftMotorFront.setPower(0);
+        leftMotorBack.setPower(0);
+        rightMotorFront.setPower(0);
+        rightMotorBack.setPower(0);
     }
     public void turnLeft(double degrees, double power) {
 
@@ -276,9 +265,13 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
             telemetry.update();
             leftMotorFront.setPower(-power);
             leftMotorBack.setPower(power);
-            rightMotorFront.setPower(power);
-            rightMotorBack.setPower(-power);
+            rightMotorFront.setPower(-power);
+            rightMotorBack.setPower(power);
         }
+        leftMotorFront.setPower(0);
+        leftMotorBack.setPower(0);
+        rightMotorFront.setPower(0);
+        rightMotorBack.setPower(0);
         leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -297,7 +290,7 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
 
         int targetTurn = (int)(degrees * TICKS_PER_DEGREE);
 
-        while ((leftMotorBack.getCurrentPosition() > -targetTurn) && (rightMotorBack.getCurrentPosition() < targetTurn)) {
+        while ((leftMotorFront.getCurrentPosition() > -targetTurn) && (rightMotorBack.getCurrentPosition() < targetTurn)) {
             telemetry.addData("Target Position", targetTurn);
             telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
             telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
@@ -306,13 +299,162 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
             telemetry.update();
             leftMotorFront.setPower(power);
             leftMotorBack.setPower(-power);
-            rightMotorFront.setPower(-power);
-            rightMotorBack.setPower(power);
+            rightMotorFront.setPower(power);
+            rightMotorBack.setPower(-power);
         }
+        leftMotorFront.setPower(0);
+        leftMotorBack.setPower(0);
+        rightMotorFront.setPower(0);
+        rightMotorBack.setPower(0);
         leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
-}
 
+    public void dropMarker(){
+        box1.setPower(.8);
+        box2.setPower(-.8);
+        sleep(1500);
+        box1.setPower(0);
+        box2.setPower(0);
+        wheel.setPower(1);
+        sleep(1000);
+        box1.setPower(-1);
+        box2.setPower(1);
+        wheel.setPower(0);
+        sleep(2000);
+        box1.setPower(0);
+        box2.setPower(0);
+    }
+
+    public void initialization() {
+        leftMotorFront = hardwareMap.get(DcMotor.class, "left_motor_front");
+        leftMotorBack = hardwareMap.get(DcMotor.class, "left_motor_back");
+        rightMotorFront = hardwareMap.get(DcMotor.class, "right_motor_front");
+        rightMotorBack = hardwareMap.get(DcMotor.class, "right_motor_back");
+        horizontal = hardwareMap.get(DcMotor.class, "horizontal");
+        wheel = hardwareMap.get(CRServo.class, "wheel");
+        crane1 = hardwareMap.get(DcMotor.class, "crane_a");
+        crane2 = hardwareMap.get(DcMotor.class, "crane_b");
+        box1 = hardwareMap.get(CRServo.class, "right_crater");
+        box2 = hardwareMap.get(CRServo.class, "left_crater");
+        elevator = hardwareMap.get(Servo.class, "elevator");
+        distance = hardwareMap.get(DistanceSensor.class, "distance");
+
+        leftMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
+        initVuforia();
+
+        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
+            initTfod();
+        } else {
+            telemetry.addData("Sorry!", "This device is not compatible with TFOD");
+        }
+
+        if (tfod != null) {
+            tfod.activate();
+        }
+
+        getAllPower();
+    }
+    public Double getVoltage() {
+        double result = Double.POSITIVE_INFINITY;
+        for (VoltageSensor sensor : hardwareMap.voltageSensor) {
+            double voltage = sensor.getVoltage();
+            if (voltage > 0) {
+                result = Math.min(result, voltage);
+            }
+        }
+        return result;
+    }
+    public void getAllPower(){
+        double v = getVoltage();
+        if (v >= 13) {
+            allPower = (-.03 * (v-13) * (v-13) + .53);
+        }
+        else if (v > 12) {
+            allPower = (.04 * (v-13) * (v-13) + .53);
+        }
+    }
+    public void turnTo (double degrees, double power, String direction){
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double heading = formatAngle(angles.angleUnit, angles.firstAngle);
+
+        if (direction.equals("Right")) {
+            while (heading < degrees - 5){
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                heading = formatAngle(angles.angleUnit, angles.firstAngle);
+                leftMotorFront.setPower(power);
+                leftMotorBack.setPower(-power);
+                rightMotorFront.setPower(power);
+                rightMotorBack.setPower(-power);
+                telemetry.addData("Angle: ", heading);
+                telemetry.addData("Degrees + 5: ",degrees + 5);
+                telemetry.addData("Degrees - 5: ",degrees - 5);
+                telemetry.update();
+            }
+            while (heading < degrees + 3) {
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                heading = formatAngle(angles.angleUnit, angles.firstAngle);
+                leftMotorFront.setPower(power / 1.3);
+                leftMotorBack.setPower(-power / 1.3);
+                rightMotorFront.setPower(power / 1.3);
+                rightMotorBack.setPower(-power / 1.3);
+                telemetry.addData("Angle: ", heading);
+                telemetry.addData("Degrees + 5: ",degrees + 5);
+                telemetry.addData("Degrees - 5: ",degrees - 5);
+                telemetry.update();
+            }
+        }
+        else {
+            while (heading > degrees + 5){
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                heading = formatAngle(angles.angleUnit, angles.firstAngle);
+                leftMotorFront.setPower(-power);
+                leftMotorBack.setPower(power);
+                rightMotorFront.setPower(-power);
+                rightMotorBack.setPower(power);
+                telemetry.addData("Angle: ", heading);
+                telemetry.addData("Degrees + 5: ",degrees + 5);
+                telemetry.addData("Degrees - 5: ",degrees - 5);
+                telemetry.update();
+            }
+            while (heading > degrees + 2) {
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                heading = formatAngle(angles.angleUnit, angles.firstAngle);
+                leftMotorFront.setPower(-power / 1.3);
+                leftMotorBack.setPower(power / 1.3);
+                rightMotorFront.setPower(-power / 1.3);
+                rightMotorBack.setPower(power / 1.3);
+                telemetry.addData("Angle: ", heading);
+                telemetry.addData("Degrees + 5: ",degrees + 5);
+                telemetry.addData("Degrees - 5: ",degrees - 5);
+                telemetry.update();
+            }
+        }
+
+        leftMotorFront.setPower(0);
+        leftMotorBack.setPower(0);
+        rightMotorFront.setPower(0);
+        rightMotorBack.setPower(0);
+        return;
+    }
+    Double formatAngle(AngleUnit angleUnit, double angle) {
+        return AngleUnit.DEGREES.fromUnit(angleUnit, angle);
+    }
+}

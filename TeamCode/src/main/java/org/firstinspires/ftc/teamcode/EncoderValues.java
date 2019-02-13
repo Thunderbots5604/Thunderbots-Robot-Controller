@@ -1,14 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-
+@Disabled
 @TeleOp(name="Encoder Values", group="Linear Opmode")
 public class EncoderValues extends LinearOpMode {
 
@@ -32,14 +29,6 @@ public class EncoderValues extends LinearOpMode {
         rightMotorFront = hardwareMap.get(DcMotor.class, "right_motor_front");
         rightMotorBack = hardwareMap.get(DcMotor.class, "right_motor_back");
 
-        leftMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        leftMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
         waitForStart();
 
         while (opModeIsActive()) {
@@ -49,7 +38,6 @@ public class EncoderValues extends LinearOpMode {
             telemetry.addData("Right Front Power: ", rightMotorFront.getCurrentPosition());
             telemetry.addData("Right Back Power: ", rightMotorBack.getCurrentPosition());
             telemetry.update();
-
 
 
             if(gamepad1.b) {

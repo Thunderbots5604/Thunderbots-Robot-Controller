@@ -1,14 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.motors.RevRoboticsCoreHexMotor;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 @TeleOp(name="TeleOp", group="Linear Opmode")
@@ -65,7 +63,6 @@ public class TeleOpTest extends LinearOpMode {
         waitForStart();
         halfSpeedCooldown.reset();
         reversedCooldown.reset();
-
         while (opModeIsActive()) {
 
             telemetry.addData("Left Front Power: ", leftMotorFront.getPower());
@@ -212,7 +209,7 @@ public class TeleOpTest extends LinearOpMode {
 
 
             if ((gamepad1.y || gamepad2.y) && elevator.getPosition() == .15) {
-                elevator.setPosition(.8);
+                elevator.setPosition(.7);
             }
             else if ((gamepad1.y || gamepad2.y) && elevator.getPosition() == .8) {
                 elevator.setPosition(.15);
@@ -229,6 +226,10 @@ public class TeleOpTest extends LinearOpMode {
             else if (gamepad1.dpad_right || gamepad2.dpad_right) {
                 box1.setPower(1);
                 box2.setPower(-1);
+            }
+            else {
+                box1.setPower(0);
+                box2.setPower(0);
             }
         }
     }

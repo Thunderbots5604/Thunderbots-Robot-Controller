@@ -8,9 +8,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name="Detach Only", group="Autonomous Competition")
-public class DetachOnly extends GodfatherOfAllAutonomous {
 
+@Autonomous(name="Testing autonomous", group="Autonomous Competition")
+public class AutonomousTesting extends GodfatherOfAllAutonomous {
     @Override
     public void runOpMode() {
         leftMotorFront = hardwareMap.get(DcMotor.class, "left_motor_front");
@@ -26,11 +26,6 @@ public class DetachOnly extends GodfatherOfAllAutonomous {
         elevator = hardwareMap.get(Servo.class, "elevator");
         distance = hardwareMap.get(DistanceSensor.class, "distance");
 
-        leftMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -42,14 +37,14 @@ public class DetachOnly extends GodfatherOfAllAutonomous {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
-
         getAllPower();
 
         waitForStart();
 
-        detach();
-
+        turnTo(-45,allPower,"Right");
+        sleep(2000);
+        turnTo(45,allPower,"Left");
+        sleep(2000);
+        turnTo(0,allPower,"Right");
     }
 }
