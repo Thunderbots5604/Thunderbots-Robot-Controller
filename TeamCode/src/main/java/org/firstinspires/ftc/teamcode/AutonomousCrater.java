@@ -24,63 +24,56 @@ public class AutonomousCrater extends GodfatherOfAllAutonomous {
             //Hit Marker
             turnRight(25,allPower);
             runTo(21, allPower);
-            sleep(500);
+            sleep(100);
             //Go Back
             runTo(-15,allPower);
-            sleep(300);
             //Adjust
             turnLeft(46,allPower);
-            runTo(3.5,allPower);
-            turnLeft(52,allPower);
-            runTo(50,allPower);
+            runTo(2.5,allPower);
+            turnLeft(66.6,allPower);
+            runTo(52,allPower);
             // Go to Depot
-            turnLeft(42.0,allPower);
-            runTo(36.0,allPower);
+            turnLeft(36.0,allPower);
+            runTo(32,allPower);
         }
         if (location == 1) {
             //Hit Marker
             turnLeft(18, allPower);
-            runTo(21,allPower);
-            sleep(500);
+            runTo(18,allPower);
+            sleep(250);
             //Go Back
             turnLeft(5,allPower);
-            runTo(-15,allPower);
+            runTo(-16,allPower);
             //Adjust
             turnRight(8,allPower);
             runTo(2.5,allPower);
             //Go to Depot
             turnLeft(66.6,allPower);
-            runTo(50,allPower);
-            turnLeft(40,allPower);
-            runTo(34,allPower);
+            runTo(50.5,allPower);
+            turnLeft(42.0,allPower);
+            runTo(32,allPower);
         }
         if (location == 0){
             //Hit Marker
-            turnLeft(50, allPower);
-            runTo(32,allPower);
+            turnLeft(56, allPower);
+            runTo(31,allPower);
             sleep(250);
             //Make sure it gets marker off of robot
             runTo(-15,allPower);
             sleep(250);
-            turnLeft(42.0,allPower);
-            runTo(28,allPower);
+            turnLeft(40,allPower);
+            runTo(29,allPower);
             //Go to Depot
             turnLeft(33.33,allPower);
-            runTo(16,allPower);
-            turnLeft(5,allPower);
-            runTo(30,allPower);
+            runTo(15,allPower);
+            turnLeft(16.6,allPower);
+            runTo(25,allPower);
         }
-
-        telemetry.addData("Location: ", location);
-        telemetry.update();
         //Drop marker
-        sleep(250);
+        sleep(100);
         dropMarker();
         //Run back to crater to park
-        sleep(200);
-        turnLeft(5,allPower);
-        runTo(-45,1);
-        sleep(200);
-        runTo(-5,.3);
+        runTo(-66.6,1);
+        runTo(-10,allPower * .8);
     }
 }

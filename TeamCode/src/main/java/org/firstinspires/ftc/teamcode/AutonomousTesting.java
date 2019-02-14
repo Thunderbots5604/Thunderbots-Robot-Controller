@@ -41,16 +41,18 @@ public class AutonomousTesting extends GodfatherOfAllAutonomous {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
-        getAllPower();
+        initialization();
 
         waitForStart();
 
+        sleep(5000);
 
-        while (opModeIsActive()){
-            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            double heading = formatAngle(angles.angleUnit, angles.firstAngle);
-            telemetry.addData("Heading: ", heading);
-            telemetry.update();
-        }
+        runTo(100, allPower);
+        sleep(1000);
+        runTo(-100, allPower);
+        sleep(1000);
+        turnRight(360, allPower);
+        sleep(1000);
+        turnLeft(360, allPower);
     }
 }

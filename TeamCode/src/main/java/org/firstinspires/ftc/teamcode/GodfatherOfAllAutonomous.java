@@ -134,20 +134,19 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
         //Getting out of pesky hook
         sleep(250);
         runTo(1.9,allPower + .1);
-        sleep(500);
+        sleep(250);
         turnRight(15,allPower);
-        sleep(500);
+        sleep(250);
         turnRight(28,allPower);
         runTo(3,allPower - .2);
         //Going to right side to scan 2 blocks on right
         turnRight(42,allPower);
-        sleep(500);
+        sleep(200);
         runTo(7,allPower);
-        sleep(250);
         //Adjust angle for scanning
         runtime.reset();
         double heading = 0;
-        while (runtime.milliseconds() < 3000 && heading > -30) {
+        while (runtime.milliseconds() < 1000 && heading > -30) {
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             heading = formatAngle(angles.angleUnit, angles.firstAngle);
             telemetry.addData("Heading: ", heading);
@@ -157,10 +156,10 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
         if (turn > 30) {
             telemetry.addData("Turning: ", turn*.95);
             telemetry.update();
-            turnLeft(turn * .95, allPower);
+            turnLeft(turn * .62, allPower * 1.2);
         }
         else {
-            turnLeft(36,allPower);
+            turnLeft(10,allPower);
         }
         //Back up for more space
         runTo(-3, allPower);
@@ -329,9 +328,9 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
     }
 
     public void dropMarker(){
-        box1.setPower(.8);
-        box2.setPower(-.8);
-        sleep(1200);
+        box1.setPower(1);
+        box2.setPower(-1);
+        sleep(700);
         box1.setPower(0);
         box2.setPower(0);
         wheel.setPower(1);
@@ -339,7 +338,7 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
         box1.setPower(-1);
         box2.setPower(1);
         wheel.setPower(0);
-        sleep(2000);
+        sleep(1500);
         box1.setPower(0);
         box2.setPower(0);
     }
@@ -386,9 +385,12 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
             tfod.activate();
         }
 
-        getAllPower();
+        allPower = getAllPower();
+
+        telemetry.addData("Power: ", allPower);
+        telemetry.update();
     }
-    public Double getVoltage() {
+    public double getVoltage() {
         double result = Double.POSITIVE_INFINITY;
         for (VoltageSensor sensor : hardwareMap.voltageSensor) {
             double voltage = sensor.getVoltage();
@@ -398,79 +400,18 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
         }
         return result;
     }
-    public void getAllPower(){
+    public double getAllPower(){
         double v = getVoltage();
+        double power = .65;
         if (v >= 13) {
-            allPower = (-.03 * (v-13) * (v-13) + .53);
+            power = (-.027 * (v-13) * (v-13) + .53);
         }
         else if (v > 12) {
-            allPower = (.04 * (v-13) * (v-13) + .53);
+            power = (.01 * (v-13) * (v-13) + .53);
         }
+        return power;
     }
-    public void turnTo (double degrees, double power, String direction){
-        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        double heading = formatAngle(angles.angleUnit, angles.firstAngle);
-
-        if (direction.equals("Right")) {
-            while (heading < degrees - 5){
-                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                heading = formatAngle(angles.angleUnit, angles.firstAngle);
-                leftMotorFront.setPower(power);
-                leftMotorBack.setPower(-power);
-                rightMotorFront.setPower(power);
-                rightMotorBack.setPower(-power);
-                telemetry.addData("Angle: ", heading);
-                telemetry.addData("Degrees + 5: ",degrees + 5);
-                telemetry.addData("Degrees - 5: ",degrees - 5);
-                telemetry.update();
-            }
-            while (heading < degrees + 2) {
-                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                heading = formatAngle(angles.angleUnit, angles.firstAngle);
-                leftMotorFront.setPower(power / 1.3);
-                leftMotorBack.setPower(-power / 1.3);
-                rightMotorFront.setPower(power / 1.3);
-                rightMotorBack.setPower(-power / 1.3);
-                telemetry.addData("Angle: ", heading);
-                telemetry.addData("Degrees + 5: ",degrees + 5);
-                telemetry.addData("Degrees - 5: ",degrees - 5);
-                telemetry.update();
-            }
-        }
-        else {
-            while (heading > degrees + 5){
-                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                heading = formatAngle(angles.angleUnit, angles.firstAngle);
-                leftMotorFront.setPower(-power);
-                leftMotorBack.setPower(power);
-                rightMotorFront.setPower(-power);
-                rightMotorBack.setPower(power);
-                telemetry.addData("Angle: ", heading);
-                telemetry.addData("Degrees + 5: ",degrees + 5);
-                telemetry.addData("Degrees - 5: ",degrees - 5);
-                telemetry.update();
-            }
-            while (heading > degrees + 2) {
-                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                heading = formatAngle(angles.angleUnit, angles.firstAngle);
-                leftMotorFront.setPower(-power / 1.3);
-                leftMotorBack.setPower(power / 1.3);
-                rightMotorFront.setPower(-power / 1.3);
-                rightMotorBack.setPower(power / 1.3);
-                telemetry.addData("Angle: ", heading);
-                telemetry.addData("Degrees + 5: ",degrees + 5);
-                telemetry.addData("Degrees - 5: ",degrees - 5);
-                telemetry.update();
-            }
-        }
-
-        leftMotorFront.setPower(0);
-        leftMotorBack.setPower(0);
-        rightMotorFront.setPower(0);
-        rightMotorBack.setPower(0);
-        return;
-    }
-    Double formatAngle(AngleUnit angleUnit, double angle) {
+    public double formatAngle(AngleUnit angleUnit, double angle) {
         return AngleUnit.DEGREES.fromUnit(angleUnit, angle);
     }
 }
