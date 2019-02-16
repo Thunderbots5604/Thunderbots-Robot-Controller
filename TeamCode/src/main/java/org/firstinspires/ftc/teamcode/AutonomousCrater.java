@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 
-@Autonomous(name="Autonomous Crater", group="Autonomous Competition")
+@Autonomous(name="Autonomous Crater and Depot", group="Autonomous Competition")
 public class AutonomousCrater extends GodfatherOfAllAutonomous {
 
     private int location = -1;

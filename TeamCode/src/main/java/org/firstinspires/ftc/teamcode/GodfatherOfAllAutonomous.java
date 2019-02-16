@@ -15,8 +15,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -133,9 +131,9 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
         box2.setPower(0);
         //Getting out of pesky hook
         sleep(250);
-        runTo(1.9,allPower + .1);
+        runTo(1.8,allPower + .1);
         sleep(250);
-        turnRight(15,allPower);
+        turnRight(17,allPower);
         sleep(250);
         turnRight(28,allPower);
         runTo(3,allPower - .2);
@@ -143,25 +141,7 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
         turnRight(42,allPower);
         sleep(200);
         runTo(7,allPower);
-        //Adjust angle for scanning
-        runtime.reset();
-        double heading = 0;
-        while (runtime.milliseconds() < 1000 && heading > -30) {
-            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            heading = formatAngle(angles.angleUnit, angles.firstAngle);
-            telemetry.addData("Heading: ", heading);
-            telemetry.update();
-        }
-        double turn = Math.abs(heading);
-        if (turn > 30) {
-            telemetry.addData("Turning: ", turn*.95);
-            telemetry.update();
-            turnLeft(turn * .62, allPower * 1.2);
-        }
-        else {
-            turnLeft(10,allPower);
-        }
-        //Back up for more space
+        turnLeft(14,allPower);
         runTo(-3, allPower);
     }
     public int tfodDetection(double timeOut) {

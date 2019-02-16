@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
-
 @Autonomous(name="Detach Only", group="Autonomous Competition")
 public class DetachOnly extends GodfatherOfAllAutonomous {
 

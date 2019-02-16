@@ -11,7 +11,7 @@ public class AutonomousCraterOnly extends GodfatherOfAllAutonomous {
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-//backwards goes more than forward
+
         initialization();
 
         waitForStart();
@@ -20,32 +20,32 @@ public class AutonomousCraterOnly extends GodfatherOfAllAutonomous {
 
         location = tfodDetection(4);
         if (location == 2) {
+            telemetry.addLine("right");
+            telemetry.update();
             turnRight(25,allPower);
             runTo(21, allPower);
             turnLeft(30,allPower);
             runTo(7,allPower);
         }
-        if (location == 1) {
-            turnLeft(18, allPower);
+        else if (location == 1) {
+            telemetry.addLine("middle");
+            telemetry.update();
+            turnLeft(22, allPower);
             runTo(24,allPower);
         }
-        if (location == 0){
-            turnLeft(56, allPower);
+        else if (location == 0){
+            telemetry.addLine("left");
+            telemetry.update();
+            turnLeft(65, allPower);
             runTo(33,allPower);
-            sleep(500);
-            runTo(-22,allPower);
-            turnRight(150,allPower);
-            sleep(250);
-            turnRight(150,allPower);
-            runTo(36,allPower);
-            runTo(-3,allPower);
-            turnLeft(85,allPower);
-            runTo(20,allPower);
+            turnRight(60, allPower);
+            runTo(10, allPower);
         }
         box1.setPower(.8);
         box2.setPower(-.8);
         sleep(1000);
         box1.setPower(0);
         box2.setPower(0);
+
     }
 }
