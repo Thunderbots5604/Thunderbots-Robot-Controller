@@ -21,11 +21,11 @@ public class AutonomousDepotToCrater extends GodfatherOfAllAutonomous {
 
         location = tfodDetection(4);
         if (location == 2) {
-            turnRight(25,allPower);
+            turnRight(45,allPower);
             runTo(31, allPower);
             sleep(500);
-            turnLeft(95,allPower);
-            runTo(20,allPower);
+            turnLeft(80,allPower);
+            runTo(16.6,allPower);
         }
         if (location == 1) {
             //Hit Marker
@@ -34,23 +34,23 @@ public class AutonomousDepotToCrater extends GodfatherOfAllAutonomous {
             sleep(250);
         }
         if (location == 0) {
-            turnLeft(55, allPower);
-            runTo(35,allPower);
+            turnLeft(65, allPower);
+            runTo(36,allPower);
             sleep(250);
-            turnRight(150,allPower);
+            turnRight(180,allPower);
             runTo(22,allPower);
         }
         dropMarker();
         if (location == 2) {
-            runTo(-14,allPower);
+            runTo(-13,allPower);
             turnRight(60,allPower);
-            runTo(-18,allPower);
+            runTo(-22,allPower);
             turnLeft(66,allPower);
-            runTo(7,allPower);
-            turnLeft(40,allPower);
-            runTo(20,allPower);
-            turnLeft(20,allPower);
-            runTo(50,.9);
+            runTo(4,allPower);
+            turnLeft(60,allPower);
+            runTo(50,allPower);
+            turnLeft(66.6,allPower);
+            runTo(30,.9);
         }
         if (location == 1) {
             //Go Back
