@@ -15,6 +15,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -104,7 +106,7 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
             crane2.setPower(1);
         }
         runtime.reset();
-        while (distance.getDistance(DistanceUnit.MM) > 46) {
+        while (distance.getDistance(DistanceUnit.MM) > 47) {
             telemetry.addLine("Phase: Lowering Part 2");
             telemetry.addData("Distance", distance.getDistance(DistanceUnit.MM));
             telemetry.update();
@@ -112,12 +114,12 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
             crane2.setPower(allPower + .18);
         }
         runtime.reset();
-        while(runtime.milliseconds() < 300) {
+        while(runtime.milliseconds() < 200) {
             crane1.setPower(-(allPower + .18));
             crane2.setPower(allPower + .18);
         }
         runtime.reset();
-        while(runtime.milliseconds() < 20) {
+        while(runtime.milliseconds() < 10) {
             crane1.setPower(allPower);
             crane2.setPower(-(allPower));
         }
@@ -137,12 +139,44 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
         sleep(250);
         turnRight(28,allPower);
         runTo(3,allPower - .2);
-        //Going to right side to scan 2 blocks on right
         turnRight(42,allPower);
-        sleep(200);
+        //Going to right side to scan 2 blocks on right
+        double heading = 0;
+        double turn;
+        while (runtime.milliseconds() < 2000 && heading > -20) {
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            heading = formatAngle(angles.angleUnit, angles.firstAngle);
+            telemetry.addData("Heading: ", heading);
+            telemetry.update();
+        }
+        sleep(250);
+        if (heading > -35) {
+            turn = Math.abs(35 + heading);
+            telemetry.addData("Turning: ", turn * .9);
+            telemetry.update();
+            turnRight(turn * .5, allPower);
+        }
+        sleep(250);
         runTo(7,allPower);
         //turn left was 14
-        turnLeft(24,allPower);
+        runtime.reset();
+        heading = 0;
+        while (runtime.milliseconds() < 2000 && heading > -30) {
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            heading = formatAngle(angles.angleUnit, angles.firstAngle);
+            telemetry.addData("Heading: ", heading);
+            telemetry.update();
+        }
+        sleep(250);
+        turn = Math.abs(heading);
+        if (turn > 30) {
+            telemetry.addData("Turning: ", turn * .65);
+            telemetry.update();
+            turnLeft(turn * .75, allPower);
+        }
+        else {
+            turnLeft(24,allPower);
+        }
         runTo(-3, allPower);
     }
     public int tfodDetection(double timeOut) {
