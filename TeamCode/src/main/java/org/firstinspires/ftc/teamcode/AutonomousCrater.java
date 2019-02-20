@@ -31,9 +31,9 @@ public class AutonomousCrater extends GodfatherOfAllAutonomous {
             turnLeft(46,allPower);
             runTo(2.5,allPower);
             turnLeft(66.6,allPower);
-            runTo(52,allPower);
+            runTo(42.0,allPower);
             // Go to Depot
-            turnLeft(36.0,allPower);
+            turnLeft(50,allPower);
             runTo(32,allPower);
         }
         if (location == 1) {
@@ -62,11 +62,11 @@ public class AutonomousCrater extends GodfatherOfAllAutonomous {
             runTo(-15,allPower);
             sleep(250);
             turnLeft(40,allPower);
-            runTo(29,allPower);
+            runTo(27,allPower);
             //Go to Depot
-            turnLeft(33.33,allPower);
+            turnLeft(30,allPower);
             runTo(15,allPower);
-            turnLeft(16.6,allPower);
+            turnLeft(33,allPower);
             runTo(25,allPower);
         }
         //Drop marker

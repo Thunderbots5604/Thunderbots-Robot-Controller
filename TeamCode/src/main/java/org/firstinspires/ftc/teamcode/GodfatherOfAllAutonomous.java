@@ -142,7 +142,7 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
         sleep(200);
         runTo(7,allPower);
         //turn left was 14
-        turnLeft(28,allPower);
+        turnLeft(24,allPower);
         runTo(-3, allPower);
     }
     public int tfodDetection(double timeOut) {
