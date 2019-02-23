@@ -14,7 +14,7 @@ import java.util.List;
 @Autonomous(name="Testing Vuforia", group="Autonomous Competition")
 public class VuforiaTest extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
-    private int location = -1;
+    private String location;
     private int objects = 0;
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
@@ -65,51 +65,59 @@ public class VuforiaTest extends LinearOpMode {
 
         waitForStart();
 
-        int silverPosition = 0;
+        int silverOnePosition = 0;
+        int silverTwoPosition = 0;
         int goldPosition = 0;
-        int objects = 0;
-        runtime.reset();
-        while(runtime.seconds() < 5 && objects != 2) {
+        boolean silverDetected = false;
+        while(objects != 3) {
             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
             if (updatedRecognitions != null) {
                 objects = updatedRecognitions.size();
-                telemetry.addData("# Object Detected", updatedRecognitions.size());
-                if (updatedRecognitions.size() == 2) {
+                if (updatedRecognitions.size() == 3) {
+                    silverDetected = false;
                     for (Recognition r : updatedRecognitions) {
                         if (r.getLabel().equals(LABEL_GOLD_MINERAL)) {
                             goldPosition = (int) r.getTop();
-                            telemetry.addData("Gold Mineral: ", r.getTop());
-                            telemetry.addData("Silver Mineral: ", silverPosition);
-                        } else if (r.getLabel().equals(LABEL_SILVER_MINERAL)) {
-                            silverPosition = (int) r.getTop();
-                            telemetry.addData("Gold Mineral: ", goldPosition);
-                            telemetry.addData("Silver Mineral: ", silverPosition);
+                        } else if (r.getLabel().equals(LABEL_SILVER_MINERAL) && silverDetected == false){
+                            silverOnePosition = (int) r.getTop();
+                            silverDetected = true;
                         }
-                        telemetry.update();
+                        else {
+                            silverTwoPosition = (int) r.getTop();
+                        }
                     }
                 }
             }
         }
 
-        if (goldPosition == 0) {
-            telemetry.addLine("Gold Mineral is on Left");
-            telemetry.addData("Gold Top", goldPosition);
-            telemetry.addData("Silver Top", silverPosition);
-            location = 0;
-        } else if (goldPosition < silverPosition) {
-            telemetry.addLine("Gold Mineral is Center");
-            telemetry.addData("Gold Top", goldPosition);
-            telemetry.addData("Silver One Top", silverPosition);
-            location = 1;
-        } else if (goldPosition > silverPosition) {
+        if (goldPosition > silverOnePosition && goldPosition > silverTwoPosition) {
             telemetry.addLine("Gold Mineral is on Right");
             telemetry.addData("Gold Top", goldPosition);
-            telemetry.addData("Silver Top", silverPosition);
-            location = 2;
+            telemetry.addData("Silver One Top", silverOnePosition);
+            telemetry.addData("Silver Two Top", silverTwoPosition);
+            telemetry.update();
+            location = "right";
+        } else if (goldPosition < silverOnePosition && goldPosition < silverTwoPosition) {
+            telemetry.addLine("Gold Mineral is on Left");
+            telemetry.addData("Gold Top", goldPosition);
+            telemetry.addData("Silver One Top", silverOnePosition);
+            telemetry.addData("Silver Two Top", silverTwoPosition);
+            telemetry.update();
+            location = "left";
         }
+        else if ((goldPosition > silverOnePosition && goldPosition < silverTwoPosition) || (goldPosition > silverTwoPosition && goldPosition < silverOnePosition)) {
+            telemetry.addLine("Gold Mineral is Center");
+            telemetry.addData("Gold Top", goldPosition);
+            telemetry.addData("Silver One Top", silverOnePosition);
+            telemetry.addData("Silver Two Top", silverTwoPosition);
+            telemetry.update();
+            location = "center";
+        }
+
+        telemetry.addData("Location", location);
         telemetry.update();
         tfod.shutdown();
-        sleep(2000);
+        sleep(10000);
     }
     private void initVuforia() {
         /*

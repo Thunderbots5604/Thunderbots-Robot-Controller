@@ -15,8 +15,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -119,66 +117,41 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
             crane2.setPower(allPower + .18);
         }
         runtime.reset();
-        while(runtime.milliseconds() < 10) {
+        while(runtime.milliseconds() < 50) {
             crane1.setPower(allPower);
             crane2.setPower(-(allPower));
         }
         crane1.setPower(0);
         crane2.setPower(0);
+
+        sleep(1000);
         //Bringing box  back up in case it fell down
         box1.setPower(-.5);
         box2.setPower(.5);
         sleep(400);
         box1.setPower(0);
         box2.setPower(0);
+
+        sleep(1000);
         //Getting out of pesky hook
-        sleep(250);
-        runTo(1.8,allPower + .1);
-        sleep(250);
-        turnRight(17,allPower);
-        sleep(250);
-        turnRight(28,allPower);
+        //sleep(250);
+        runTo(1.5,allPower + .1);
+        sleep(1000);
+        turnRight(45,allPower);
+        sleep(1000);
         runTo(3,allPower - .2);
+        sleep(1000);
         turnRight(42,allPower);
         //Going to right side to scan 2 blocks on right
-        double heading = 0;
-        double turn;
-        while (runtime.milliseconds() < 2000 && heading > -20) {
-            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            heading = formatAngle(angles.angleUnit, angles.firstAngle);
-            telemetry.addData("Heading: ", heading);
-            telemetry.update();
-        }
-        sleep(250);
-        if (heading > -35) {
-            turn = Math.abs(35 + heading);
-            telemetry.addData("Turning: ", turn * .9);
-            telemetry.update();
-            turnRight(turn * .5, allPower);
-        }
-        sleep(250);
+        sleep(1000);
         runTo(7,allPower);
-        //turn left was 14
-        runtime.reset();
-        heading = 0;
-        while (runtime.milliseconds() < 2000 && heading > -30) {
-            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            heading = formatAngle(angles.angleUnit, angles.firstAngle);
-            telemetry.addData("Heading: ", heading);
-            telemetry.update();
-        }
-        sleep(250);
-        turn = Math.abs(heading);
-        if (turn > 30) {
-            telemetry.addData("Turning: ", turn * .65);
-            telemetry.update();
-            turnLeft(turn * .75, allPower);
-        }
-        else {
-            turnLeft(24,allPower);
-        }
+        sleep(1000);
+        turnLeft(24,allPower);
+        sleep(1000);
         runTo(-3, allPower);
-    }
+        sleep(1000);
+        turnLeft(20, allPower);
+    }/*
     public int tfodDetection(double timeOut) {
         int silverPosition = 0;
         int goldPosition = 0;
@@ -200,7 +173,6 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
                 }
             }
         }
-
         if (goldPosition == 0) {
             telemetry.addLine("Gold Mineral is on Left");
             telemetry.addData("Gold Top", goldPosition);
@@ -220,7 +192,71 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
         telemetry.update();
         tfod.shutdown();
         return location;
+    }*/
+
+    public int objectDetect() {
+        initVuforia();
+
+        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
+            initTfod();
+        } else {
+            telemetry.addData("Sorry!", "This device is not compatible with TFOD");
+        }
+
+        if (tfod != null) {
+            tfod.activate();
+        }
+
+        int silverOnePosition = 0;
+        int silverTwoPosition = 0;
+        int goldPosition = 0;
+        boolean silverDetected = false;
+        location = 0;
+        while(objects != 3) {
+            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+            if (updatedRecognitions != null) {
+                objects = updatedRecognitions.size();
+                if (updatedRecognitions.size() == 3) {
+                    silverDetected = false;
+                    for (Recognition r : updatedRecognitions) {
+                        if (r.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                            goldPosition = (int) r.getTop();
+                        } else if (r.getLabel().equals(LABEL_SILVER_MINERAL) && silverDetected == false){
+                            silverOnePosition = (int) r.getTop();
+                            silverDetected = true;
+                        }
+                        else {
+                            silverTwoPosition = (int) r.getTop();
+                        }
+                    }
+                }
+            }
+        }
+
+        if (goldPosition > silverOnePosition && goldPosition > silverTwoPosition) {
+            telemetry.addLine("Gold Mineral is on Right");
+            telemetry.addData("Gold Top", goldPosition);
+            telemetry.addData("Silver One Top", silverOnePosition);
+            telemetry.addData("Silver Two Top", silverTwoPosition);
+            location = 2;
+        } else if ((goldPosition > silverOnePosition && goldPosition < silverTwoPosition) || (goldPosition > silverTwoPosition && goldPosition < silverOnePosition)) {
+            telemetry.addLine("Gold Mineral is Center");
+            telemetry.addData("Gold Top", goldPosition);
+            telemetry.addData("Silver One Top", silverOnePosition);
+            telemetry.addData("Silver Two Top", silverTwoPosition);
+            location = 1;
+        } else if (goldPosition < silverOnePosition && goldPosition < silverTwoPosition) {
+            telemetry.addLine("Gold Mineral is on Left");
+            telemetry.addData("Gold Top", goldPosition);
+            telemetry.addData("Silver One Top", silverOnePosition);
+            telemetry.addData("Silver Two Top", silverTwoPosition);
+            location = 0;
+        }
+        telemetry.update();
+        tfod.shutdown();
+        return location;
     }
+
     public void runTo(double inches, double power) {
         //.75 is max accurate
         leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -388,22 +424,7 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
-        initVuforia();
-
-        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
-            initTfod();
-        } else {
-            telemetry.addData("Sorry!", "This device is not compatible with TFOD");
-        }
-
-        if (tfod != null) {
-            tfod.activate();
-        }
-
         allPower = getAllPower();
-
-        telemetry.addData("Power: ", allPower);
-        telemetry.update();
     }
     public double getVoltage() {
         double result = Double.POSITIVE_INFINITY;

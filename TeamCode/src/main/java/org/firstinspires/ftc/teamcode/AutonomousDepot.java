@@ -12,11 +12,11 @@ public class AutonomousDepot extends GodfatherOfAllAutonomous {
 
         initialization();
 
+        location = objectDetect();
+
         waitForStart();
 
         detach();
-
-        location = tfodDetection(6);
         if (location == 2) {
             turnRight(25,allPower);
             runTo(31, allPower);

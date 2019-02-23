@@ -15,11 +15,11 @@ public class AutonomousDepotToCrater extends GodfatherOfAllAutonomous {
 
         initialization();
 
+        location = objectDetect();
+
         waitForStart();
 
         detach();
-
-        location = tfodDetection(4);
         if (location == 2) {
             turnRight(45,allPower);
             runTo(31, allPower);

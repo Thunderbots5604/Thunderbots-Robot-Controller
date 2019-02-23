@@ -14,11 +14,11 @@ public class AutonomousCraterOnly extends GodfatherOfAllAutonomous {
 
         initialization();
 
+        location = objectDetect();
+
         waitForStart();
 
         detach();
-
-        location = tfodDetection(4);
         if (location == 2) {
             telemetry.addLine("right");
             telemetry.update();

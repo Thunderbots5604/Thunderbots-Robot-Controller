@@ -15,11 +15,12 @@ public class AutonomousCrater extends GodfatherOfAllAutonomous {
 
         initialization();
 
+        location = objectDetect();
+
         waitForStart();
 
         detach();
 
-        location = tfodDetection(4);
         if (location == 2) {
             //Hit Marker
             turnRight(27,allPower);
