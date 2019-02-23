@@ -124,33 +124,16 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
         crane1.setPower(0);
         crane2.setPower(0);
 
-        sleep(1000);
-        //Bringing box  back up in case it fell down
-        box1.setPower(-.5);
-        box2.setPower(.5);
-        sleep(400);
-        box1.setPower(0);
-        box2.setPower(0);
-
-        sleep(1000);
+        sleep(100);
         //Getting out of pesky hook
         //sleep(250);
         runTo(1.5,allPower + .1);
-        sleep(1000);
-        turnRight(45,allPower);
-        sleep(1000);
+        sleep(500);
+        turnRight(45, allPower);
+        sleep(100);
         runTo(3,allPower - .2);
-        sleep(1000);
+        sleep(100);
         turnRight(42,allPower);
-        //Going to right side to scan 2 blocks on right
-        sleep(1000);
-        runTo(7,allPower);
-        sleep(1000);
-        turnLeft(24,allPower);
-        sleep(1000);
-        runTo(-3, allPower);
-        sleep(1000);
-        turnLeft(20, allPower);
     }/*
     public int tfodDetection(double timeOut) {
         int silverPosition = 0;

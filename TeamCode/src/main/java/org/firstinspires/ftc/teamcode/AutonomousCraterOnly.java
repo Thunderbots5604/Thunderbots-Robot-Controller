@@ -18,32 +18,46 @@ public class AutonomousCraterOnly extends GodfatherOfAllAutonomous {
 
         waitForStart();
 
+        int cooldown = 2500;
+
         detach();
+        sleep(cooldown);
         if (location == 2) {
             telemetry.addLine("right");
             telemetry.update();
-            turnRight(25,allPower);
+            //Going to right side to scan 2 blocks on right
+            sleep(cooldown);
+            runTo(7,allPower);
+            sleep(cooldown);
+            turnLeft(20, allPower);
+            sleep(cooldown);
             runTo(21, allPower);
+            sleep(cooldown);
             turnLeft(30,allPower);
+            sleep(cooldown);
             runTo(7,allPower);
         }
         else if (location == 1) {
             telemetry.addLine("middle");
             telemetry.update();
-            turnLeft(22, allPower);
-            runTo(24,allPower);
+            sleep(cooldown);
+            turnLeft(30, allPower);
+            sleep(cooldown);
+            runTo(21, allPower);
+            sleep(cooldown);
+            runTo(7,allPower);
         }
         else if (location == 0){
             telemetry.addLine("left");
             telemetry.update();
-            turnLeft(65, allPower);
-            runTo(33,allPower);
-            turnRight(60, allPower);
-            runTo(10, allPower);
+            sleep(cooldown);
+            turnLeft(30, allPower);
+            sleep(cooldown);
+            runTo(30, allPower);
         }
         box1.setPower(.8);
         box2.setPower(-.8);
-        sleep(1000);
+        sleep(2000);
         box1.setPower(0);
         box2.setPower(0);
 
