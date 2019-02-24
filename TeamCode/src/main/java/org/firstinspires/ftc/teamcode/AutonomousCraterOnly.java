@@ -25,7 +25,7 @@ public class AutonomousCraterOnly extends GodfatherOfAllAutonomous {
         if (location == 2) {
             telemetry.addLine("right");
             telemetry.update();
-            runTo(28, allPower);
+            runTo(27, allPower);
             sleep(cooldown);
             turnLeft(40, allPower);
             sleep(cooldown);
@@ -39,14 +39,14 @@ public class AutonomousCraterOnly extends GodfatherOfAllAutonomous {
             sleep(cooldown);
             turnLeft(32, allPower);
             sleep(cooldown);
-            runTo(20, allPower);
+            runTo(23, allPower);
         }
         else if (location == 0){
             telemetry.addLine("left");
             telemetry.update();
             runTo(5, allPower);
             sleep(cooldown);
-            turnLeft(75, allPower);
+            turnLeft(82, allPower);
             sleep(cooldown);
             runTo(25, allPower);
             sleep(cooldown);
@@ -54,9 +54,9 @@ public class AutonomousCraterOnly extends GodfatherOfAllAutonomous {
             sleep(cooldown);
             runTo(7, allPower);
         }
-        box1.setPower(.8);
-        box2.setPower(-.8);
-        sleep(2000);
+        box1.setPower(-1);
+        box2.setPower(1);
+        sleep(cooldown);
         box1.setPower(0);
         box2.setPower(0);
 

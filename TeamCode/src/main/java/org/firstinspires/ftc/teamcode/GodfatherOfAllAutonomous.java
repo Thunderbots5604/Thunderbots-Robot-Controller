@@ -359,15 +359,15 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
     }
 
     public void dropMarker(){
-        box1.setPower(1);
-        box2.setPower(-1);
+        box1.setPower(-1);
+        box2.setPower(1);
         sleep(700);
         box1.setPower(0);
         box2.setPower(0);
         wheel.setPower(1);
         sleep(1000);
-        box1.setPower(-1);
-        box2.setPower(1);
+        box1.setPower(1);
+        box2.setPower(-1);
         wheel.setPower(0);
         sleep(1500);
         box1.setPower(0);
