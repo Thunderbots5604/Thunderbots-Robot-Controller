@@ -130,10 +130,7 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
         runTo(1.5,allPower + .1);
         sleep(500);
         turnRight(45, allPower);
-        sleep(100);
-        runTo(3,allPower - .2);
-        sleep(100);
-        turnRight(42,allPower);
+
     }/*
     public int tfodDetection(double timeOut) {
         int silverPosition = 0;
