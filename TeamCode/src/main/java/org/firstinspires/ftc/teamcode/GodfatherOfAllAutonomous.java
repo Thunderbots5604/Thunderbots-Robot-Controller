@@ -176,6 +176,7 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
 
     public int objectDetect() {
         initVuforia();
+        runtime.reset();
 
         if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
             initTfod();
@@ -197,7 +198,6 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
             if (updatedRecognitions != null) {
                 objects = updatedRecognitions.size();
                 if (updatedRecognitions.size() == 3) {
-                    silverDetected = false;
                     for (Recognition r : updatedRecognitions) {
                         if (r.getLabel().equals(LABEL_GOLD_MINERAL)) {
                             goldPosition = (int) r.getTop();
@@ -209,6 +209,37 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
                             silverTwoPosition = (int) r.getTop();
                         }
                     }
+                }
+                if (runtime.milliseconds() > 5000 && updatedRecognitions.size() == 2) {
+                    for (Recognition r : updatedRecognitions) {
+                        if (r.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                            goldPosition = (int) r.getTop();
+                        }
+                        else if (r.getLabel().equals(LABEL_SILVER_MINERAL)){
+                            silverOnePosition = (int) r.getTop();
+                        }
+                    }
+                    if (goldPosition == 0) {
+                        telemetry.addLine("Gold Mineral is on Right");
+                        telemetry.addData("Gold Top", goldPosition);
+                        telemetry.addData("Silver Top", silverOnePosition);
+                        location = 2;
+                    }
+                    else if (goldPosition > silverOnePosition) {
+                        telemetry.addLine("Gold Mineral is on Center");
+                        telemetry.addData("Gold Top", goldPosition);
+                        telemetry.addData("Silver Top", silverOnePosition);
+                        location = 1;
+                    }
+                    else {
+                        telemetry.addLine("Gold Mineral is on Left");
+                        telemetry.addData("Gold Top", goldPosition);
+                        telemetry.addData("Silver Top", silverOnePosition);
+                        location = 0;
+                    }
+                    telemetry.update();
+                    tfod.shutdown();
+                    return location;
                 }
             }
         }
@@ -361,7 +392,7 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
     public void dropMarker(){
         box1.setPower(-1);
         box2.setPower(1);
-        sleep(700);
+        sleep(1500);
         box1.setPower(0);
         box2.setPower(0);
         wheel.setPower(1);

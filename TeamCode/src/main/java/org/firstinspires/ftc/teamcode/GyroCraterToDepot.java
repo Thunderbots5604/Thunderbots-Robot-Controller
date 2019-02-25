@@ -1,21 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
-@Autonomous(name="Gyro Crater Only", group="Gyro")
-public class GyroCrater extends GodfatherOfAllAutonomous {
+@Autonomous(name="Gyro Crater-Depot", group="Gyro")
+public class GyroCraterToDepot extends GodfatherOfAllAutonomous {
 
     @Override
     public void runOpMode() {
@@ -78,7 +71,6 @@ public class GyroCrater extends GodfatherOfAllAutonomous {
         telemetry.addData("Heading: ", heading);
         telemetry.addData("Turning: ", turn);
         telemetry.update();
-        sleep(cooldown);
         if (heading > -33.0) {
             turnRight(turn, allPower);
         }
@@ -90,41 +82,67 @@ public class GyroCrater extends GodfatherOfAllAutonomous {
         //Auto Crater only
         sleep(cooldown);
         if (location == 2) {
-            telemetry.addLine("right");
-            telemetry.update();
-            runTo(27, allPower);
-            sleep(cooldown);
-            turnLeft(40, allPower);
-            sleep(cooldown);
-            runTo(3, allPower);
+            //Hit Marker
+            runTo(22, allPower);
+            sleep(100);
+            //Go Back
+            runTo(-14,allPower);
+            //Adjust
+            turnLeft(46,allPower);
+            runTo(2.5,allPower);
+            turnLeft(69,allPower);
+            runTo(45,allPower);
+            // Go to Depot
+            turnLeft(35,allPower);
+            runTo(30,allPower);
+            //Drop marker
+            sleep(100);
+            dropMarker();
+            //Run back to crater to park
+            runTo(-55,1);
+            runTo(-10,allPower * .8);
         }
         else if (location == 1) {
-            telemetry.addLine("middle");
-            telemetry.update();
-
             runTo(5, allPower);
             sleep(cooldown);
             turnLeft(32, allPower);
             sleep(cooldown);
-            runTo(23, allPower);
+            runTo(16.6, allPower);
+            runTo(-13,allPower);
+            turnLeft(100,allPower);
+            runTo(39,allPower);
+            turnLeft(22,allPower);
+            runTo(11,allPower);
+            turnLeft(20,allPower);
+            runTo(26,allPower);
+            //Drop marker
+            sleep(100);
+            dropMarker();
+            //Run back to crater to park
+            runTo(-55,1);
+            runTo(-10,allPower * .8);
         }
         else if (location == 0){
-            telemetry.addLine("left");
-            telemetry.update();
             runTo(5, allPower);
             sleep(cooldown);
-            turnLeft(82, allPower);
+            turnLeft(120, allPower);
+            runTo(3,allPower);
             sleep(cooldown);
-            runTo(25, allPower);
-            sleep(cooldown);
-            turnRight(45, allPower);
-            sleep(cooldown);
-            runTo(7, allPower);
+            turnRight(86,allPower);
+            runTo(20, allPower * .85);
+            runTo(-6,allPower);
+            turnLeft(30,allPower);
+            runTo(16.6,allPower);
+            turnLeft(60,allPower);
+            runTo(10,allPower);
+            turnLeft(30,allPower);
+            runTo(33,allPower);
+            //Drop marker
+            sleep(100);
+            dropMarker();
+            //Run back to crater to park
+            runTo(-55,1);
+            runTo(-10,allPower * .8);
         }
-        box1.setPower(-1);
-        box2.setPower(1);
-        sleep(2000);
-        box1.setPower(0);
-        box2.setPower(0);
     }
 }
