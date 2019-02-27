@@ -190,10 +190,12 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
         int silverOnePosition = 0;
         int silverTwoPosition = 0;
         int goldPosition = 0;
+        int objects = 0;
         boolean silverDetected = false;
         location = 0;
         runtime.reset();
-        while((objects != 3 || objects != 2) && runtime.seconds() < 15) {
+        //Or statement for runtime to be less than 3 is so that it doesn't auto detect only 2 on the right first
+        while((objects != 3 && objects != 2 && runtime.seconds() < 15) || runtime.seconds() < 3) {
             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
             if (updatedRecognitions != null) {
                 objects = updatedRecognitions.size();

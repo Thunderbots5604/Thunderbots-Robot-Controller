@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
@@ -23,43 +22,7 @@ public class GyroCraterToDepot extends GodfatherOfAllAutonomous {
 
         waitForStart();
 
-        while (distance.getDistance(DistanceUnit.MM) > 100) {
-            telemetry.addLine("Phase: Lowering Part 1");
-            telemetry.addData("Distance", distance.getDistance(DistanceUnit.MM));
-            telemetry.update();
-            crane1.setPower(-1);
-            crane2.setPower(1);
-        }
-        runtime.reset();
-        while (distance.getDistance(DistanceUnit.MM) > 47) {
-            telemetry.addLine("Phase: Lowering Part 2");
-            telemetry.addData("Distance", distance.getDistance(DistanceUnit.MM));
-            telemetry.update();
-            crane1.setPower(-(allPower + .18));
-            crane2.setPower(allPower + .18);
-        }
-        runtime.reset();
-        while(runtime.milliseconds() < 200) {
-            crane1.setPower(-(allPower + .18));
-            crane2.setPower(allPower + .18);
-        }
-        runtime.reset();
-        while(runtime.milliseconds() < 50) {
-            crane1.setPower(allPower);
-            crane2.setPower(-(allPower));
-        }
-        crane1.setPower(0);
-        crane2.setPower(0);
-
-        sleep(100);
-        //Getting out of hook
-        //sleep(250);
-        runTo(1.5,allPower + .1);
-        turnRight(20,allPower);
-        sleep(500);
-        runTo(1,allPower + .1);
-        turnRight(45,allPower);
-        sleep(500);
+        detach();
         double heading = 0;
         double turn;
         while (runtime.milliseconds() < 5000 && heading == 0) {
