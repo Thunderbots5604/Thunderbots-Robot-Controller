@@ -191,39 +191,43 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
         int silverTwoPosition = 0;
         int goldPosition = 0;
         int objects = 0;
-        boolean silverDetected = false;
+
+        List<Recognition> updatedRecognitions = null;
         location = 0;
         runtime.reset();
-        //Or statement for runtime to be less than 3 is so that it doesn't auto detect only 2 on the right first
-        while((objects != 3 && objects != 2 && runtime.seconds() < 15) || runtime.seconds() < 3) {
-            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-            if (updatedRecognitions != null) {
+        while(objects != 3 && objects != 2 && runtime.seconds() < 5) {
+            updatedRecognitions = tfod.getUpdatedRecognitions();
+            if(updatedRecognitions != null) {
                 objects = updatedRecognitions.size();
-                if (updatedRecognitions.size() == 3) {
-                    for (Recognition r : updatedRecognitions) {
-                        if (r.getLabel().equals(LABEL_GOLD_MINERAL)) {
-                            goldPosition = (int) r.getTop();
-                        } else if (r.getLabel().equals(LABEL_SILVER_MINERAL) && silverDetected == false){
-                            silverOnePosition = (int) r.getTop();
-                            silverDetected = true;
-                        }
-                        else {
-                            silverTwoPosition = (int) r.getTop();
-                        }
+            }
+        }
+        boolean silverDetected = false;
+        if (updatedRecognitions != null) {
+            if (updatedRecognitions.size() == 3) {
+                for (Recognition r : updatedRecognitions) {
+                    if (r.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                        goldPosition = (int) r.getTop();
+                    } else if (r.getLabel().equals(LABEL_SILVER_MINERAL) && silverDetected == false){
+                        silverOnePosition = (int) r.getTop();
+                        silverDetected = true;
+                    }
+                    else {
+                        silverTwoPosition = (int) r.getTop();
                     }
                 }
-                else if (updatedRecognitions.size() == 2) {
-                    for (Recognition r : updatedRecognitions) {
-                        if (r.getLabel().equals(LABEL_GOLD_MINERAL)) {
-                            goldPosition = (int) r.getTop();
-                        }
-                        else if (r.getLabel().equals(LABEL_SILVER_MINERAL)){
-                            silverOnePosition = (int) r.getTop();
-                        }
+            }
+            else if (updatedRecognitions.size() == 2) {
+                for (Recognition r : updatedRecognitions) {
+                    if (r.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                        goldPosition = (int) r.getTop();
+                    }
+                    else if (r.getLabel().equals(LABEL_SILVER_MINERAL)){
+                        silverOnePosition = (int) r.getTop();
                     }
                 }
             }
         }
+
         if (objects == 3) {
             if (goldPosition > silverOnePosition && goldPosition > silverTwoPosition) {
                 telemetry.addLine("Gold Mineral is on Right");
