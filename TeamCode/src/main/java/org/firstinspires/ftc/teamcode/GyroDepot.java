@@ -73,7 +73,7 @@ public class GyroDepot extends GodfatherOfAllAutonomous {
             sleep(cooldown);
             runTo(38, allPower);
             sleep(cooldown);
-            turnRight(135, allPower);
+            turnRight(143, allPower);
             sleep(cooldown);
             runTo(22, allPower);
         }
