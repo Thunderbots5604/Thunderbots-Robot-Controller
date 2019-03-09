@@ -27,12 +27,12 @@ public class AutonomousDepotToCrater extends GodfatherOfAllAutonomous {
             runTo(31, allPower);
             sleep(500);
             turnLeft(80,allPower);
-            runTo(16.6,allPower);
+            runTo(17.6,allPower);
         }
         if (location == 1) {
             //Hit Marker
             turnLeft(18, allPower);
-            runTo(18,allPower);
+            runTo(20,allPower);
             sleep(250);
         }
         if (location == 0) {
@@ -44,33 +44,34 @@ public class AutonomousDepotToCrater extends GodfatherOfAllAutonomous {
         }
         dropMarker();
         if (location == 2) {
-            runTo(-13,allPower);
-            turnRight(60,allPower);
-            runTo(-22,allPower);
-            turnLeft(66,allPower);
-            runTo(4,allPower);
-            turnLeft(60,allPower);
+            turnLeft(90,allPower);
+            runTo(16,allPower);
+            turnLeft(30,allPower);
             runTo(50,allPower);
-            turnLeft(66.6,allPower);
-            runTo(30,.9);
         }
         if (location == 1) {
             //Go Back
-            turnLeft(5,allPower);
-            runTo(-16,allPower);
+            runTo(-2,allPower);
+            turnLeft(90,allPower);
+            runTo(5,allPower);
             //Adjust
-            turnRight(8,allPower);
-            runTo(2.5,allPower);
-            //Go to Crater
-            turnLeft(66.6,allPower);
-            runTo(50.5,allPower);
-            turnLeft(42.0,allPower);
-            runTo(32,allPower);
+            turnLeft(30,allPower);
+            runTo(8,allPower);
+            turnLeft(30,allPower);
+            runTo(50,allPower);
         }
         if (location == 0) {
             runTo(-5, allPower);
-            turnRight(20, allPower);
+            turnRight(10, allPower);
             runTo(-80, .8);
         }
+        box1.setPower(-1);
+        box2.setPower(1);
+        sleep(2000);
+        box1.setPower(1);
+        box2.setPower(-1);
+        sleep(2000);
+        box1.setPower(0);
+        box2.setPower(0);
     }
 }

@@ -46,59 +46,54 @@ public class GyroDepotToCrater extends GodfatherOfAllAutonomous {
         //Auto Crater only
         sleep(cooldown);
         if (location == 2) {
-            telemetry.addLine("right");
-            telemetry.update();
-            runTo(27, allPower);
-            sleep(cooldown);
-            turnLeft(55, allPower);
-            sleep(cooldown);
-            runTo(21, allPower);
+            turnRight(10,allPower);
+            runTo(36, allPower);
+            sleep(500);
+            turnLeft(90,allPower);
+            runTo(30,allPower);
         }
-        else if (location == 1) {
-            telemetry.addLine("middle");
-            telemetry.update();
-
-            runTo(5, allPower);
-            sleep(cooldown);
-            turnLeft(40, allPower);
-            sleep(cooldown);
-            runTo(32, allPower);
+        if (location == 1) {
+            //Hit Marker
+            runTo(5,allPower);
+            turnLeft(27, allPower);
+            runTo(33.33,allPower);
+            sleep(250);
         }
-        else if (location == 0){
-            telemetry.addLine("left");
-            telemetry.update();
-            runTo(5, allPower);
-            sleep(cooldown);
-            turnLeft(82, allPower);
-            sleep(cooldown);
-            runTo(38, allPower);
-            sleep(cooldown);
-            turnRight(135, allPower);
-            sleep(cooldown);
-            runTo(25, allPower);
+        if (location == 0) {
+            runTo(5,allPower);
+            turnLeft(75, allPower);
+            runTo(36,allPower);
+            sleep(250);
+            turnRight(125,allPower);
+            runTo(22,allPower);
         }
         dropMarker();
         if (location == 2) {
-            runTo(-2,allPower);
-            turnLeft(50,allPower);
-            runTo(30,allPower);
-            turnLeft(65,allPower);
-            runTo(60,allPower);
+            turnLeft(60,allPower);
+            runTo(16.6,allPower);
+            turnLeft(40,allPower);
+            runTo(50,allPower);
         }
-        else if (location == 1) {
+        if (location == 1) {
+            //Go Back
             runTo(-2,allPower);
-            turnLeft(65,allPower);
-            runTo(15,allPower);
+            turnLeft(90,allPower);
+            runTo(5,allPower);
+            //Adjust
+            turnLeft(30,allPower);
+            runTo(8,allPower);
             turnLeft(30,allPower);
             runTo(50,allPower);
         }
-        else if (location == 0) {
-            turnRight(10,allPower);
-            runTo(-70,allPower);
+        if (location == 0) {
+            runTo(-5, allPower);
+            turnRight(16.6, allPower);
+            runTo(-50, 1);
+            runTo(-24,allPower);
         }
         box1.setPower(-1);
         box2.setPower(1);
-        sleep(1500);
+        sleep(2000);
         box1.setPower(0);
         box2.setPower(0);
     }
