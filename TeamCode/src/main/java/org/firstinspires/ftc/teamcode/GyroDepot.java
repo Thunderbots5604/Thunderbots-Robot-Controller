@@ -11,7 +11,11 @@ public class GyroDepot extends GodfatherOfAllAutonomous {
 
     @Override
     public void runOpMode() {
+        depotDrop();
+        dropMarker();
+    }
 
+    public void depotDrop() {
         int cooldown = 500;
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -77,6 +81,5 @@ public class GyroDepot extends GodfatherOfAllAutonomous {
             sleep(cooldown);
             runTo(22, allPower);
         }
-        dropMarker();
     }
 }
