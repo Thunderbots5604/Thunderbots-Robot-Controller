@@ -27,24 +27,7 @@ public class GyroDepot extends GodfatherOfAllAutonomous {
         waitForStart();
 
         detach();
-        double heading = 0;
-        double turn;
-        while (runtime.milliseconds() < 5000 && heading == 0) {
-            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            heading = formatAngle(angles.angleUnit, angles.firstAngle);
-        }
-        turn = ((Math.abs(33 + heading))*1.1);
-        telemetry.addData("Runtime", runtime.milliseconds());
-        telemetry.addData("Heading: ", heading);
-        telemetry.addData("Turning: ", turn);
-        telemetry.update();
-        sleep(cooldown);
-        if (heading > -33.0) {
-            turnRight(turn, allPower);
-        }
-        else if (heading < -33.0) {
-            turnLeft(turn, allPower);
-        }
+        turnOut();
         //detach finished
 
         //Auto Crater only

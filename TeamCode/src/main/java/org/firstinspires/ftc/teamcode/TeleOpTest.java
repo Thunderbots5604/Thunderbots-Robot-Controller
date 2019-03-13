@@ -35,6 +35,7 @@ public class TeleOpTest extends LinearOpMode {
     private boolean reversed = false;
     private boolean halfSpeed = false;
     private double multiplier = 1;
+    private boolean moved = false;
 
     @Override
     public void runOpMode() {
@@ -209,7 +210,7 @@ public class TeleOpTest extends LinearOpMode {
 
 
             if ((gamepad1.y || gamepad2.y) && elevator.getPosition() == .15) {
-                elevator.setPosition(.7);
+                elevator.setPosition(.8);
             }
             else if ((gamepad1.y || gamepad2.y) && elevator.getPosition() == .8) {
                 elevator.setPosition(.15);
@@ -222,11 +223,17 @@ public class TeleOpTest extends LinearOpMode {
             if (gamepad1.dpad_left || gamepad2.dpad_left) {
                 box1.setPower(-1);
                 box2.setPower(1);
+                //moved = true;
             }
             else if (gamepad1.dpad_right || gamepad2.dpad_right) {
                 box1.setPower(1);
                 box2.setPower(-1);
+                //moved = false;
             }
+            /*else if (moved == true) {
+                box1.setPower(.05);
+                box2.setPower(-.05);
+            }*/
             else {
                 box1.setPower(0);
                 box2.setPower(0);
