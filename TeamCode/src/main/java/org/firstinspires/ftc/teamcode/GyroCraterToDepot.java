@@ -37,7 +37,7 @@ public class GyroCraterToDepot extends GodfatherOfAllAutonomous {
             sleep(cooldown);
             turnLeft(90, allPower);
             sleep(cooldown);
-            runTo(37, allPower);
+            runTo(39, allPower);
             sleep(cooldown);
             turnLeft(70, allPower);
             sleep(cooldown);
@@ -60,9 +60,9 @@ public class GyroCraterToDepot extends GodfatherOfAllAutonomous {
             sleep(cooldown);
             turnLeft(60, allPower);
             sleep(cooldown);
-            runTo(39, allPower);
+            runTo(40, allPower);
             sleep(cooldown);
-            turnLeft(75, allPower);
+            turnLeft(70, allPower);
             sleep(cooldown);
             runTo(50, allPower);
             dropMarker();
@@ -73,7 +73,7 @@ public class GyroCraterToDepot extends GodfatherOfAllAutonomous {
             telemetry.update();
             runTo(5, allPower);
             sleep(cooldown);
-            turnLeft(75, allPower);
+            turnLeft(77, allPower);
             sleep(cooldown);
             runTo(20, allPower);
             sleep(cooldown);

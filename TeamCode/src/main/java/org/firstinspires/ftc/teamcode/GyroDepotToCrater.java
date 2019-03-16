@@ -24,7 +24,7 @@ public class GyroDepotToCrater extends GyroDepot {
             dropMarker();
             runTo(10, allPower);
             sleep(cooldown);
-            turnRight(135, allPower);
+            turnRight(130, allPower);
             sleep(cooldown);
             runTo(-80, allPower);
 
@@ -32,10 +32,10 @@ public class GyroDepotToCrater extends GyroDepot {
         else if (location == 1) {
             telemetry.addLine("middle");
             telemetry.update();
-            runTo(10, allPower);
+            runTo(5, allPower);
             dropMarker();
             sleep(cooldown);
-            turnRight(75, allPower);
+            turnRight(85, allPower);
             sleep(cooldown);
             runTo(-80, allPower);
 
@@ -44,7 +44,7 @@ public class GyroDepotToCrater extends GyroDepot {
             telemetry.addLine("left");
             telemetry.update();
 
-            turnRight(15, allPower);
+            turnRight(5, allPower);
             dropMarker();
             sleep(cooldown);
             runTo(-80, allPower);

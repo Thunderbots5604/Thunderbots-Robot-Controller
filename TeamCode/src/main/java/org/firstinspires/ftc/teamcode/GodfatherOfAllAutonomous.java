@@ -197,18 +197,24 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
         List<Recognition> updatedRecognitions = null;
         location = 0;
         runtime.reset();
-        while(objects != 3 && objects != 2 && runtime.seconds() < 5) {
+        while(objects != 3 && objects != 2 && runtime.seconds() < 6) {
             updatedRecognitions = tfod.getUpdatedRecognitions();
             if(updatedRecognitions != null) {
                 objects = updatedRecognitions.size();
             }
         }
+        if (objects == 1) {
+            updatedRecognitions = tfod.getUpdatedRecognitions();
+        }
         boolean silverDetected = false;
+        boolean goldDetected = false;
         if (updatedRecognitions != null) {
             if (updatedRecognitions.size() == 3) {
                 for (Recognition r : updatedRecognitions) {
-                    if (r.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                    if (r.getLabel().equals(LABEL_GOLD_MINERAL) && goldDetected == false) {
                         goldPosition = (int) r.getTop();
+                        goldDetected = true;
+
                     } else if (r.getLabel().equals(LABEL_SILVER_MINERAL) && silverDetected == false){
                         silverOnePosition = (int) r.getTop();
                         silverDetected = true;
@@ -217,60 +223,148 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
                         silverTwoPosition = (int) r.getTop();
                     }
                 }
+                if (goldPosition > silverOnePosition && goldPosition > silverTwoPosition) {
+                    telemetry.addLine("Gold Mineral is on Right");
+                    telemetry.addData("Gold Top", goldPosition);
+                    telemetry.addData("Silver One Top", silverOnePosition);
+                    telemetry.addData("Silver Two Top", silverTwoPosition);
+                    location = 2;
+                } else if ((goldPosition > silverOnePosition && goldPosition < silverTwoPosition) || (goldPosition > silverTwoPosition && goldPosition < silverOnePosition)) {
+                    telemetry.addLine("Gold Mineral is Center");
+                    telemetry.addData("Gold Top", goldPosition);
+                    telemetry.addData("Silver One Top", silverOnePosition);
+                    telemetry.addData("Silver Two Top", silverTwoPosition);
+                    location = 1;
+                } else if (goldPosition < silverOnePosition && goldPosition < silverTwoPosition) {
+                    telemetry.addLine("Gold Mineral is on Left");
+                    telemetry.addData("Gold Top", goldPosition);
+                    telemetry.addData("Silver One Top", silverOnePosition);
+                    telemetry.addData("Silver Two Top", silverTwoPosition);
+                    location = 0;
+                }
             }
-            else if (updatedRecognitions.size() == 2) {
+            else if(updatedRecognitions.size() == 2){
                 for (Recognition r : updatedRecognitions) {
-                    if (r.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                    if (r.getLabel().equals(LABEL_GOLD_MINERAL) && goldDetected == false) {
                         goldPosition = (int) r.getTop();
                     }
-                    else if (r.getLabel().equals(LABEL_SILVER_MINERAL)){
+                    else if (r.getLabel().equals(LABEL_SILVER_MINERAL) && silverDetected == false){
                         silverOnePosition = (int) r.getTop();
+                        silverDetected = true;
+                    }
+                    else {
+                        silverTwoPosition = (int) r.getTop();
+                    }
+                }
+                if (goldPosition != 0) {
+                    if(goldPosition > 800) {
+                        telemetry.addLine("Gold Mineral is on Right");
+                        telemetry.addData("Silver One Top", silverOnePosition);
+                        telemetry.addData("Silver Two Top", silverTwoPosition);
+                        location = 2;
+                    }
+                    else if (goldPosition < 800 && goldPosition > 400) {
+                        telemetry.addLine("Gold Mineral is on Center");
+                        telemetry.addData("Gold Top", goldPosition);
+                        telemetry.addData("Silver Top", silverOnePosition);
+                        location = 1;
+                    }
+                    else if (goldPosition < 400) {
+                        telemetry.addLine("Gold Mineral is on Left");
+                        telemetry.addData("Gold Top", goldPosition);
+                        telemetry.addData("Silver Top", silverOnePosition);
+                        location = 0;
+                    }
+                }
+                else {
+                    if(silverOnePosition > 800 && silverTwoPosition < 800 && silverTwoPosition > 400) {
+                        telemetry.addLine("Gold Mineral is on Left");
+                        telemetry.addData("Gold Top", goldPosition);
+                        telemetry.addData("Silver Top", silverOnePosition);
+                        location = 0;
+                    }
+                    else if (silverOnePosition > 800 && silverTwoPosition < 400) {
+                        telemetry.addLine("Gold Mineral is on Center");
+                        telemetry.addData("Gold Top", goldPosition);
+                        telemetry.addData("Silver Top", silverOnePosition);
+                        location = 1;
+                    }
+                    else if (silverOnePosition < 800 && silverOnePosition > 400 && silverTwoPosition > 800) {
+                        telemetry.addLine("Gold Mineral is on Left");
+                        telemetry.addData("Gold Top", goldPosition);
+                        telemetry.addData("Silver Top", silverOnePosition);
+                        location = 0;
+                    }
+                    else if(silverOnePosition < 800 && silverOnePosition > 400 && silverTwoPosition < 400) {
+                        telemetry.addLine("Gold Mineral is on Right");
+                        telemetry.addData("Silver One Top", silverOnePosition);
+                        telemetry.addData("Silver Two Top", silverTwoPosition);
+                        location = 2;
+                    }
+                    else if (silverOnePosition < 400 && silverTwoPosition < 800 && silverTwoPosition > 400) {
+                        telemetry.addLine("Gold Mineral is on Right");
+                        telemetry.addData("Silver One Top", silverOnePosition);
+                        telemetry.addData("Silver Two Top", silverTwoPosition);
+                        location = 2;
+                    }
+                    else if (silverOnePosition < 400 && silverTwoPosition > 800) {
+                        telemetry.addLine("Gold Mineral is on Center");
+                        telemetry.addData("Gold Top", goldPosition);
+                        telemetry.addData("Silver Top", silverOnePosition);
+                        location = 1;
+                    }
+                }
+
+
+
+
+                /*
+                if (goldPosition == 0 && silverOnePosition != 0 && silverTwoPosition != 0) {
+                    telemetry.addLine("Gold Mineral is on Right");
+                    telemetry.addData("Silver One Top", silverOnePosition);
+                    telemetry.addData("Silver Two Top", silverTwoPosition);
+                    location = 2;
+                }
+                else if (goldPosition > silverOnePosition) {
+                    telemetry.addLine("Gold Mineral is on Center");
+                    telemetry.addData("Gold Top", goldPosition);
+                    telemetry.addData("Silver Top", silverOnePosition);
+                    location = 1;
+                }
+                else if (goldPosition < silverOnePosition) {
+                    telemetry.addLine("Gold Mineral is on Left");
+                    telemetry.addData("Gold Top", goldPosition);
+                    telemetry.addData("Silver Top", silverOnePosition);
+                    location = 0;
+                }*/
+            }
+            else if(updatedRecognitions.size() == 1) {
+                for(Recognition r: updatedRecognitions) {
+                    if(r.getLabel() == LABEL_GOLD_MINERAL) {
+                        goldPosition = (int) r.getTop();
+                    }
+                }
+                if(goldPosition != 0) {
+                    if(goldPosition > 800) {
+                        telemetry.addLine("Gold Mineral is on Right");
+                        telemetry.addData("Gold Top", goldPosition);
+                        location = 2;
+                    }
+                    else if(goldPosition < 800 && goldPosition > 400) {
+                        telemetry.addLine("Gold Mineral is on Center");
+                        telemetry.addData("Gold Top", goldPosition);
+                        location = 1;
+                    }
+                    else if (goldPosition < 400) {
+                        telemetry.addLine("Gold Mineral is on Left");
+                        telemetry.addData("Gold Top", goldPosition);
+                        location = 0;
                     }
                 }
             }
         }
+        telemetry.addData("Array: ", updatedRecognitions);
 
-        if (objects == 3) {
-            if (goldPosition > silverOnePosition && goldPosition > silverTwoPosition) {
-                telemetry.addLine("Gold Mineral is on Right");
-                telemetry.addData("Gold Top", goldPosition);
-                telemetry.addData("Silver One Top", silverOnePosition);
-                telemetry.addData("Silver Two Top", silverTwoPosition);
-                location = 2;
-            } else if ((goldPosition > silverOnePosition && goldPosition < silverTwoPosition) || (goldPosition > silverTwoPosition && goldPosition < silverOnePosition)) {
-                telemetry.addLine("Gold Mineral is Center");
-                telemetry.addData("Gold Top", goldPosition);
-                telemetry.addData("Silver One Top", silverOnePosition);
-                telemetry.addData("Silver Two Top", silverTwoPosition);
-                location = 1;
-            } else if (goldPosition < silverOnePosition && goldPosition < silverTwoPosition) {
-                telemetry.addLine("Gold Mineral is on Left");
-                telemetry.addData("Gold Top", goldPosition);
-                telemetry.addData("Silver One Top", silverOnePosition);
-                telemetry.addData("Silver Two Top", silverTwoPosition);
-                location = 0;
-            }
-        }
-        else if (objects == 2) {
-            if (goldPosition == 0) {
-                telemetry.addLine("Gold Mineral is on Right");
-                telemetry.addData("Gold Top", goldPosition);
-                telemetry.addData("Silver Top", silverOnePosition);
-                location = 2;
-            }
-            else if (goldPosition > silverOnePosition) {
-                telemetry.addLine("Gold Mineral is on Center");
-                telemetry.addData("Gold Top", goldPosition);
-                telemetry.addData("Silver Top", silverOnePosition);
-                location = 1;
-            }
-            else {
-                telemetry.addLine("Gold Mineral is on Left");
-                telemetry.addData("Gold Top", goldPosition);
-                telemetry.addData("Silver Top", silverOnePosition);
-                location = 0;
-            }
-        }
 
         telemetry.update();
         tfod.shutdown();
@@ -477,16 +571,15 @@ public class GodfatherOfAllAutonomous extends LinearOpMode {
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             heading = formatAngle(angles.angleUnit, angles.firstAngle);
         }
-        turn = ((Math.abs(45 + heading))*1.1);
+        turn = ((Math.abs(39 + heading))*1.1);
         telemetry.addData("Runtime", runtime.milliseconds());
         telemetry.addData("Heading: ", heading);
         telemetry.addData("Turning: ", turn);
         telemetry.update();
         sleep(500);
-        if (heading > -45) {
+        if (heading > -39.0) {
             turnRight(turn, allPower);
-        }
-        else if (heading < -45) {
+        } else if (heading < -39.0) {
             turnLeft(turn, allPower);
         }
     }

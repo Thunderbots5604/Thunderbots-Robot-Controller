@@ -49,7 +49,7 @@ public class GyroDepot extends GodfatherOfAllAutonomous {
             sleep(cooldown);
             turnLeft(40, allPower);
             sleep(cooldown);
-            runTo(30, allPower);
+            runTo(32, allPower);
         }
         else if (location == 0){
             telemetry.addLine("left");
@@ -60,7 +60,7 @@ public class GyroDepot extends GodfatherOfAllAutonomous {
             sleep(cooldown);
             runTo(38, allPower);
             sleep(cooldown);
-            turnRight(143, allPower);
+            turnRight(136, allPower);
             sleep(cooldown);
             runTo(22, allPower);
         }
