@@ -1,4 +1,4 @@
-s## TeamCode Module
+## TeamCode Module
 
 Welcome!
 
