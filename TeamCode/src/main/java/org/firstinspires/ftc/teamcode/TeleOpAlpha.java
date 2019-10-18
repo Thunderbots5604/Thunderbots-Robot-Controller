@@ -20,8 +20,8 @@ public class TeleOpAlpha extends LinearOpMode {
     private DcMotor leftMotorBack = null;
     private DcMotor rightMotorFront = null;
     private DcMotor rightMotorBack = null;
-    private CRServo clawServo = null;
-    private CRServo armServo = null;
+    private Servo clawServo = null;
+    private Servo armServo = null;
 
     private boolean reversed = false;
     private boolean halfSpeed = false;
@@ -29,24 +29,28 @@ public class TeleOpAlpha extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
 
 
         leftMotorFront = hardwareMap.get(DcMotor.class, "left_motor_front");
         leftMotorBack = hardwareMap.get(DcMotor.class, "left_motor_back");
         rightMotorFront = hardwareMap.get(DcMotor.class, "right_motor_front");
         rightMotorBack = hardwareMap.get(DcMotor.class, "right_motor_back");
-        clawServo = hardwareMap.get(CRServo.class, "claw_servo");
-        armServo = hardwareMap.get(CRServo.class, "arm_servo")
+        clawServo = hardwareMap.get(Servo.class, "claw_servo");
+        armServo = hardwareMap.get(Servo.class, "arm_servo");
 
         leftMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        //armServo.setDirection(0);
-        //clawServo.setDirection(0);
+        armServo.setPosition(0);
+        clawServo.setPosition(0);
+
+        armServo.getDirection();
+        clawServo.getDirection();
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
 
         waitForStart();
+
         cooldown.reset();
         armCooldown.reset();
         while (opModeIsActive()) {
@@ -56,8 +60,8 @@ public class TeleOpAlpha extends LinearOpMode {
             telemetry.addData("Right Front Power: ", rightMotorFront.getPower());
             telemetry.addData("Right Back Power: ", rightMotorBack.getPower());
             telemetry.addData("Reversed: ", reversed);
-            telemetry.addData("Claw Servo", clawServo.getDirection());
-            telemetry.addData("Arm Servo", armServo.getDirection());
+            telemetry.addData("Claw Servo", clawServo.getPosition());
+            telemetry.addData("Arm Servo", armServo.getPosition());
             telemetry.update();
 
             if(gamepad1.b && cooldown.seconds() > .5) {
@@ -129,23 +133,23 @@ public class TeleOpAlpha extends LinearOpMode {
                 rightMotorBack.setPower(0);
             }
             //Claw closing and arm upping
-            /*if (gamepad1.right_bumper && !gamepad1.left_bumper && armCooldown.seconds() > 2) {
+            if (gamepad1.right_bumper && !gamepad1.left_bumper && armCooldown.seconds() > 2) {
                 armCooldown.reset();
-                armServo.setDirection(90);
+                armServo.setPosition(90);
                 sleep(500);
-                clawServo.setDirection(90);
+                clawServo.setPosition(90);
                 sleep(500);
-                armServo.setDirection(0);
+                armServo.setPosition(0);
             }
             //Claw opening and arm downing
             else if (!gamepad1.right_bumper && gamepad1.left_bumper && armCooldown.seconds() > 2) {
                 armCooldown.reset();
-                armServo.setDirection(90);
+                armServo.setPosition(90);
                 sleep(500);
-                clawServo.setDirection(0);
+                clawServo.setPosition(0);
                 sleep(500);
-                armServo.setDirection(0);
-            }*/
+                armServo.setPosition(0);
+            }
 
         }
         leftMotorFront.setPower(0);
