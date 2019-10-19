@@ -150,7 +150,6 @@ public class TeleOpAlpha extends LinearOpMode {
                 sleep(500);
                 armServo.setPosition(0);
             }
-
         }
         leftMotorFront.setPower(0);
         leftMotorBack.setPower(0);

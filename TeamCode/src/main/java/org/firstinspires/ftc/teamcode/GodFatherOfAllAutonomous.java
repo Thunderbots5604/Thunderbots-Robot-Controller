@@ -23,8 +23,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-
 import java.util.List;
+
 @Disabled
 @Autonomous(name="No Use", group="Autonomous Competition")
 public class GodFatherOfAllAutonomous extends LinearOpMode {
@@ -35,6 +35,9 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public DcMotor leftMotorBack = null;
     public DcMotor rightMotorFront = null;
     public DcMotor rightMotorBack = null;
+    private Servo clawServo = null;
+    private Servo armServo = null;
+    private ElapsedTime armCooldown = new ElapsedTime();
 
     public final float TICKS_PER_INCH = 42.99308433F;
     public final float TICKS_PER_DEGREE = 7.889583333F;
@@ -44,7 +47,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public int objects = 0;
     public static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     public static final String LABEL_SKYSTONE = "Skystone";
-    public static final String LABEL_BLOCK = "Block";
+    public static final String LABEL_BLOCK = "Stone";
 
     public static final String VUFORIA_KEY = "AfDTG3b/////AAABmQnAWkqPDkVztdcIurPa8w5lO6BWlTpltO5r1m4s9oA9w3cfFdIBqJ4rjZB0We4YHcRMdc5LkWwOvJk+xcDr2VFpLP8m6zEqLWlrVNQvBnNxmGO8BeZ+xRQeQ34AgPhrqQQqeheWJbfoOn+lekIz2ZMm9f+j+1ng/X0vKDHyFGfxbtXbJuUx4Qh6E3t0esH0b3VQtbuJiOOTpWi9xFAqBsHWp+DQbwub+a6HZV5q42OabnOAyr0GZ7u1vJZs+I/Vlnf7qEMLD4RTIYA5OmMyzOdl5aikZqDSgG223ETSwcbwd3QFKewYE3oXXxkpI0vmsxCiaqBJ1oL9e6n0RXbC8Zdvn2VYwh6oSemcpp+fSjGa";
 
@@ -55,6 +58,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public double allPower = .65;
 
     public BNO055IMU imu;
+
     public Orientation angles;
 
     @Override
@@ -165,10 +169,14 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                 telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
                 telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
                 telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
+                telemetry.addData("Left Motor Front Power", leftMotorFront.getPower());
+                telemetry.addData("Left Motor Back Power", leftMotorBack.getPower());
+                telemetry.addData("Right Motor Front Power", rightMotorFront.getPower());
+                telemetry.addData("Right Motor Back Power", rightMotorBack.getPower());
                 telemetry.update();
                 leftMotorFront.setPower(power);
-                leftMotorBack.setPower(-power);
-                rightMotorFront.setPower(-power);
+                leftMotorBack.setPower(power);
+                rightMotorFront.setPower(power);
                 rightMotorBack.setPower(power);
             }
             leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -185,8 +193,8 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                 telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
                 telemetry.update();
                 leftMotorFront.setPower(-power);
-                leftMotorBack.setPower(power);
-                rightMotorFront.setPower(power);
+                leftMotorBack.setPower(-power);
+                rightMotorFront.setPower(-power);
                 rightMotorBack.setPower(-power);
             }
             leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -215,10 +223,10 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
             telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
             telemetry.update();
-            leftMotorFront.setPower(-power);
+            leftMotorFront.setPower(power);
             leftMotorBack.setPower(power);
             rightMotorFront.setPower(-power);
-            rightMotorBack.setPower(power);
+            rightMotorBack.setPower(-power);
         }
         leftMotorFront.setPower(0);
         leftMotorBack.setPower(0);
@@ -245,10 +253,10 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
             telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
             telemetry.update();
-            leftMotorFront.setPower(power);
+            leftMotorFront.setPower(-power);
             leftMotorBack.setPower(-power);
             rightMotorFront.setPower(power);
-            rightMotorBack.setPower(-power);
+            rightMotorBack.setPower(power);
         }
         leftMotorFront.setPower(0);
         leftMotorBack.setPower(0);
@@ -265,6 +273,8 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         leftMotorBack = hardwareMap.get(DcMotor.class, "left_motor_back");
         rightMotorFront = hardwareMap.get(DcMotor.class, "right_motor_front");
         rightMotorBack = hardwareMap.get(DcMotor.class, "right_motor_back");
+        clawServo = hardwareMap.get(Servo.class, "claw_servo");
+        armServo = hardwareMap.get(Servo.class, "arm_servo");
 
         leftMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -286,5 +296,21 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     }
     public double formatAngle(AngleUnit angleUnit, double angle) {
         return AngleUnit.DEGREES.fromUnit(angleUnit, angle);
+    }
+    public void armDown () {
+        armCooldown.reset();
+        armServo.setPosition(90);
+        sleep(500);
+        clawServo.setPosition(0);
+        sleep(500);
+        armServo.setPosition(0);
+    }
+    public void armUp () {
+        armCooldown.reset();
+        armServo.setPosition(90);
+        sleep(500);
+        clawServo.setPosition(90);
+        sleep(500);
+        armServo.setPosition(0);
     }
 }
