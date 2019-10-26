@@ -106,6 +106,8 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         int objects = 0;
         int[] skystoneLocation = {1, 2};
         int blocksTested = 0;
+        boolean skystone1Detected = false;
+        boolean skystone2Detected = false;
 
         List<Recognition> updatedRecognitions = null;
         runtime.reset();
@@ -118,7 +120,6 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         if (objects != 6) {
             updatedRecognitions = tfod.getUpdatedRecognitions();
         }
-        boolean skystone1Detected = false;
         if (updatedRecognitions != null) {
                 for (Recognition r : updatedRecognitions) {
                     if (r.getLabel().equals(LABEL_SKYSTONE) && !skystone1Detected) {
@@ -127,27 +128,37 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
 
                     } else if (r.getLabel().equals(LABEL_SKYSTONE) && skystone1Detected){
                         skystone2Position = (int) r.getTop();
+                        skystone2Detected = true;
                     }
                     else {
                         blockPositions[blocksDetected] = (int) r.getTop();
                         blocksDetected += 1;
                     }
                 }
+                //If both skystones detected
+                if (skystone2Detected) {
+                    if (skystone1Position < skystone2Position) {
+                        int skystone1PositionSub = skystone1Position;
+                        skystone1Position = skystone2Position;
+                        skystone2Position = skystone1PositionSub;
+                    }
+                    // Locate blocks
+
+                }
+                //If only one skystone block found
+                else if (skystone1Detected && !skystone2Detected) {
+                    for (blocksTested = 0; blocksDetected > blocksTested; blocksTested++) {
+                        if (blockPositions[blocksTested] > skystone1Position) {
+                            skystoneLocation[0] += 1;
+                        }
+                            skystoneLocation[1] = 6;
+                    }
+                }
+                else {
+                    skystoneLocation[0] = 5;
+                    skystoneLocation[1] = 6;
+                }
                 //Make Skystone 1 on top
-                if (skystone1Position < skystone2Position) {
-                    int skystone1PositionSub = skystone1Position;
-                    skystone1Position = skystone2Position;
-                    skystone2Position = skystone1PositionSub;
-                }
-                // Locate blocks
-                for (blocksTested = 0; blocksDetected > blocksTested; blocksTested++) {
-                    if (blockPositions[blocksTested] > skystone1Position) {
-                        skystoneLocation[0] += 1;
-                    }
-                    if (blockPositions[blocksTested] > skystone2Position) {
-                        skystoneLocation[1] += 1;
-                    }
-                }
         }
 
         telemetry.addData("Array: ", updatedRecognitions);
@@ -161,9 +172,13 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         int targetPosition = (int)(inches * TICKS_PER_INCH);
         if (inches > 0) {
-            while ((leftMotorBack.getCurrentPosition() < targetPosition) && (rightMotorBack.getCurrentPosition() > -targetPosition)) {
+            while ((leftMotorBack.getCurrentPosition() < targetPosition) && (rightMotorBack.getCurrentPosition() > -targetPosition) && opModeIsActive()) {
                 telemetry.addData("Target Position", targetPosition);
                 telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
                 telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
@@ -179,13 +194,9 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                 rightMotorFront.setPower(power);
                 rightMotorBack.setPower(power);
             }
-            leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
         else {
-            while ((leftMotorBack.getCurrentPosition() > targetPosition) && (rightMotorBack.getCurrentPosition() > targetPosition)) {
+            while ((leftMotorBack.getCurrentPosition() > targetPosition) && (rightMotorBack.getCurrentPosition() > targetPosition) && opModeIsActive()) {
                 telemetry.addData("Target Position", targetPosition);
                 telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
                 telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
@@ -197,15 +208,15 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                 rightMotorFront.setPower(-power);
                 rightMotorBack.setPower(-power);
             }
-            leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
         leftMotorFront.setPower(0);
         leftMotorBack.setPower(0);
         rightMotorFront.setPower(0);
         rightMotorBack.setPower(0);
+        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
     public void turnLeft(double degrees, double power) {
 
@@ -213,20 +224,24 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         int targetTurn = (int)(degrees * TICKS_PER_DEGREE);
 
-        while ((leftMotorFront.getCurrentPosition() < targetTurn) && (rightMotorBack.getCurrentPosition() > -targetTurn)) {
+        while ((leftMotorFront.getCurrentPosition() > targetTurn) && (rightMotorBack.getCurrentPosition() < targetTurn) && opModeIsActive()) {
             telemetry.addData("Target Position", targetTurn);
             telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
             telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
             telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
             telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
             telemetry.update();
-            leftMotorFront.setPower(power);
-            leftMotorBack.setPower(power);
-            rightMotorFront.setPower(-power);
-            rightMotorBack.setPower(-power);
+            leftMotorFront.setPower(-power);
+            leftMotorBack.setPower(-power);
+            rightMotorFront.setPower(power);
+            rightMotorBack.setPower(power);
         }
         leftMotorFront.setPower(0);
         leftMotorBack.setPower(0);
@@ -243,20 +258,24 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         int targetTurn = (int)(degrees * TICKS_PER_DEGREE);
 
-        while ((leftMotorFront.getCurrentPosition() > -targetTurn) && (rightMotorBack.getCurrentPosition() < targetTurn)) {
+        while ((leftMotorFront.getCurrentPosition() < targetTurn) && (rightMotorBack.getCurrentPosition() > targetTurn) && opModeIsActive()) {
             telemetry.addData("Target Position", targetTurn);
             telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
             telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
             telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
             telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
             telemetry.update();
-            leftMotorFront.setPower(-power);
-            leftMotorBack.setPower(-power);
-            rightMotorFront.setPower(power);
-            rightMotorBack.setPower(power);
+            leftMotorFront.setPower(power);
+            leftMotorBack.setPower(power);
+            rightMotorFront.setPower(-power);
+            rightMotorBack.setPower(-power);
         }
         leftMotorFront.setPower(0);
         leftMotorBack.setPower(0);
@@ -292,25 +311,32 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
-        allPower = allPower;
+        leftMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
     }
+
     public double formatAngle(AngleUnit angleUnit, double angle) {
         return AngleUnit.DEGREES.fromUnit(angleUnit, angle);
     }
+
     public void armDown () {
-        armCooldown.reset();
-        armServo.setPosition(90);
-        sleep(500);
-        clawServo.setPosition(0);
-        sleep(500);
-        armServo.setPosition(0);
+        while (opModeIsActive) {
+            armCooldown.reset();
+            armServo.setPosition(90);
+            sleep(500);
+            clawServo.setPosition(0);
+            sleep(500);
+            armServo.setPosition(0);
+        }
     }
     public void armUp () {
-        armCooldown.reset();
-        armServo.setPosition(90);
-        sleep(500);
-        clawServo.setPosition(90);
-        sleep(500);
-        armServo.setPosition(0);
+        while (opModeIsActive) {
+            armCooldown.reset();
+            armServo.setPosition(90);
+            sleep(500);
+            clawServo.setPosition(90);
+            sleep(500);
+            armServo.setPosition(0);
+        }
     }
 }
