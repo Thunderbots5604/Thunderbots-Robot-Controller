@@ -63,8 +63,9 @@ public class VuforiaTest extends GodFatherOfAllAutonomous {
             telemetry.addData("Skystone: ", skystone1Position);
             telemetry.addData("Block: ", blockPosition);
             telemetry.update();
+            sleep(1000000);
             tfod.shutdown();
-            sleep()
+            sleep(1000000000);
         }
     }
 }

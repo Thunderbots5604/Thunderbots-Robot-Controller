@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
+
 @TeleOp(name="TeleOpAlpha", group="Linear Opmode")
 public class TeleOpAlpha extends LinearOpMode {
 
@@ -91,40 +92,40 @@ public class TeleOpAlpha extends LinearOpMode {
             //Point Turn
             //If right stick is moving on the x axis
             else if (gamepad1.left_stick_y == 0 && gamepad1.right_stick_x != 0) {
-                leftMotorFront.setPower(multiplier * gamepad1.right_stick_x);
-                leftMotorBack.setPower(multiplier * gamepad1.right_stick_x);
-                rightMotorFront.setPower(multiplier * gamepad1.right_stick_x);
-                rightMotorBack.setPower(multiplier * gamepad1.right_stick_x);
+                leftMotorFront.setPower(Math.abs(multiplier) * gamepad1.right_stick_x);
+                leftMotorBack.setPower(Math.abs(multiplier) * gamepad1.right_stick_x);
+                rightMotorFront.setPower(-Math.abs(multiplier) * gamepad1.right_stick_x);
+                rightMotorBack.setPower(-Math.abs(multiplier) * gamepad1.right_stick_x);
             }
 
             //Swerve Turn
             //Left Turn
             else if (gamepad1.left_stick_y != 0 && gamepad1.right_stick_x < 0 && !reversed) {
-                leftMotorFront.setPower(0);
-                leftMotorBack.setPower(0);
-                rightMotorFront.setPower(multiplier * gamepad1.right_stick_x / 2 + gamepad1.left_stick_y / 2);
-                rightMotorBack.setPower(multiplier * gamepad1.right_stick_x / 2 + gamepad1.left_stick_y / 2);
+                leftMotorFront.setPower(multiplier * (gamepad1.right_stick_x / 4 + gamepad1.left_stick_y / 4));
+                leftMotorBack.setPower(multiplier * (gamepad1.right_stick_x / 4 + gamepad1.left_stick_y / 4));
+                rightMotorFront.setPower(multiplier * (gamepad1.right_stick_x / 2 + gamepad1.left_stick_y / 2));
+                rightMotorBack.setPower(multiplier * (gamepad1.right_stick_x / 2 + gamepad1.left_stick_y / 2));
             }
             //Right Turn
-            else if (gamepad1.left_stick_y > 0 && gamepad1.right_stick_x < 0 && !reversed) {
-                leftMotorFront.setPower(multiplier * gamepad1.right_stick_x / 2 + gamepad1.right_stick_x / 2);
-                leftMotorBack.setPower(multiplier * gamepad1.right_stick_x / 2 + gamepad1.right_stick_y / 2);
-                rightMotorFront.setPower(0);
-                rightMotorBack.setPower(0);
+            else if (gamepad1.left_stick_y != 0 && gamepad1.right_stick_x > 0 && !reversed) {
+                leftMotorFront.setPower(multiplier * (gamepad1.right_stick_x / 2 + gamepad1.left_stick_y / 2));
+                leftMotorBack.setPower(multiplier * (gamepad1.right_stick_x / 2 + gamepad1.left_stick_y / 2));
+                rightMotorFront.setPower(multiplier * (gamepad1.right_stick_x / 4 + gamepad1.left_stick_y / 4));
+                rightMotorBack.setPower(multiplier * (gamepad1.right_stick_x / 4 + gamepad1.left_stick_y / 4));
             }
             //Reverse Left Turn
-            else if (gamepad1.left_stick_y > 0 && gamepad1.right_stick_x < 0 && reversed) {
-                rightMotorFront.setPower(0);
-                rightMotorBack.setPower(0);
-                leftMotorFront.setPower(multiplier * gamepad1.right_stick_x / 2 + gamepad1.left_stick_y / 2);
-                leftMotorBack.setPower(multiplier * gamepad1.right_stick_x / 2 + gamepad1.left_stick_y / 2);
+            else if (gamepad1.left_stick_y != 0 && gamepad1.right_stick_x > 0 && reversed) {
+                leftMotorFront.setPower(-multiplier * (gamepad1.right_stick_x / 4 + gamepad1.left_stick_y / 4));
+                leftMotorBack.setPower(-multiplier * (gamepad1.right_stick_x / 4 + gamepad1.left_stick_y / 4));
+                rightMotorFront.setPower(-multiplier * (gamepad1.right_stick_x / 2 + gamepad1.left_stick_y / 2));
+                rightMotorBack.setPower(-multiplier * (gamepad1.right_stick_x / 2 + gamepad1.left_stick_y / 2));
             }
             //Reverse Right Turn
-            else if (gamepad1.left_stick_y > 0 && gamepad1.right_stick_x < 0 && reversed) {
-                rightMotorFront.setPower(multiplier * gamepad1.right_stick_x / 2 + gamepad1.right_stick_y / 2);
-                rightMotorBack.setPower(multiplier * gamepad1.right_stick_x / 2+ gamepad1.right_stick_y / 2);
-                leftMotorFront.setPower(0);
-                leftMotorBack.setPower(0);
+            else if (gamepad1.left_stick_y != 0 && gamepad1.right_stick_x < 0 && reversed) {
+                leftMotorFront.setPower(-multiplier * (gamepad1.right_stick_x / 2 + gamepad1.left_stick_y / 2));
+                leftMotorBack.setPower(-multiplier * (gamepad1.right_stick_x / 2 + gamepad1.left_stick_y / 2));
+                rightMotorFront.setPower(-multiplier * (gamepad1.right_stick_x / 4 + gamepad1.left_stick_y / 4));
+                rightMotorBack.setPower(-multiplier * (gamepad1.right_stick_x / 4 + gamepad1.left_stick_y / 4));
             }
             else {
                 leftMotorFront.setPower(0);

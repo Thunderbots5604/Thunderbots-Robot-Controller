@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -109,7 +110,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         boolean skystone1Detected = false;
         boolean skystone2Detected = false;
 
-        List<Recognition> updatedRecognitions = null;
+        List <Recognition> updatedRecognitions = null;
         runtime.reset();
         while(objects != 6 && runtime.seconds() < 6) {
             updatedRecognitions = tfod.getUpdatedRecognitions();
@@ -117,50 +118,58 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                 objects = updatedRecognitions.size();
             }
         }
-        if (objects != 6) {
-            updatedRecognitions = tfod.getUpdatedRecognitions();
-        }
+        sleep(500);
+        updatedRecognitions = tfod.getUpdatedRecognitions();
+        objects = updatedRecognitions.size();
         if (updatedRecognitions != null) {
-                for (Recognition r : updatedRecognitions) {
-                    if (r.getLabel().equals(LABEL_SKYSTONE) && !skystone1Detected) {
-                        skystone1Position = (int) r.getTop();
-                        skystone1Detected = true;
+            for (Recognition r : updatedRecognitions) {
+                if (r.getLabel().equals(LABEL_SKYSTONE) && !skystone1Detected) {
+                    skystone1Position = (int) r.getTop();
+                    skystone1Detected = true;
 
-                    } else if (r.getLabel().equals(LABEL_SKYSTONE) && skystone1Detected){
-                        skystone2Position = (int) r.getTop();
-                        skystone2Detected = true;
-                    }
-                    else {
-                        blockPositions[blocksDetected] = (int) r.getTop();
-                        blocksDetected += 1;
-                    }
-                }
-                //If both skystones detected
-                if (skystone2Detected) {
-                    if (skystone1Position < skystone2Position) {
-                        int skystone1PositionSub = skystone1Position;
-                        skystone1Position = skystone2Position;
-                        skystone2Position = skystone1PositionSub;
-                    }
-                    // Locate blocks
-
-                }
-                //If only one skystone block found
-                else if (skystone1Detected && !skystone2Detected) {
-                    for (blocksTested = 0; blocksDetected > blocksTested; blocksTested++) {
-                        if (blockPositions[blocksTested] > skystone1Position) {
-                            skystoneLocation[0] += 1;
-                        }
-                            skystoneLocation[1] = 6;
-                    }
+                } else if (r.getLabel().equals(LABEL_SKYSTONE) && skystone1Detected){
+                    skystone2Position = (int) r.getTop();
+                    skystone2Detected = true;
                 }
                 else {
-                    skystoneLocation[0] = 5;
-                    skystoneLocation[1] = 6;
+                    blockPositions[blocksDetected] = (int) r.getTop();
+                    blocksDetected += 1;
                 }
-                //Make Skystone 1 on top
+            }
+            //If both skystones detected
+            //Make Skystone 1 on top
+            if (skystone2Detected) {
+                if (skystone1Position < skystone2Position) {
+                    int skystone1PositionSub = skystone1Position;
+                    skystone1Position = skystone2Position;
+                    skystone2Position = skystone1PositionSub;
+                }// Locate blocks
+            }
+            //If both skystones found
+            if (skystone1Detected && skystone2Detected) {
+                for (blocksTested = 0; blocksDetected > blocksTested; blocksTested++) {
+                    if (blockPositions[blocksTested] > skystone1Position) {
+                        skystoneLocation[0] += 1;
+                    }
+                    if (blockPositions[blocksTested] > skystone2Position) {
+                        skystoneLocation[1] += 1;
+                    }
+                }
+            }
+            else if (skystone1Detected && !skystone2Detected) {
+                for (blocksTested = 0; blocksDetected > blocksTested; blocksTested++) {
+                    if (blockPositions[blocksTested] > skystone1Position) {
+                        skystoneLocation[0] += 1;
+                    }
+                }
+                skystoneLocation[1] = objects + 1;
+            }
+            //If neither skystone detected
+            else {
+                skystoneLocation[0] = objects + 1;
+                skystoneLocation[1] = objects + 2;
+            }
         }
-
         telemetry.addData("Array: ", updatedRecognitions);
         telemetry.update();
         tfod.shutdown();
@@ -320,7 +329,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     }
 
     public void armDown () {
-        while (opModeIsActive) {
+        while (opModeIsActive()) {
             armCooldown.reset();
             armServo.setPosition(90);
             sleep(500);
@@ -330,7 +339,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         }
     }
     public void armUp () {
-        while (opModeIsActive) {
+        while (opModeIsActive()) {
             armCooldown.reset();
             armServo.setPosition(90);
             sleep(500);

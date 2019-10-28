@@ -24,8 +24,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
-@Autonomous(name="Autonomous", group="Autonomous Competition")
-public class Auto extends GodFatherOfAllAutonomous {
+@Autonomous(name="Autonomous_blocks", group="Autonomous Competition")
+public class AutoBlock extends GodFatherOfAllAutonomous {
 
     @Override
     public void runOpMode() {
@@ -36,10 +36,10 @@ public class Auto extends GodFatherOfAllAutonomous {
 
         waitForStart();
 
-        picSkystone(skystone1);
+        pickSkystone(skystone1);
         runTo(-40,allPower);
-        turnRight(70, allPower)
-        picSkystone(skystone2);
+        turnRight(70, allPower);
+        pickSkystone(skystone2);
         runTo(-20, allPower);
     }
     public void pickSkystone(int skystone) {

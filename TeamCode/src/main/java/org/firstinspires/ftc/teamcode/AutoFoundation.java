@@ -24,8 +24,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
-@Autonomous(name="Autonomous on Foundation side", group="Autonomous Competition")
-public class AutoNothing extends GodFatherOfAllAutonomous {
+@Autonomous(name="Autonomous_Foundation", group="Autonomous Competition")
+public class AutoFoundation extends GodFatherOfAllAutonomous {
 
     @Override
     public void runOpMode() {
