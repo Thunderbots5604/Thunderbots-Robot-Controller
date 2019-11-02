@@ -24,32 +24,22 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
-@Autonomous(name="Autonomous_blocks", group="Autonomous Competition")
-public class AutoBlock extends GodFatherOfAllAutonomous {
+
+@Disabled
+@Autonomous(name="AutoTest", group="Autonomous Competition")
+public class AutoTest extends GodFatherOfAllAutonomous {
 
     @Override
     public void runOpMode() {
         initialization();
-        int[] skystoneLocation = objectDetect();
-        int skystone1 = skystoneLocation[0];
-        int skystone2 = skystoneLocation[1];
 
         waitForStart();
-
-        pickSkystone(skystone1);
-        runTo(-40,allPower);
-        turnRight(70, allPower);
-        pickSkystone(skystone2);
-        runTo(-20, allPower);
-    }
-    public void pickSkystone(int skystone) {
-        turnRight((skystone - 2) * 15, allPower);
-        runTo(skystone + 6, allPower);
-        armUp();
-        runTo( -6 - skystone, allPower);
-        turnLeft((skystone - 2) * 15, allPower);
-        turnLeft(70, allPower);
-        runTo(40, allPower);
+        telemetry.addData("Running","Running");
+        telemetry.update();
         armDown();
+        sleep(2000);
+        telemetry.addData("ran", "Ran");
+        telemetry.update();
+        armUp();
     }
 }

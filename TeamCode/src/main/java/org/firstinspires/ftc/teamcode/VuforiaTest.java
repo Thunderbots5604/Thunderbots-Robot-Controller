@@ -29,43 +29,12 @@ public class VuforiaTest extends GodFatherOfAllAutonomous {
 
     @Override
     public void runOpMode() {
-        initVuforia();
-        initTfod();
-
-        if (tfod != null) {
-            tfod.activate();
-        }
-
-        waitForStart();
-
-        int skystone1Position = 0;
-        int blockPosition = 0;
-
-        List<Recognition> updatedRecognitions = null;
-        runtime.reset();
-        while(objects == 0 && runtime.seconds() < 6) {
-            updatedRecognitions = tfod.getUpdatedRecognitions();
-            if(updatedRecognitions != null) {
-                objects = updatedRecognitions.size();
-            }
-        }
-        if (objects != 0) {
-            updatedRecognitions = tfod.getUpdatedRecognitions();
-        }
-        if (updatedRecognitions != null) {
-            for (Recognition r : updatedRecognitions) {
-                if (r.getLabel().equals(LABEL_SKYSTONE)) {
-                    skystone1Position = (int) r.getTop();
-                } else {
-                    blockPosition = (int) r.getTop();
-                }
-            }
-            telemetry.addData("Skystone: ", skystone1Position);
-            telemetry.addData("Block: ", blockPosition);
-            telemetry.update();
-            sleep(1000000);
-            tfod.shutdown();
-            sleep(1000000000);
-        }
+        int[] skystoneLocation = objectDetect("Red");
+        int skystone1Position = skystoneLocation[0];
+        int skystone2Position = skystoneLocation[1];
+        telemetry.addData("Skystone: ", skystone1Position);
+        telemetry.addData("Skystone: ", skystone2Position);
+        telemetry.update();
+        sleep(1000000);
     }
 }

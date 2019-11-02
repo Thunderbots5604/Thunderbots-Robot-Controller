@@ -40,8 +40,15 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     private Servo armServo = null;
     private ElapsedTime armCooldown = new ElapsedTime();
 
-    public final float TICKS_PER_INCH = 42.99308433F;
-    public final float TICKS_PER_DEGREE = 7.889583333F;
+    public final float TICKS_PER_INCH = 45.501275F;
+    public final float TICKS_PER_DEGREE_LLF = 6.761111111F;
+    public final float TICKS_PER_DEGREE_LLB = 16.54305556F;
+    public final float TICKS_PER_DEGREE_LRF = -11.22222222F;
+    public final float TICKS_PER_DEGREE_LRB = -10.96111111F;
+    public final float TICKS_PER_DEGREE_RLF= -8.968888889F;
+    public final float TICKS_PER_DEGREE_RLB = -10.34888889F;
+    public final float TICKS_PER_DEGREE_RRF = 8.142222222F;
+    public final float TICKS_PER_DEGREE_RRB = 12.42888889F;
 
     private final float pi = 3.1415926535897932384626433832F;
     public int location = -1;
@@ -56,7 +63,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
 
     public TFObjectDetector tfod;
 
-    public double allPower = .65;
+    public double allPower = .8;
 
     public BNO055IMU imu;
 
@@ -87,7 +94,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_SKYSTONE, LABEL_BLOCK);
     }
 
-    public int[] objectDetect() {
+    public int[] objectDetect(String color) {
         initVuforia();
 
         if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
@@ -101,76 +108,71 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         }
 
         int skystone1Position = 0;
-        int skystone2Position = 0;
-        int[] blockPositions = {0, 0, 0, 0};
-        int blocksDetected = 0;
+        int block1Position = 0;
+        int block2Position = 0;
         int objects = 0;
         int[] skystoneLocation = {1, 2};
-        int blocksTested = 0;
-        boolean skystone1Detected = false;
-        boolean skystone2Detected = false;
 
         List <Recognition> updatedRecognitions = null;
         runtime.reset();
-        while(objects != 6 && runtime.seconds() < 6) {
+        while(objects != 3 && runtime.seconds() < 6) {
             updatedRecognitions = tfod.getUpdatedRecognitions();
             if(updatedRecognitions != null) {
                 objects = updatedRecognitions.size();
             }
+            telemetry.addData("Objects ", objects);
+            telemetry.update();
         }
         sleep(500);
         updatedRecognitions = tfod.getUpdatedRecognitions();
         objects = updatedRecognitions.size();
         if (updatedRecognitions != null) {
             for (Recognition r : updatedRecognitions) {
-                if (r.getLabel().equals(LABEL_SKYSTONE) && !skystone1Detected) {
-                    skystone1Position = (int) r.getTop();
-                    skystone1Detected = true;
-
-                } else if (r.getLabel().equals(LABEL_SKYSTONE) && skystone1Detected){
-                    skystone2Position = (int) r.getTop();
-                    skystone2Detected = true;
+                if (r.getLabel().equals(LABEL_SKYSTONE)) {
+                    if (color == "Blue") {
+                        skystone1Position = (int) r.getTop();
+                    }
+                    else {
+                        skystone1Position = (int) r.getBottom();
+                    }
+                }
+                else if (block1Position == 0) {
+                    if (color == "Blue") {
+                        block1Position = (int) r.getTop();
+                    }
+                    else {
+                        block1Position = (int) r.getBottom();
+                    }
                 }
                 else {
-                    blockPositions[blocksDetected] = (int) r.getTop();
-                    blocksDetected += 1;
-                }
-            }
-            //If both skystones detected
-            //Make Skystone 1 on top
-            if (skystone2Detected) {
-                if (skystone1Position < skystone2Position) {
-                    int skystone1PositionSub = skystone1Position;
-                    skystone1Position = skystone2Position;
-                    skystone2Position = skystone1PositionSub;
-                }// Locate blocks
-            }
-            //If both skystones found
-            if (skystone1Detected && skystone2Detected) {
-                for (blocksTested = 0; blocksDetected > blocksTested; blocksTested++) {
-                    if (blockPositions[blocksTested] > skystone1Position) {
-                        skystoneLocation[0] += 1;
+                    if (color == "Blue") {
+                        block2Position = (int) r.getTop();
                     }
-                    if (blockPositions[blocksTested] > skystone2Position) {
-                        skystoneLocation[1] += 1;
+                    else {
+                        block2Position = (int) r.getBottom();
                     }
                 }
             }
-            else if (skystone1Detected && !skystone2Detected) {
-                for (blocksTested = 0; blocksDetected > blocksTested; blocksTested++) {
-                    if (blockPositions[blocksTested] > skystone1Position) {
-                        skystoneLocation[0] += 1;
-                    }
+            if (skystone1Position != 0 && objects >= 3) {
+                if (skystone1Position < block1Position) {
+                    skystoneLocation[0] += 1;
                 }
-                skystoneLocation[1] = objects + 1;
+                if (skystone1Position < block2Position) {
+                    skystoneLocation[0] += 1;
+                }
             }
-            //If neither skystone detected
+            else if (skystone1Position != 0 && objects == 2) {
+                if (skystone1Position < block1Position) {
+                    skystoneLocation[0] += 1;
+                }
+            }
             else {
-                skystoneLocation[0] = objects + 1;
-                skystoneLocation[1] = objects + 2;
+                skystoneLocation[0] = 3;
             }
+            skystoneLocation[1] = skystoneLocation[0] + 3;
         }
         telemetry.addData("Array: ", updatedRecognitions);
+        telemetry.addData("Skystone Locations", skystoneLocation);
         telemetry.update();
         tfod.shutdown();
         return skystoneLocation;
@@ -205,8 +207,8 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             }
         }
         else {
-            while ((leftMotorBack.getCurrentPosition() > targetPosition) && (rightMotorBack.getCurrentPosition() > targetPosition) && opModeIsActive()) {
-                telemetry.addData("Target Position", targetPosition);
+            while ((leftMotorBack.getCurrentPosition() < -targetPosition) && (rightMotorBack.getCurrentPosition() < -targetPosition) && opModeIsActive()) {
+                telemetry.addData("Target Position", -targetPosition);
                 telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
                 telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
                 telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
@@ -238,10 +240,13 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        int targetTurn = (int)(degrees * TICKS_PER_DEGREE);
+        int targetTurn_LLF = (int)(degrees * TICKS_PER_DEGREE_LLF);
+        int targetTurn_LLB = (int)(degrees * TICKS_PER_DEGREE_LLB);
+        int targetTurn_LRF = (int)(degrees * TICKS_PER_DEGREE_LRF);
+        int targetTurn_LRB = (int)(degrees * TICKS_PER_DEGREE_LRB);
 
-        while ((leftMotorFront.getCurrentPosition() > targetTurn) && (rightMotorBack.getCurrentPosition() < targetTurn) && opModeIsActive()) {
-            telemetry.addData("Target Position", targetTurn);
+        while ((leftMotorFront.getCurrentPosition() < targetTurn_LLF) && (rightMotorBack.getCurrentPosition() > targetTurn_LRB) && (leftMotorBack.getCurrentPosition() < targetTurn_LLB) && (rightMotorFront.getCurrentPosition() > targetTurn_LRF) && opModeIsActive()) {
+            telemetry.addData("Target Position", targetTurn_LLF);
             telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
             telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
             telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
@@ -256,10 +261,6 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         leftMotorBack.setPower(0);
         rightMotorFront.setPower(0);
         rightMotorBack.setPower(0);
-        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
     public void turnRight(double degrees, double power) {
 
@@ -272,10 +273,13 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        int targetTurn = (int)(degrees * TICKS_PER_DEGREE);
+        int targetTurn_RLF = (int)(degrees * TICKS_PER_DEGREE_RLF);
+        int targetTurn_RLB = (int)(degrees * TICKS_PER_DEGREE_RLB);
+        int targetTurn_RRF = (int)(degrees * TICKS_PER_DEGREE_RRF);
+        int targetTurn_RRB = (int)(degrees * TICKS_PER_DEGREE_RRB);
 
-        while ((leftMotorFront.getCurrentPosition() < targetTurn) && (rightMotorBack.getCurrentPosition() > targetTurn) && opModeIsActive()) {
-            telemetry.addData("Target Position", targetTurn);
+        while ((leftMotorFront.getCurrentPosition() > targetTurn_RLF) && (rightMotorBack.getCurrentPosition() < targetTurn_RRB) && (leftMotorBack.getCurrentPosition() > targetTurn_RLB) && (rightMotorFront.getCurrentPosition() < targetTurn_RRF) && opModeIsActive()) {
+            telemetry.addData("Target Position", targetTurn_RLF);
             telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
             telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
             telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
@@ -290,10 +294,6 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         leftMotorBack.setPower(0);
         rightMotorFront.setPower(0);
         rightMotorBack.setPower(0);
-        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public void initialization() {
@@ -329,23 +329,36 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     }
 
     public void armDown () {
-        while (opModeIsActive()) {
-            armCooldown.reset();
-            armServo.setPosition(90);
-            sleep(500);
-            clawServo.setPosition(0);
-            sleep(500);
-            armServo.setPosition(0);
+        boolean complete = false;
+        while (opModeIsActive() && complete == false) {
+            clawServo.setPosition(1);
+            sleep(2500);
+            armServo.setPosition(.95);
+            complete = true;
         }
     }
     public void armUp () {
-        while (opModeIsActive()) {
-            armCooldown.reset();
-            armServo.setPosition(90);
-            sleep(500);
-            clawServo.setPosition(90);
-            sleep(500);
-            armServo.setPosition(0);
+        boolean complete = false;
+        while (opModeIsActive()  && complete == false) {
+            clawServo.setPosition(0.1);
+            sleep(1000);
+            armServo.setPosition(.1);
+            complete = true;
+        }
+    }
+    public void pickSkystone(int skystone, String color) {
+        if (color == "Blue") {
+            turnLeft((skystone - 2) * 15, allPower);
+            runTo(skystone + 6, allPower);
+            armUp();
+            runTo( -6 - skystone, allPower);
+            turnRight((skystone - 2) * 15, allPower);
+            turnRight(70, allPower);
+            runTo(40, allPower);
+            armDown();
+        }
+        else {
+
         }
     }
 }
