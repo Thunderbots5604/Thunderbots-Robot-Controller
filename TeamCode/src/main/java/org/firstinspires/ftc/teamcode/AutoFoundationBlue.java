@@ -24,21 +24,34 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
-@Autonomous(name="Vuforia Test", group="Autonomous Competition")
-public class VuforiaTest extends GodFatherOfAllAutonomous {
+@Autonomous(name="Autonomous_Foundation Blue", group="Autonomous Competition")
+public class AutoFoundationBlue extends GodFatherOfAllAutonomous {
 
     @Override
     public void runOpMode() {
-        int[] skystoneLocation = objectDetect("Red");
-        int skystone1Position = skystoneLocation[0];
-        int skystone2Position = skystoneLocation[1];
-        int block1Position = skystoneLocation[2];
-        int block2Position = skystoneLocation[3];
-        telemetry.addData("Skystone1: ", skystone1Position);
-        telemetry.addData("Skystone2: ", skystone2Position);
-        telemetry.addData("Block Position 1: ", block1Position);
-        telemetry.addData("Block Position 2: ", block2Position);
-        telemetry.update();
-        sleep(1000000);
+        initialization();
+
+        waitForStart();
+
+        runTo(60, allPower);
+        sleep(2000);
+        turnRight(45, allPower);
+        sleep(1000);
+        runTo(-30, allPower);
+        turnLeft(90, allPower);
+        runTo(16, allPower);
+        turnRight(55, allPower);
+        runTo(-25, allPower);
+        sleep(1000);
+        runTo(-50, allPower / 2);
+        sleep(1000);
+        runTo(-25, allPower / 2);
+        turnRight(80, allPower);
+        runTo(20, allPower);
+        turnRight(30, allPower);
+        runTo(10, allPower);
+        //turnRight(50, allPower);
+        //runTo(10, allPower / 2);
+        //turnLeft(90, allPower);
     }
 }

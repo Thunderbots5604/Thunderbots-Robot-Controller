@@ -24,21 +24,16 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
-@Autonomous(name="Vuforia Test", group="Autonomous Competition")
-public class VuforiaTest extends GodFatherOfAllAutonomous {
+@Autonomous(name="AutoPark", group="Autonomous Competition")
+public class AutoPark extends GodFatherOfAllAutonomous {
 
     @Override
     public void runOpMode() {
-        int[] skystoneLocation = objectDetect("Red");
-        int skystone1Position = skystoneLocation[0];
-        int skystone2Position = skystoneLocation[1];
-        int block1Position = skystoneLocation[2];
-        int block2Position = skystoneLocation[3];
-        telemetry.addData("Skystone1: ", skystone1Position);
-        telemetry.addData("Skystone2: ", skystone2Position);
-        telemetry.addData("Block Position 1: ", block1Position);
-        telemetry.addData("Block Position 2: ", block2Position);
-        telemetry.update();
-        sleep(1000000);
+        initialization();
+
+        waitForStart();
+
+        sleep(20000);
+        runTo(24, allPower / 3);
     }
 }

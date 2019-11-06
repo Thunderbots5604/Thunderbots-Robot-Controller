@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -15,7 +14,6 @@ public class TeleOpAlpha extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime cooldown = new ElapsedTime();
-    private ElapsedTime armCooldown = new ElapsedTime();
 
     private DcMotor leftMotorFront = null;
     private DcMotor leftMotorBack = null;
@@ -35,16 +33,12 @@ public class TeleOpAlpha extends LinearOpMode {
         leftMotorBack = hardwareMap.get(DcMotor.class, "left_motor_back");
         rightMotorFront = hardwareMap.get(DcMotor.class, "right_motor_front");
         rightMotorBack = hardwareMap.get(DcMotor.class, "right_motor_back");
-        clawServo = hardwareMap.get(Servo.class, "claw_servo");
-        armServo = hardwareMap.get(Servo.class, "arm_servo");
 
         leftMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-
-        armCooldown.reset();
 
         waitForStart();
 
@@ -57,12 +51,12 @@ public class TeleOpAlpha extends LinearOpMode {
             telemetry.addData("Arm Servo", armServo.getPosition());
             telemetry.update();
 
-            if(gamepad1.b && cooldown.seconds() > .5) {
+            if((gamepad1.y) && cooldown.seconds() > .5) {
                 reversed = !reversed;
                 multiplier *= -1;
                 cooldown.reset();
             }
-            if(gamepad1.x && cooldown.seconds() > .5) {
+            if((gamepad1.x) && cooldown.seconds() > .5) {
                 halfSpeed = !halfSpeed;
                 if (halfSpeed) {
                     multiplier *= .5;
@@ -127,22 +121,6 @@ public class TeleOpAlpha extends LinearOpMode {
                 rightMotorBack.setPower(0);
             }
             //Claw closing and arm upping
-            //negative brings arm towards picking up
-            //positive brings claw servo towards picking up
-            if (gamepad1.right_bumper && !gamepad1.left_bumper && armCooldown.milliseconds() > 3000) {
-                armCooldown.reset();
-                clawServo.setPosition(1);
-                sleep(1000);
-                armServo.setPosition(1);
-            }
-            //Claw opening and arm downing
-            if (!gamepad1.right_bumper && gamepad1.left_bumper && armCooldown.milliseconds() > 3000) {
-                armCooldown.reset();
-                clawServo.setPosition(0.1);
-                sleep(1000);
-                armServo.setPosition(.1);
-
-            }
         }
         leftMotorFront.setPower(0);
         leftMotorBack.setPower(0);

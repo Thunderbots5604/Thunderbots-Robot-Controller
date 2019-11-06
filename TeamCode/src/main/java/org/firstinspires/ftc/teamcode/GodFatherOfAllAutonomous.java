@@ -49,6 +49,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public final float TICKS_PER_DEGREE_RLB = -10.34888889F;
     public final float TICKS_PER_DEGREE_RRF = 8.142222222F;
     public final float TICKS_PER_DEGREE_RRB = 12.42888889F;
+    public final float TickS_MULTIPLIER = (/*Ticks to foundation divided by _ inches*/) * (/*_ inches to ticks to foundation*/)F;
 
     private final float pi = 3.1415926535897932384626433832F;
     public int location = -1;
@@ -63,7 +64,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
 
     public TFObjectDetector tfod;
 
-    public double allPower = .8;
+    public double allPower = .75;
 
     public BNO055IMU imu;
 
@@ -73,109 +74,6 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-    }
-    public void initVuforia() {
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         */
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = CameraDirection.BACK;
-
-        //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-    }
-    public void initTfod() {
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_SKYSTONE, LABEL_BLOCK);
-    }
-
-    public int[] objectDetect(String color) {
-        initVuforia();
-
-        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
-            initTfod();
-        } else {
-            telemetry.addData("Sorry!", "This device is not compatible with TFOD");
-        }
-
-        if (tfod != null) {
-            tfod.activate();
-        }
-
-        int skystone1Position = 0;
-        int block1Position = 0;
-        int block2Position = 0;
-        int objects = 0;
-        int[] skystoneLocation = {1, 2};
-
-        List <Recognition> updatedRecognitions = null;
-        runtime.reset();
-        while(objects != 3 && runtime.seconds() < 6) {
-            updatedRecognitions = tfod.getUpdatedRecognitions();
-            if(updatedRecognitions != null) {
-                objects = updatedRecognitions.size();
-            }
-            telemetry.addData("Objects ", objects);
-            telemetry.update();
-        }
-        sleep(500);
-        updatedRecognitions = tfod.getUpdatedRecognitions();
-        objects = updatedRecognitions.size();
-        if (updatedRecognitions != null) {
-            for (Recognition r : updatedRecognitions) {
-                if (r.getLabel().equals(LABEL_SKYSTONE)) {
-                    if (color == "Blue") {
-                        skystone1Position = (int) r.getTop();
-                    }
-                    else {
-                        skystone1Position = (int) r.getBottom();
-                    }
-                }
-                else if (block1Position == 0) {
-                    if (color == "Blue") {
-                        block1Position = (int) r.getTop();
-                    }
-                    else {
-                        block1Position = (int) r.getBottom();
-                    }
-                }
-                else {
-                    if (color == "Blue") {
-                        block2Position = (int) r.getTop();
-                    }
-                    else {
-                        block2Position = (int) r.getBottom();
-                    }
-                }
-            }
-            if (skystone1Position != 0 && objects >= 3) {
-                if (skystone1Position < block1Position) {
-                    skystoneLocation[0] += 1;
-                }
-                if (skystone1Position < block2Position) {
-                    skystoneLocation[0] += 1;
-                }
-            }
-            else if (skystone1Position != 0 && objects == 2) {
-                if (skystone1Position < block1Position) {
-                    skystoneLocation[0] += 1;
-                }
-            }
-            else {
-                skystoneLocation[0] = 3;
-            }
-            skystoneLocation[1] = skystoneLocation[0] + 3;
-        }
-        telemetry.addData("Array: ", updatedRecognitions);
-        telemetry.addData("Skystone Locations", skystoneLocation);
-        telemetry.update();
-        tfod.shutdown();
-        return skystoneLocation;
     }
 
     public void runTo(double inches, double power) {
@@ -323,42 +221,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         leftMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
     }
-
     public double formatAngle(AngleUnit angleUnit, double angle) {
         return AngleUnit.DEGREES.fromUnit(angleUnit, angle);
-    }
-
-    public void armDown () {
-        boolean complete = false;
-        while (opModeIsActive() && complete == false) {
-            clawServo.setPosition(1);
-            sleep(2500);
-            armServo.setPosition(.95);
-            complete = true;
-        }
-    }
-    public void armUp () {
-        boolean complete = false;
-        while (opModeIsActive()  && complete == false) {
-            clawServo.setPosition(0.1);
-            sleep(1000);
-            armServo.setPosition(.1);
-            complete = true;
-        }
-    }
-    public void pickSkystone(int skystone, String color) {
-        if (color == "Blue") {
-            turnLeft((skystone - 2) * 15, allPower);
-            runTo(skystone + 6, allPower);
-            armUp();
-            runTo( -6 - skystone, allPower);
-            turnRight((skystone - 2) * 15, allPower);
-            turnRight(70, allPower);
-            runTo(40, allPower);
-            armDown();
-        }
-        else {
-
-        }
     }
 }
