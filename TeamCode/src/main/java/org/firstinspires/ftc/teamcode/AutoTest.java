@@ -26,7 +26,7 @@ import java.util.List;
 
 
 @Disabled
-@Autonomous(name="AutoTest", group="Autonomous Competition")
+@Autonomous(name="AutoTest", group="Test")
 public class AutoTest extends GodFatherOfAllAutonomous {
 
     @Override

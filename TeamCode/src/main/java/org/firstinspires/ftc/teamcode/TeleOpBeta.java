@@ -19,8 +19,6 @@ public class TeleOpBeta extends LinearOpMode {
     private DcMotor leftMotorBack = null;
     private DcMotor rightMotorFront = null;
     private DcMotor rightMotorBack = null;
-    private Servo clawServo = null;
-    private Servo armServo = null;
 
     private boolean reversed = false;
     private boolean halfSpeed = false;

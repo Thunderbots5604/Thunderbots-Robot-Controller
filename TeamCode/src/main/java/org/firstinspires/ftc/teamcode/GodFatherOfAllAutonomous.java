@@ -49,7 +49,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public final float TICKS_PER_DEGREE_RLB = -10.34888889F;
     public final float TICKS_PER_DEGREE_RRF = 8.142222222F;
     public final float TICKS_PER_DEGREE_RRB = 12.42888889F;
-    public final float TickS_MULTIPLIER = (/*Ticks to foundation divided by _ inches*/) * (/*_ inches to ticks to foundation*/)F;
+    public final float TICKS_MULTIPLIER = /*(Ticks in competition for wall to foundation) / (Ticks in testing for wall to foundation) */1F;
 
     private final float pi = 3.1415926535897932384626433832F;
     public int location = -1;
@@ -138,10 +138,10 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        int targetTurn_LLF = (int)(degrees * TICKS_PER_DEGREE_LLF);
-        int targetTurn_LLB = (int)(degrees * TICKS_PER_DEGREE_LLB);
-        int targetTurn_LRF = (int)(degrees * TICKS_PER_DEGREE_LRF);
-        int targetTurn_LRB = (int)(degrees * TICKS_PER_DEGREE_LRB);
+        int targetTurn_LLF = (int)(degrees * TICKS_PER_DEGREE_LLF * TICKS_MULTIPLIER);
+        int targetTurn_LLB = (int)(degrees * TICKS_PER_DEGREE_LLB * TICKS_MULTIPLIER);
+        int targetTurn_LRF = (int)(degrees * TICKS_PER_DEGREE_LRF * TICKS_MULTIPLIER);
+        int targetTurn_LRB = (int)(degrees * TICKS_PER_DEGREE_LRB * TICKS_MULTIPLIER);
 
         while ((leftMotorFront.getCurrentPosition() < targetTurn_LLF) && (rightMotorBack.getCurrentPosition() > targetTurn_LRB) && (leftMotorBack.getCurrentPosition() < targetTurn_LLB) && (rightMotorFront.getCurrentPosition() > targetTurn_LRF) && opModeIsActive()) {
             telemetry.addData("Target Position", targetTurn_LLF);
@@ -171,10 +171,10 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        int targetTurn_RLF = (int)(degrees * TICKS_PER_DEGREE_RLF);
-        int targetTurn_RLB = (int)(degrees * TICKS_PER_DEGREE_RLB);
-        int targetTurn_RRF = (int)(degrees * TICKS_PER_DEGREE_RRF);
-        int targetTurn_RRB = (int)(degrees * TICKS_PER_DEGREE_RRB);
+        int targetTurn_RLF = (int)(degrees * TICKS_PER_DEGREE_RLF * TICKS_MULTIPLIER);
+        int targetTurn_RLB = (int)(degrees * TICKS_PER_DEGREE_RLB * TICKS_MULTIPLIER);
+        int targetTurn_RRF = (int)(degrees * TICKS_PER_DEGREE_RRF * TICKS_MULTIPLIER);
+        int targetTurn_RRB = (int)(degrees * TICKS_PER_DEGREE_RRB * TICKS_MULTIPLIER);
 
         while ((leftMotorFront.getCurrentPosition() > targetTurn_RLF) && (rightMotorBack.getCurrentPosition() < targetTurn_RRB) && (leftMotorBack.getCurrentPosition() > targetTurn_RLB) && (rightMotorFront.getCurrentPosition() < targetTurn_RRF) && opModeIsActive()) {
             telemetry.addData("Target Position", targetTurn_RLF);
@@ -223,5 +223,8 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     }
     public double formatAngle(AngleUnit angleUnit, double angle) {
         return AngleUnit.DEGREES.fromUnit(angleUnit, angle);
+    }
+    public String senseColor() {
+        return "Yellow";
     }
 }

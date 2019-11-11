@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 
-@TeleOp(name="TeleOpAlpha", group="Linear Opmode")
-public class TeleOpAlpha extends LinearOpMode {
+@TeleOp(name="TeleOpOutreach", group="Outreach")
+public class TeleOpOutreach extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime cooldown = new ElapsedTime();
@@ -19,10 +19,12 @@ public class TeleOpAlpha extends LinearOpMode {
     private DcMotor leftMotorBack = null;
     private DcMotor rightMotorFront = null;
     private DcMotor rightMotorBack = null;
+    private Servo clawServo = null;
+    private Servo armServo = null;
 
     private boolean reversed = false;
     private boolean halfSpeed = false;
-    private double multiplier = -1;
+    private double multiplier = -0.3;
 
     @Override
     public void runOpMode() {
@@ -31,6 +33,8 @@ public class TeleOpAlpha extends LinearOpMode {
         leftMotorBack = hardwareMap.get(DcMotor.class, "left_motor_back");
         rightMotorFront = hardwareMap.get(DcMotor.class, "right_motor_front");
         rightMotorBack = hardwareMap.get(DcMotor.class, "right_motor_back");
+        clawServo = hardwareMap.get(Servo.class, "claw_servo");
+        armServo = hardwareMap.get(Servo.class, "arm_servo");
 
         leftMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -45,6 +49,8 @@ public class TeleOpAlpha extends LinearOpMode {
         while (opModeIsActive()) {
             telemetry.addData("Reversed: ", reversed);
             telemetry.addData("Half Speed" , halfSpeed);
+            telemetry.addData("Claw Servo", clawServo.getPosition());
+            telemetry.addData("Arm Servo", armServo.getPosition());
             telemetry.update();
 
             if((gamepad1.y) && cooldown.seconds() > .5) {
@@ -117,7 +123,20 @@ public class TeleOpAlpha extends LinearOpMode {
                 rightMotorBack.setPower(0);
             }
             //Claw closing and arm upping
-        }
+            if (gamepad1.right_bumper && !gamepad1.left_bumper && armCooldown.milliseconds() > 3000) {
+                armCooldown.reset();
+                clawServo.setPosition(1);
+                sleep(1000);
+                armServo.setPosition(1);
+            }
+            //Claw opening and arm downing
+            if (!gamepad1.right_bumper && gamepad1.left_bumper && armCooldown.milliseconds() > 3000) {
+                armCooldown.reset();
+                clawServo.setPosition(0.1);
+                sleep(1000);
+                armServo.setPosition(.1);
+
+            }
         leftMotorFront.setPower(0);
         leftMotorBack.setPower(0);
         rightMotorFront.setPower(0);

@@ -33,25 +33,5 @@ public class AutoFoundationRed extends GodFatherOfAllAutonomous {
 
         waitForStart();
 
-        runTo(60, allPower);
-        sleep(2000);
-        turnLeft(45, allPower);
-        sleep(1000);
-        runTo(-30, allPower);
-        turnRight(90, allPower);
-        runTo(16, allPower);
-        turnLeft(55, allPower);
-        runTo(-25, allPower);
-        sleep(1000);
-        runTo(-50, allPower / 2);
-        sleep(1000);
-        runTo(-25, allPower / 2);
-        turnLeft(80, allPower);
-        runTo(20, allPower);
-        turnLeft(30, allPower);
-        runTo(10, allPower);
-        //turnLeft(50, allPower);
-        //runTo(10, allPower / 2);
-        //turnRight(90, allPower);
     }
 }

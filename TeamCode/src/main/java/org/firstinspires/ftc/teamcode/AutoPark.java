@@ -24,7 +24,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
-@Autonomous(name="AutoPark", group="Autonomous Competition")
+@Autonomous(name="AutoPark", group="Parking")
 public class AutoPark extends GodFatherOfAllAutonomous {
 
     @Override
