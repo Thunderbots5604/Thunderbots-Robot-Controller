@@ -14,16 +14,23 @@ public class TeleOpAlpha extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime cooldown = new ElapsedTime();
+    private ElapsedTime armCooldown = new ElapsedTime();
+    private ElapsedTime armCooldownUp = new ElapsedTime();
+    private ElapsedTime armCooldownDown = new ElapsedTime();
 
     private DcMotor leftMotorFront = null;
     private DcMotor leftMotorBack = null;
     private DcMotor rightMotorFront = null;
     private DcMotor rightMotorBack = null;
+    private Servo clawServo = null;
+    private Servo armServo = null;
 
     private boolean reversed = false;
     private boolean halfSpeed = false;
     private double multiplier = -1;
 
+    private boolean positionSetClaw = true;
+    private boolean positionSetArm = true;
     @Override
     public void runOpMode() {
 
@@ -31,6 +38,8 @@ public class TeleOpAlpha extends LinearOpMode {
         leftMotorBack = hardwareMap.get(DcMotor.class, "left_motor_back");
         rightMotorFront = hardwareMap.get(DcMotor.class, "right_motor_front");
         rightMotorBack = hardwareMap.get(DcMotor.class, "right_motor_back");
+        clawServo = hardwareMap.get(Servo.class, "claw_servo");
+        armServo = hardwareMap.get(Servo.class, "arm_servo");
 
         leftMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -41,6 +50,10 @@ public class TeleOpAlpha extends LinearOpMode {
         waitForStart();
 
         cooldown.reset();
+        armCooldown.reset();
+        clawServo.setPosition(0.1);
+        sleep(1000);
+        armServo.setPosition(.1);
 
         while (opModeIsActive()) {
             telemetry.addData("Reversed: ", reversed);
@@ -117,6 +130,38 @@ public class TeleOpAlpha extends LinearOpMode {
                 rightMotorBack.setPower(0);
             }
             //Claw closing and arm upping
+            if (gamepad1.right_bumper && !gamepad1.left_bumper && armCooldown.milliseconds() > 2000) {
+                armCooldown.reset();
+                armCooldownUp.reset();
+                positionSetArm = false;
+                positionSetClaw = false;
+            }
+            if (armCooldownUp.milliseconds() < 1000 && positionSetClaw == false) {
+                clawServo.setPosition(1);
+                positionSetClaw = true;
+            }
+            else if (armCooldownUp.milliseconds() > 1000 && armCooldownUp.milliseconds() < 2000 && positionSetArm == false) {
+                armServo.setPosition(1);
+                positionSetArm = true;
+            }
+            //Claw opening and arm downing
+            if (!gamepad1.right_bumper && gamepad1.left_bumper && armCooldown.milliseconds() > 2000) {
+                armCooldown.reset();
+                armCooldownDown.reset();
+            }
+            if (armCooldownDown.milliseconds() < 1000 && positionSetClaw == false) {
+                clawServo.setPosition(.1);
+                positionSetClaw = true;
+            }
+            else if (armCooldownDown.milliseconds() > 1000 && armCooldownDown.milliseconds() < 2000 && positionSetArm == false) {
+                armServo.setPosition(.1);
+                positionSetArm = true;
+            }
+            //Resets armCooldown
+            if (armCooldown.milliseconds() > 2000 && armCooldown.milliseconds() < 3000) {
+                positionSetArm = false;
+                positionSetClaw = false;
+            }
         }
         leftMotorFront.setPower(0);
         leftMotorBack.setPower(0);

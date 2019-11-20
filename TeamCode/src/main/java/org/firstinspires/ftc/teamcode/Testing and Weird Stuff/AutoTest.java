@@ -315,11 +315,10 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         }
         while (degrees > 30) {
             turnLeft(30, power);
-            angle = getAngle();
-            if (side == 1) {
+            if (targetAngle > angle && side == 1) {
                 degrees = targetAngle - angle;
             }
-            else if (side == 2) {
+            else if (targetAngle < angle && side == 2) {
                 degrees = 360 - (angle - targetAngle);
             }
         }
@@ -338,23 +337,13 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             side = 2;
         }
         while (degrees > 30) {
-            turnRight(20, power / 2);
-            angle = getAngle();
-            if (side == 1) {
+            turnRight(30, power);
+            if (targetAngle < angle && side == 1) {
                 degrees = angle - targetAngle;
             }
-            else if (side == 2) {
+            else if (targetAngle > angle && side == 2) {
                 degrees = 360 - (targetAngle - angle);
             }
-        }
-        angle = getAngle();
-        if (targetAngle < angle) {
-            degrees = angle - targetAngle;
-            side = 1;
-        }
-        else if (targetAngle > angle) {
-            degrees = 360 - (targetAngle - angle);
-            side = 2;
         }
         turnRight(degrees, power);
     }

@@ -24,37 +24,26 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
-@Autonomous(name="EncoderValueTest", group="Test")
-public class EncoderValues extends GodFatherOfAllAutonomous {
+@Autonomous(name="EncoderValueTest_Jack", group="Test")
+public class EncoderValuesbyJack extends GodFatherOfAllAutonomous {
     private ElapsedTime time = new ElapsedTime();
-    
+
     @Override
     public void runOpMode() {
         initialization();
 
-        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        
         waitForStart();
-        
+
         time.reset();
-        
-        while (time.milliseconds() < 3000) {
-            leftMotorFront.setPower(allPower);
-            leftMotorBack.setPower(allPower);
-            rightMotorFront.setPower(allPower);
-            rightMotorBack.setPower(allPower);
-        }
+
+        runTo(20, allPower);
+
         leftMotorFront.setPower(0);
         leftMotorBack.setPower(0);
         rightMotorFront.setPower(0);
         rightMotorBack.setPower(0);
+
+        telemetry.addData("Ran Supposedly 20 inches. Measure. Change encoder multiplier in GodFather for FINAL");
         telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
         telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
         telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());

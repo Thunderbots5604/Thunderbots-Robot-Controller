@@ -14,6 +14,7 @@ public class TeleOpOutreach extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime cooldown = new ElapsedTime();
+    private ElapsedTime armCooldown = new ElapsedTime();
 
     private DcMotor leftMotorFront = null;
     private DcMotor leftMotorBack = null;
@@ -135,11 +136,11 @@ public class TeleOpOutreach extends LinearOpMode {
                 clawServo.setPosition(0.1);
                 sleep(1000);
                 armServo.setPosition(.1);
-
             }
-        leftMotorFront.setPower(0);
-        leftMotorBack.setPower(0);
-        rightMotorFront.setPower(0);
-        rightMotorBack.setPower(0);
+            leftMotorFront.setPower(0);
+            leftMotorBack.setPower(0);
+            rightMotorFront.setPower(0);
+            rightMotorBack.setPower(0);
+        }
     }
 }

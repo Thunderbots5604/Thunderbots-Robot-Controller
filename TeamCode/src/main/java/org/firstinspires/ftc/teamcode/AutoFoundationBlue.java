@@ -29,9 +29,28 @@ public class AutoFoundationBlue extends GodFatherOfAllAutonomous {
 
     @Override
     public void runOpMode() {
+
+        //This should be the same as AutoFoundationRed, but all the rights are lefts.
+        //Also, all the turn degrees are switched to negative because I think that they are supposed to be target angle.
+
         initialization();
+
+        telemetry.addData("Should be set up", "so that it can go straight and not hit the foundation.");
+        telemetry.update();
 
         waitForStart();
 
-    }
+        //position to move foundation into base
+        runTo(60, allPower);
+        accurateTurnLeft(-90, .25);
+        runTo(24, allPower);
+        accurateTurnLeft(-180, .25);
+        //RAMMING SPEED
+        runTo(80, 1); //Add a bit of distance to overcome any resistance
+        //Go back to the line
+        runTo(-10, allPower);
+        accurateTurnLeft(-270, .25);
+        runTo(48, allPower);
+        //This hasn't been tested yet. Hopefully Accurate Turn works.
+        }
 }

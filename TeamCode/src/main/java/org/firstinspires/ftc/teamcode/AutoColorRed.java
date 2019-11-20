@@ -34,21 +34,20 @@ remember to change godfather for that also
 @Disabled
 @Autonomous(name="AutoColorRed", group="Test")
 public class AutoColorRed extends GodFatherOfAllAutonomous {
-
+    private String color = null;
+    private int blockNumber = 6;
     @Override
     public void runOpMode() {
+
         //get to the first block, might need editiing depending on color sensor placement
-        String color = null;
-        int blockNumber = null;
         runTo(36, allPower);
         turnLeft(90, allPower);
-        blockNumber = 6;
         //start testing blocks
         while (blockNumber > 4){
             //refresh color sensor
             color = senseColor();
             //if it's not the skystone, move on. Otherwise, exit loop
-            if (color = "yellow"){
+            if (color.equals("Yellow")){
                 runTo(12, allPower);
                 blockNumber -= 1;
             }

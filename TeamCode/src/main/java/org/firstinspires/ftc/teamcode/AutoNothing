@@ -25,21 +25,19 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
 
-@Disabled
-@Autonomous(name="AutoTest", group="Test")
-public class AutoTest extends GodFatherOfAllAutonomous {
+
+@Autonomous(name="Autonomous Nothing", group="Autonomous Competition")
+public class AutoNothing extends GodFatherOfAllAutonomous {
 
     @Override
     public void runOpMode() {
         initialization();
 
+        telemetry.addData("You probably", "don't want to run this.");
+        telemetry.addData("It doesn't", "do anything.");
+
         waitForStart();
-        telemetry.addData("Running","Running");
-        telemetry.update();
-        armDown();
-        sleep(2000);
-        telemetry.addData("ran", "Ran");
-        telemetry.update();
-        armUp();
+
+
     }
 }

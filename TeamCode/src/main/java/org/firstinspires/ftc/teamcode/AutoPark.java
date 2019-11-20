@@ -29,10 +29,17 @@ public class AutoPark extends GodFatherOfAllAutonomous {
 
     @Override
     public void runOpMode() {
+
+        //Just parks on the line
+
         initialization();
+
+        telemetry.addData("Robot should", "face the line.");
+        telemetry.update();
 
         waitForStart();
 
+        //sleep first to allow the other robot to maneuver
         sleep(20000);
         runTo(24, allPower / 3);
     }

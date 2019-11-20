@@ -50,40 +50,47 @@ public class TeleOpGamma extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            //Simplifying inputs
             x = gamepad1.left_stick_x;
             y = gamepad1.left_stick_y;
             absx = Math.abs(gamepad1.left_stick_x);
             absy = Math.abs(gamepad1.left_stick_y);
 
-            if (x > 0.1 && absy < 0.2  && rots == 0) {
+            //Rotataing left stick = speed up
+            if (x > 0.2 && absy < 0.3  && rots == 0) {
                 rots += 1;
             }
-            else if (absx < 0.2 && absy > 0.1 && (rots == 1 || rots == 3)) {
+            else if (absx < 0.3 && absy > 0.2 && (rots == 1 || rots == 3)) {
                 rots += 1;
             }
-            else if (x < -0.1 && absy < 0.2 && rots == 2) {
+            else if (x < -0.2 && absy < 0.3 && rots == 2) {
                 rots += 1;
             }
-            if (rots == 4) {
-                power += .2;
+            if (rots >= 4) {
+                power += .18;
                 rots = 0;
             }
-            if (rotTime.milliseconds() > 600) {
+            //Constantly slows down
+            if (rotTime.milliseconds() > 600 && power > 0) {
                 rotTime.reset();
                 power -= 0.1;
             }
-
-
+            else if (rotTime.milliseconds() < 600 && power < 0) {
+                rotTime.reset();
+                power += 0.1;
+            }
+            //Slow Down
             if (gamepad1.right_bumper && bumps % 2 == 0) {
                 bumps += 1;
             }
             if (gamepad1.left_bumper && bumps % 2 == 1) {
                 bumps += 1;
             }
-            if (bumps >= 3) {
-                power -= .2;
+            if (bumps >= 2) {
+                power -= .1;
                 bumps -= 3;
             }
+            //Resetting power & making power not greater than 1
             if (gamepad1.b) {
                 power = 0;
             }
@@ -93,24 +100,28 @@ public class TeleOpGamma extends LinearOpMode {
             if (power < -1) {
                 power = -1;
             }
-            if (power < 0.1 && gamepad1.right_stick_x == 0) {
+            //Stop it
+            if (Math.abs(power) < 0.1 && gamepad1.right_stick_x == 0) {
                 leftMotorFront.setPower(0);
                 leftMotorBack.setPower(0);
                 rightMotorFront.setPower(0);
                 rightMotorBack.setPower(0);
             }
-            else if (power > 0.1 && gamepad1.right_stick_x == 0) {
+            //Go Forward & backwards
+            else if (Math.abs(power) > 0.1 && gamepad1.right_stick_x == 0) {
                 leftMotorFront.setPower(power);
                 leftMotorBack.setPower(power);
                 rightMotorFront.setPower(power);
                 rightMotorBack.setPower(power);
             }
+            //Point Turn
             else if (gamepad1.right_stick_x != 0 && power < 0.1) {
                 leftMotorFront.setPower(gamepad1.right_stick_x);
                 leftMotorBack.setPower(gamepad1.right_stick_x);
                 rightMotorFront.setPower(-gamepad1.right_stick_x);
                 rightMotorBack.setPower(-gamepad1.right_stick_x);
             }
+            //Swerve Turns
             else if (gamepad1.right_stick_x > 0 && power > 0){
                 leftMotorFront.setPower(gamepad1.right_stick_x);
                 leftMotorBack.setPower(gamepad1.right_stick_x);
