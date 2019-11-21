@@ -25,12 +25,13 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
 /*
-Still Needs Testing. This should be the same as AutoColorBlue, but for the red side.
+Still Needs Testing. This should be the same as AutoColorRed, but for the blue side.
 Detects Skystone and brings it to the other side, then gets the next skystone and brings it to the other side.
  */
 
-@Autonomous(name="AutoColorRed", group="Test")
-public class AutoColorRed extends GodFatherOfAllAutonomous {
+
+@Autonomous(name="AutoColorBlue", group="Test")
+public class AutoColorBlue extends GodFatherOfAllAutonomous {
     private String color = null;
     private int blockNumber = 6;
     @Override
@@ -38,7 +39,7 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
 
         //get to the first block, might need editiing depending on color sensor placement
         runTo(36, allPower);
-        turnLeft(90, allPower);
+        turnRight(90, allPower);
         //start testing blocks
         while (blockNumber > 4){
             //refresh color sensor
@@ -57,7 +58,7 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
         armDown();
         //back up and turn towards other side
         runTo(-24, allPower);
-        turnRight(90, allPower);
+        turnLeft(90, allPower);
         //move (distance depending on block location) to base
         runTo(12*(6-blockNumber)+60, allPower);
         //drop in block
@@ -66,13 +67,13 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
         runTo(-(12*(6-blockNumber)+60), allPower);
         runTo(-36, allPower);
         //orient towards next skystone
-        turnLeft(90, allPower);
+        turnRight(90, allPower);
         //grab next skystone
         runTo(24, allPower);
         armDown();
         //head to base again
         runTo(-24, allPower);
-        turnRight(90, allPower);
+        turnLeft(90, allPower);
         runTo(12*(6-blockNumber)+96, allPower);
         //drop in next skystone
         armUp();

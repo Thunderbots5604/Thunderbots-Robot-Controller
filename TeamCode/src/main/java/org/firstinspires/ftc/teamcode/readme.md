@@ -26,9 +26,6 @@ that are not used actively in a competition but are important to calibrate encod
 be placed into this folder. Also, programs that are functional but not used in competitions should be placed
 here, such as the aforementioned TeleOpGamma.
 
-The last grouping is the Works in Progress folder. This folder should contain any files that are either
-partially done or done but untested and are going to be used in a competition.
-
 Please use your best judgement when choosing which place to put your files.
 
 CODE FORMATTING
@@ -44,5 +41,5 @@ for small chunks of code (1-4 lines usually) there should be a comment with a sp
 between that comment and the code it is describing. Both of these comment types should be used on all the
 programs for readability.
 
-Thanks for reading this,
-Co-Captain of Programming, Jack K. Correy
+Thanks,
+Jack K. Correy, Co-Captain of Programming
