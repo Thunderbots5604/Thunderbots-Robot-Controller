@@ -25,56 +25,73 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
 /*
-Still Needs Testing. This should be the same as AutoColorBlue, but for the red side.
+Still Needs Testing. This should be the same as AutoColorRed, but for the blue side.
 Detects Skystone and brings it to the other side, then gets the next skystone and brings it to the other side.
  */
 
-@Autonomous(name="AutoColorRed", group="Test")
+
+@Autonomous(name="AutoColorRed", group="Competition")
 public class AutoColorRed extends GodFatherOfAllAutonomous {
     private String color = null;
     private int blockNumber = 6;
     @Override
     public void runOpMode() {
 
+        initialization();
+
+        waitForStart();
+
         //get to the first block, might need editiing depending on color sensor placement
-        runTo(36, allPower);
-        turnLeft(90, allPower);
+        runTo(16, allPower);
+        turnLeft(40, allPower);
+        runTo(4, allPower);
+        turnLeft(20, allPower);
+        runTo(2, allPower);
+        accurateTurnLeft(85, allPower);
+        runTo(6, allPower);
         //start testing blocks
         while (blockNumber > 4){
             //refresh color sensor
+            sleep(500);
             color = senseColor();
             //if it's not the skystone, move on. Otherwise, exit loop
             if (color.equals("Yellow")){
-                runTo(12, allPower);
+
+                runTo(8, allPower);
                 blockNumber -= 1;
             }
             else {
                 break;
             }
+            telemetry.addData("Scanning block", blockNumber);
+            telemetry.update();
         }
         //grab block
-        turnRight(90, allPower);
+        turnRight(60, allPower);
+        runTo(10, allPower / 2);
         armDown();
         //back up and turn towards other side
-        runTo(-24, allPower);
-        turnRight(90, allPower);
+        runTo(-15, allPower);
+        turnRight(75, allPower);
         //move (distance depending on block location) to base
         runTo(12*(6-blockNumber)+60, allPower);
         //drop in block
         armUp();
         //back to original place + 3 block lengths to go to next block
         runTo(-(12*(6-blockNumber)+60), allPower);
-        runTo(-36, allPower);
+        runTo(-12, allPower);
         //orient towards next skystone
         turnLeft(90, allPower);
         //grab next skystone
-        runTo(24, allPower);
+        runTo(10, allPower);
+        runTo(5, allPower / 2);
         armDown();
         //head to base again
-        runTo(-24, allPower);
-        turnRight(90, allPower);
+        runTo(-15, allPower);
+        accurateTurnRight(-80, allPower);
         runTo(12*(6-blockNumber)+96, allPower);
         //drop in next skystone
         armUp();
+        runTo(-15, allPower);
     }
 }

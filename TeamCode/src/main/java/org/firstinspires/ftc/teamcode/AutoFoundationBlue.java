@@ -42,15 +42,15 @@ public class AutoFoundationBlue extends GodFatherOfAllAutonomous {
 
         //position to move foundation into base
         runTo(60, allPower);
-        accurateTurnLeft(-90, .25);
+        accurateTurnLeft(90, .25);
         runTo(24, allPower);
-        accurateTurnLeft(-180, .25);
+        accurateTurnLeft(170, .25);
         //RAMMING SPEED
         runTo(80, 1); //Add a bit of distance to overcome any resistance
         //Go back to the line
         runTo(-10, allPower);
-        accurateTurnLeft(-270, .25);
+        accurateTurnLeft(-90, .25);
         runTo(48, allPower);
         //This hasn't been tested yet. Hopefully Accurate Turn works.
-        }
+    }
 }

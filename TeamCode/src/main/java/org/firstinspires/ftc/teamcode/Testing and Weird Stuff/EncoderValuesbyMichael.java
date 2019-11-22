@@ -27,7 +27,7 @@ import java.util.List;
 @Autonomous(name="EncoderValueTest_Michael", group="Test")
 public class EncoderValuesbyMichael extends GodFatherOfAllAutonomous {
     private ElapsedTime time = new ElapsedTime();
-    
+
     @Override
     public void runOpMode() {
         initialization();
@@ -40,11 +40,11 @@ public class EncoderValuesbyMichael extends GodFatherOfAllAutonomous {
         leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        
+
         waitForStart();
-        
+
         time.reset();
-        
+
         while (time.milliseconds() < 1500) {
             leftMotorFront.setPower(allPower);
             leftMotorBack.setPower(allPower);
@@ -55,11 +55,12 @@ public class EncoderValuesbyMichael extends GodFatherOfAllAutonomous {
         leftMotorBack.setPower(0);
         rightMotorFront.setPower(0);
         rightMotorBack.setPower(0);
-        telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
-        telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
-        telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
-        telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
-        telemetry.update();
-        sleep(10000);
+        while (opModeIsActive()) {
+            telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
+            telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
+            telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
+            telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
+            telemetry.update();
+        }
     }
 }

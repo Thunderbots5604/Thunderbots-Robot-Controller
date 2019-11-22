@@ -52,7 +52,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public Servo armServo = null;
 
     //All Power for autonomous running
-    public double allPower = .75;
+    public double allPower = .4;
 
     //Color Sensor
     public ColorSensor colorSensor;
@@ -75,7 +75,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public final float TICKS_PER_DEGREE_RLB = -10.34888889F;
     public final float TICKS_PER_DEGREE_RRF = 8.142222222F;
     public final float TICKS_PER_DEGREE_RRB = 12.42888889F;
-    public final float TICKS_MULTIPLIER = /*(Ticks in competition for wall to foundation) / (Ticks in testing for wall to foundation) */1F;
+    public final float TICKS_MULTIPLIER = (3216.25F / 3501.833333333333333333F);/*(Ticks in competition for wall to foundation) / (Ticks in testing for wall to foundation) */
 
     //Vuforia
     public int location = -1;
@@ -281,12 +281,14 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         clawServo.setPosition(0.1);
         sleep(1000);
         armServo.setPosition(.1);
+        sleep(1000);
     }
     public void armDown() {
         armCooldown.reset();
         clawServo.setPosition(1);
         sleep(1000);
         armServo.setPosition(1);
+        sleep(1000);
     }
     public double getDistance() {
         millimetersAway = distance.getDistance(DistanceUnit.MM);
@@ -337,8 +339,8 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             degrees = 360 - (targetAngle - angle);
             side = 2;
         }
-        while (degrees > 30) {
-            turnRight(20, power / 2);
+        while (degrees > 20) {
+            turnRight(10, power / 2);
             angle = getAngle();
             if (side == 1) {
                 degrees = angle - targetAngle;
