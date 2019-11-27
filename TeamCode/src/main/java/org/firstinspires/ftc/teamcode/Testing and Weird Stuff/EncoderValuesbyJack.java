@@ -43,7 +43,7 @@ public class EncoderValuesbyJack extends GodFatherOfAllAutonomous {
         rightMotorFront.setPower(0);
         rightMotorBack.setPower(0);
 
-        telemetry.addData("Ran Supposedly 20 inches. Measure. Change encoder multiplier in GodFather for FINAL");
+        telemetry.addData("Ran Supposedly 20 inches. Measure. Change encoder multiplier in GodFather for");
         telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
         telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
         telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());

@@ -50,9 +50,11 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public DcMotor rightMotorBack = null;
     public Servo clawServo = null;
     public Servo armServo = null;
+    public Servo spinnyBoy1 = null;
+    public Servo spinnyBoy2 = null;
 
     //All Power for autonomous running
-    public double allPower = .4;
+    public double allPower = .45;
 
     //Color Sensor
     public ColorSensor colorSensor;
@@ -63,7 +65,10 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
 
     //Distance Sensor
     public DistanceSensor distance = null;
-    public double millimetersAway;
+    public double mmAway;
+    public double inchesAway;
+    public double inchesTraveling;
+    public double inches;
 
     //Ticks
     public final float TICKS_PER_INCH = 45.501275F;
@@ -75,7 +80,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public final float TICKS_PER_DEGREE_RLB = -10.34888889F;
     public final float TICKS_PER_DEGREE_RRF = 8.142222222F;
     public final float TICKS_PER_DEGREE_RRB = 12.42888889F;
-    public final float TICKS_MULTIPLIER = (3216.25F / 3501.833333333333333333F);/*(Ticks in competition for wall to foundation) / (Ticks in testing for wall to foundation) */
+    public final float TICKS_MULTIPLIER = (20F / 25F);//(2750F / 3501.83333333333333333333F);/*(Ticks in competition for wall to foundation) / (Ticks in testing for wall to foundation) */
 
     //Vuforia
     public int location = -1;
@@ -100,8 +105,9 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
     }
-
+    //Use encoders to move robot a certain number of inches. For power, use allPower
     public void runTo(double inches, double power) {
+        runtime.reset();
         leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -110,9 +116,9 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        int targetPosition = (int)(inches * TICKS_PER_INCH);
+        int targetPosition = (int)(inches * TICKS_PER_INCH * TICKS_MULTIPLIER);
         if (inches > 0) {
-            while ((leftMotorBack.getCurrentPosition() < targetPosition) && (rightMotorBack.getCurrentPosition() > -targetPosition) && opModeIsActive()) {
+            while ((leftMotorBack.getCurrentPosition() < targetPosition) && (rightMotorBack.getCurrentPosition() > -targetPosition) && opModeIsActive() && runtime.milliseconds() < 4000) {
                 telemetry.addData("Target Position", targetPosition);
                 telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
                 telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
@@ -130,7 +136,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             }
         }
         else {
-            while ((leftMotorBack.getCurrentPosition() < -targetPosition) && (rightMotorBack.getCurrentPosition() < -targetPosition) && opModeIsActive()) {
+            while ((leftMotorBack.getCurrentPosition() < -targetPosition) && (rightMotorBack.getCurrentPosition() < -targetPosition) && opModeIsActive() && runtime.milliseconds() < 4000) {
                 telemetry.addData("Target Position", -targetPosition);
                 telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
                 telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
@@ -152,8 +158,9 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
+    //Turns left a certain number of degrees.
     public void turnLeft(double degrees, double power) {
-
+        runtime.reset();
         leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -168,7 +175,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         int targetTurn_LRF = (int)(degrees * TICKS_PER_DEGREE_LRF * TICKS_MULTIPLIER);
         int targetTurn_LRB = (int)(degrees * TICKS_PER_DEGREE_LRB * TICKS_MULTIPLIER);
 
-        while ((leftMotorFront.getCurrentPosition() < targetTurn_LLF) && (rightMotorBack.getCurrentPosition() > targetTurn_LRB) && (leftMotorBack.getCurrentPosition() < targetTurn_LLB) && (rightMotorFront.getCurrentPosition() > targetTurn_LRF) && opModeIsActive()) {
+        while ((leftMotorFront.getCurrentPosition() < targetTurn_LLF) && (rightMotorBack.getCurrentPosition() > targetTurn_LRB) && (leftMotorBack.getCurrentPosition() < targetTurn_LLB) && (rightMotorFront.getCurrentPosition() > targetTurn_LRF) && opModeIsActive() && runtime.milliseconds() < 4000) {
             telemetry.addData("Target Position", targetTurn_LLF);
             telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
             telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
@@ -185,8 +192,9 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         rightMotorFront.setPower(0);
         rightMotorBack.setPower(0);
     }
+    //Turns right a certain number of degrees.
     public void turnRight(double degrees, double power) {
-
+        runtime.reset();
         leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -201,7 +209,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         int targetTurn_RRF = (int)(degrees * TICKS_PER_DEGREE_RRF * TICKS_MULTIPLIER);
         int targetTurn_RRB = (int)(degrees * TICKS_PER_DEGREE_RRB * TICKS_MULTIPLIER);
 
-        while ((leftMotorFront.getCurrentPosition() > targetTurn_RLF) && (rightMotorBack.getCurrentPosition() < targetTurn_RRB) && (leftMotorBack.getCurrentPosition() > targetTurn_RLB) && (rightMotorFront.getCurrentPosition() < targetTurn_RRF) && opModeIsActive()) {
+        while ((leftMotorFront.getCurrentPosition() > targetTurn_RLF) && (rightMotorBack.getCurrentPosition() < targetTurn_RRB) && (leftMotorBack.getCurrentPosition() > targetTurn_RLB) && (rightMotorFront.getCurrentPosition() < targetTurn_RRF) && opModeIsActive() && runtime.milliseconds() < 4000) {
             telemetry.addData("Target Position", targetTurn_RLF);
             telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
             telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
@@ -219,6 +227,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         rightMotorBack.setPower(0);
     }
 
+    //Does all the stuff when init is pressed on phone
     public void initialization() {
         leftMotorFront = hardwareMap.get(DcMotor.class, "left_motor_front");
         leftMotorBack = hardwareMap.get(DcMotor.class, "left_motor_back");
@@ -226,6 +235,8 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         rightMotorBack = hardwareMap.get(DcMotor.class, "right_motor_back");
         clawServo = hardwareMap.get(Servo.class, "claw_servo");
         armServo = hardwareMap.get(Servo.class, "arm_servo");
+        spinnyBoy1 = hardwareMap.get(Servo.class, "spin1");
+        spinnyBoy2 = hardwareMap.get(Servo.class, "spin2");
         colorSensor = hardwareMap.colorSensor.get("color_sensor");
         distance = hardwareMap.get(DistanceSensor.class, "distance");
 
@@ -250,11 +261,14 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
 
         colorSensor.enableLed(false);
 
-        armUp();
+        armUp(); spinnyBoyUp();
     }
+
+    //Method to find angle, don't use. Just use getAngle
     public double formatAngle(AngleUnit angleUnit, double angle) {
         return AngleUnit.DEGREES.fromUnit(angleUnit, angle);
     }
+    //Returns if it's yellow or not. if it is, it returns "Yellow"
     public String senseColor() {
         color = "Yellow";
         red = colorSensor.red();
@@ -276,6 +290,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         }
         return color;
     }
+    //Drops the block, also resets it
     public void armUp() {
         armCooldown.reset();
         clawServo.setPosition(0.1);
@@ -283,6 +298,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         armServo.setPosition(.1);
         sleep(1000);
     }
+    //Picks up the block
     public void armDown() {
         armCooldown.reset();
         clawServo.setPosition(1);
@@ -290,10 +306,13 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         armServo.setPosition(1);
         sleep(1000);
     }
+    //Uses distance sensor, but we don't have one yet, on the robot
     public double getDistance() {
-        millimetersAway = distance.getDistance(DistanceUnit.MM);
-        return millimetersAway;
+        mmAway = distance.getDistance(DistanceUnit.MM);
+        return mmAway;
     }
+    //Method that returns current angle relative to start
+    //(left goes 0-180, right goes -180 to 0)
     public double getAngle() {
         heading = 0;
         runtime.reset();
@@ -303,6 +322,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         }
         return heading;
     }
+    //Turns left using gyroscope and angle. Turns left towards angle based on initial position
     public void accurateTurnLeft(double targetAngle, double power) {
         side = 0;
         degrees = 0;
@@ -315,8 +335,8 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             degrees = 360 - (angle - targetAngle);
             side = 2;
         }
-        while (degrees > 30) {
-            turnLeft(30, power);
+        while (degrees > 20) {
+            turnLeft(10, power);
             angle = getAngle();
             if (side == 1) {
                 degrees = targetAngle - angle;
@@ -327,7 +347,9 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         }
         turnLeft(degrees, power);
     }
+    //Turns right using gyroscope and angle. Turns right towards angle based on initial position
     public void accurateTurnRight(double targetAngle, double power) {
+        sleep(500);
         degrees = 0;
         side = 0;
         angle = getAngle();
@@ -340,7 +362,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             side = 2;
         }
         while (degrees > 20) {
-            turnRight(10, power / 2);
+            turnRight(10, power);
             angle = getAngle();
             if (side == 1) {
                 degrees = angle - targetAngle;
@@ -359,5 +381,31 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             side = 2;
         }
         turnRight(degrees, power);
+    }
+    public void spinnyBoyDown() {
+        spinnyBoy1.setPosition(.58);
+        spinnyBoy2.setPosition(.29);
+    }
+    public void spinnyBoyUp() {
+        spinnyBoy1.setPosition(.9);
+        spinnyBoy2.setPosition(0);
+    }
+    //25 mm = max distance before unable to pick up blocks
+    public void runUntil(double mm,double power) {
+        sleep(600);
+        mmAway= getDistance();
+        inchesAway = mmAway / 25.4;
+        inches = mm / 25.4;
+        if (inchesAway < inches) {
+            return;
+        }
+        inchesTraveling = inchesAway - inches;
+        if (inchesTraveling > 4) {
+            runTo((inchesTraveling - 4) * .6, power);
+        }
+        mmAway= getDistance();
+        inchesAway = mmAway / 25.4;
+        inchesTraveling = inchesAway - inches;
+        runTo(inchesTraveling * .6, power * .8);
     }
 }

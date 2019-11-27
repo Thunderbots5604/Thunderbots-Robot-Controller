@@ -30,7 +30,7 @@ Detects Skystone and brings it to the other side, then gets the next skystone an
  */
 
 
-@Autonomous(name="AutoColorBlue", group="Test")
+@Autonomous(name="AutoColorBlue", group="Autonomous Competition")
 public class AutoColorBlue extends GodFatherOfAllAutonomous {
     private String color = null;
     private int blockNumber = 6;
@@ -42,7 +42,7 @@ public class AutoColorBlue extends GodFatherOfAllAutonomous {
         waitForStart();
 
         //get to the first block, might need editiing depending on color sensor placement
-        runTo(18, allPower);
+        runTo(10, allPower);
         turnLeft(40, allPower);
         runTo(3, allPower);
         turnLeft(20, allPower);
@@ -57,7 +57,7 @@ public class AutoColorBlue extends GodFatherOfAllAutonomous {
             //if it's not the skystone, move on. Otherwise, exit loop
             if (color.equals("Yellow")){
 
-                runTo(-8, allPower);
+                runTo(-6, allPower);
                 blockNumber -= 1;
             }
             else {
@@ -67,31 +67,35 @@ public class AutoColorBlue extends GodFatherOfAllAutonomous {
             telemetry.update();
         }
         //grab block
-        turnRight(60, allPower);
-        runTo(10, allPower / 2);
+        runTo(4, allPower);
+        turnRight(100, allPower);
+        runTo(5, allPower / 2);
         armDown();
         //back up and turn towards other side
-        runTo(-15, allPower);
-        turnLeft(75, allPower);
+        runTo(-10, allPower);
+        turnLeft(70, allPower);
+        accurateTurnLeft(90, allPower);
         //move (distance depending on block location) to base
-        runTo(12*(6-blockNumber)+60, allPower);
+        runTo(8*(6-blockNumber)+17, allPower);
         //drop in block
         armUp();
         //back to original place + 3 block lengths to go to next block
-        runTo(-(12*(6-blockNumber)+60), allPower);
-        runTo(-12, allPower);
+        runTo(-(12*(6-blockNumber)+20), allPower);
+        runTo(-24, allPower);
         //orient towards next skystone
-        turnRight(90, allPower);
+        turnRight(120, allPower);
         //grab next skystone
         runTo(10, allPower);
         runTo(5, allPower / 2);
         armDown();
         //head to base again
-        runTo(-15, allPower);
-        accurateTurnLeft(80, allPower);
-        runTo(12*(6-blockNumber)+96, allPower);
+        runTo(-18, allPower);
+        turnLeft(70, allPower);
+        accurateTurnLeft(90, allPower);
+        runTo(8*(6-blockNumber)+17, allPower);
+        runTo(24, allPower);
         //drop in next skystone
         armUp();
-        runTo(-20, allPower);
+        runTo(-2, allPower);
     }
 }

@@ -24,8 +24,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
-@Autonomous(name="AutoParkRight.java", group="Parking")
-public class AutoParkRight extends GodFatherOfAllAutonomous {
+@Autonomous(name="AutoParkLeft", group="Parking")
+public class AutoParkLeft extends GodFatherOfAllAutonomous {
 
     @Override
     public void runOpMode() {
@@ -33,12 +33,10 @@ public class AutoParkRight extends GodFatherOfAllAutonomous {
 
         waitForStart();
 
-        sleep(20000);
+        runTo(15, allPower);
 
-        runTo(15, allPower / 2);
+        turnRight(60, allPower);
 
-        accurateTurnLeft(85, allPower);
-
-        runTo(30, allPower / 2);
+        runTo(30, allPower);
     }
 }

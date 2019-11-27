@@ -31,20 +31,20 @@ public class AutoFoundationRed extends GodFatherOfAllAutonomous {
     public void runOpMode() {
         initialization();
 
-        telemetry.addData("Should be set up", "so that it can go straight and not hit the foundation.");
         waitForStart();
 
-        //position to move foundation into base
-        runTo(60, allPower);
-        accurateTurnRight(-90, .25);
-        runTo(24, allPower);
-        accurateTurnRight(-170, .25);
-        //RAMMING SPEED
-        runTo(80, 1); //Add a bit of distance to overcome any resistance
-        //Go back to the line
-        runTo(-10, allPower);
-        accurateTurnRight(90, .25);
-        runTo(48, allPower);
-        //This hasn't been tested yet. Hopefully Accurate Turn works.
+        //move to foundation
+        runTo(25, allPower);
+        //attach to foundation
+        spinnyBoyDown();
+        //back up
+        runTo(-20, allPower);
+        //Unattach from foundation
+        spinnyBoyUp();
+        runTo(-2.5, allPower);
+        //turn and move to line
+        turnLeft(70, allPower);
+        accurateTurnLeft(90, allPower);
+        runTo(30, allPower);
     }
 }

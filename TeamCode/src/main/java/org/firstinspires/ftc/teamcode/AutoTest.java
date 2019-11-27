@@ -24,8 +24,10 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
-@Autonomous(name="AutoParkLeft.java", group="Parking")
-public class AutoParkLeft extends GodFatherOfAllAutonomous {
+@Autonomous(name="AutoTest", group="Test")
+public class AutoTest extends GodFatherOfAllAutonomous {
+
+    private double distance;
 
     @Override
     public void runOpMode() {
@@ -33,10 +35,21 @@ public class AutoParkLeft extends GodFatherOfAllAutonomous {
 
         waitForStart();
 
-        runTo(15, allPower);
-
-        turnRight(60, allPower);
-
-        runTo(30, allPower);
+        runTo(19, allPower);
+        sleep(500);
+        runUntil(100, allPower);
+        sleep(500);
+        turnLeft(45, allPower);
+        runTo(3, allPower);
+        sleep(500);
+        accurateTurnLeft(90, allPower);
+        runTo(-10, allPower);
+        turnRight(10, allPower);
+        color = senseColor();
+        sleep(500);
+        telemetry.addData("color = ", color);
+        telemetry.update();
+        runTo(7, allPower);
+        color = senseColor();
     }
 }

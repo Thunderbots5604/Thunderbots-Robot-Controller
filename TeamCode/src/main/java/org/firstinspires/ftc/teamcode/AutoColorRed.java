@@ -24,13 +24,11 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
-/*
-Still Needs Testing. This should be the same as AutoColorRed, but for the blue side.
-Detects Skystone and brings it to the other side, then gets the next skystone and brings it to the other side.
- */
+
+//Still Needs Testing.
 
 
-@Autonomous(name="AutoColorRed", group="Competition")
+@Autonomous(name="AutoColorRed", group="Autonomous Competition")
 public class AutoColorRed extends GodFatherOfAllAutonomous {
     private String color = null;
     private int blockNumber = 6;
@@ -42,56 +40,69 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
         waitForStart();
 
         //get to the first block, might need editiing depending on color sensor placement
-        runTo(16, allPower);
-        turnLeft(40, allPower);
-        runTo(4, allPower);
-        turnLeft(20, allPower);
-        runTo(2, allPower);
-        accurateTurnLeft(85, allPower);
-        runTo(6, allPower);
-        //start testing blocks
-        while (blockNumber > 4){
-            //refresh color sensor
-            sleep(500);
+        runTo(19, allPower);
+        runUntil(90, allPower);
+        sleep(500);
+        turnLeft(45, allPower);
+        runTo(3, allPower);
+        sleep(500);
+        accurateTurnLeft(90, allPower);
+        runTo(-10, allPower);
+        turnRight(10, allPower);
+        color = senseColor();
+        if (color.equals("Yellow")) {
+            runTo(6, allPower);
             color = senseColor();
-            //if it's not the skystone, move on. Otherwise, exit loop
-            if (color.equals("Yellow")){
-
-                runTo(8, allPower);
+            blockNumber -= 1;
+            if (color.equals("Yellow")) {
+                runTo(6, allPower);
                 blockNumber -= 1;
             }
-            else {
-                break;
-            }
-            telemetry.addData("Scanning block", blockNumber);
-            telemetry.update();
         }
         //grab block
-        turnRight(60, allPower);
-        runTo(10, allPower / 2);
+        turnRight(30, allPower);
+        runTo(-2, allPower);
+        accurateTurnRight(0, allPower);
+        runUntil(20, allPower);
         armDown();
         //back up and turn towards other side
-        runTo(-15, allPower);
-        turnRight(75, allPower);
-        //move (distance depending on block location) to base
-        runTo(12*(6-blockNumber)+60, allPower);
+        runTo(-10, allPower);
+        turnRight(70, allPower);
+        accurateTurnRight(-88, allPower);
+        //move (distance depending on block location) to other side
+        runTo(8*(6-blockNumber)+17, allPower);
         //drop in block
         armUp();
         //back to original place + 3 block lengths to go to next block
-        runTo(-(12*(6-blockNumber)+60), allPower);
-        runTo(-12, allPower);
+
+        /*if (blockNumber != 4) {
+            runTo(-(12*(6-blockNumber)+20), allPower);
+            runTo(-24, allPower);
+            turnLeft(120, allPower);
+            runTo(10, allPower);
+        }
+        else {
+            runTo(-48, allPower);
+            turnLeft(100, allPower);
+            turnLeft(60, allPower);
+            runTo(5, allPower);
+            accurateTurnRight(10, allPower);
+            runTo(5, allPower);
+        }
         //orient towards next skystone
-        turnLeft(90, allPower);
+
         //grab next skystone
-        runTo(10, allPower);
-        runTo(5, allPower / 2);
+        runUntil(20, allPower);
         armDown();
         //head to base again
-        runTo(-15, allPower);
-        accurateTurnRight(-80, allPower);
-        runTo(12*(6-blockNumber)+96, allPower);
+        runTo(-18, allPower);
+        turnRight(70, allPower);
+        accurateTurnRight(-90, allPower);
+        runTo(8*(6-blockNumber)+17, allPower);
+        runTo(24, allPower);
         //drop in next skystone
         armUp();
-        runTo(-15, allPower);
+        //Run to park below bridge
+        runTo(2, allPower);*/
     }
 }

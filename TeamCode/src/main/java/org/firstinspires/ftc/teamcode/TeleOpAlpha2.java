@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 
-@TeleOp(name="TeleOpAlpha", group="Linear Opmode")
-public class TeleOpAlpha extends LinearOpMode {
+@TeleOp(name="TeleOpAlpha2", group="Linear Opmode")
+public class TeleOpAlpha2 extends LinearOpMode {
 
     // Declare OpMode members.
     //What's the time
@@ -18,7 +18,6 @@ public class TeleOpAlpha extends LinearOpMode {
     private ElapsedTime armCooldown = new ElapsedTime();
     private ElapsedTime armCooldownUp = new ElapsedTime();
     private ElapsedTime armCooldownDown = new ElapsedTime();
-    private ElapsedTime reset = new ElapsedTime();
 
     //Motors and Servos
     private DcMotor leftMotorFront = null;
@@ -27,6 +26,8 @@ public class TeleOpAlpha extends LinearOpMode {
     private DcMotor rightMotorBack = null;
     private Servo clawServo = null;
     private Servo armServo = null;
+    public Servo spinnyBoy1 = null;
+    public Servo spinnyBoy2 = null;
 
     //Multipliers
     private boolean reversed = false;
@@ -41,9 +42,7 @@ public class TeleOpAlpha extends LinearOpMode {
     //Position of claw and arm
     private double clawPosition = 0;
     private double armPosition = 0;
-    private double targetPositionArm = 0.1;
-    private double targetPositionClaw = 0.1;
-    private int countLeftButton = 0;
+
 
     @Override
     public void runOpMode() {
@@ -54,6 +53,8 @@ public class TeleOpAlpha extends LinearOpMode {
         rightMotorBack = hardwareMap.get(DcMotor.class, "right_motor_back");
         clawServo = hardwareMap.get(Servo.class, "claw_servo");
         armServo = hardwareMap.get(Servo.class, "arm_servo");
+        spinnyBoy1 = hardwareMap.get(Servo.class, "spin1");
+        spinnyBoy2 = hardwareMap.get(Servo.class, "spin2");
 
         leftMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -151,44 +152,37 @@ public class TeleOpAlpha extends LinearOpMode {
             } else {
                 clawMoving = false;
             }
-            // Double Press, does an emergency reset
-            if (gamepad1.left_bumper) {
-                countLeftButton++;
+            //Claw closing and arm upping
+            //If right bumper is pressed, left bumper is not pressed, and arm isn't running
+            if (gamepad1.right_bumper && !gamepad1.left_bumper && clawMoving == false && clawPosition <= .9) {
+                clawServo.setPosition(1);
+                armCooldownUp.reset();
+                positionSetUp = false;
             }
-            if (reset.milliseconds() > 100) {
-                reset.reset();
-                countLeftButton = 0;
+            if (clawPosition >= .9 && positionSetUp == false && armCooldownUp.milliseconds() >= 600) {
+                armServo.setPosition(1);
+                positionSetUp = true;
             }
-            if (countLeftButton == 2) {
-                armServo.setPosition(.1);
+            //grabs block
+            //Claw opening and arm downing
+            if (!gamepad1.right_bumper && gamepad1.left_bumper && clawMoving == false && clawPosition >= .15) {
                 clawServo.setPosition(.1);
-                countLeftButton = 0;
-            } else {
-
-                //Claw closing and arm upping
-                //If right bumper is pressed, left bumper is not pressed, and arm isn't running
-                if (gamepad1.right_bumper && !gamepad1.left_bumper && clawMoving == false && armPosition <= .9) {
-                    clawServo.setPosition(1);
-                    targetPositionClaw = 1;
-                    positionSetUp = false;
-                }
-                if (clawPosition >= .9 && positionSetUp == false) {
-                    armServo.setPosition(1);
-                    targetPositionArm = 1;
-                    positionSetUp = true;
-                }
-                //grabs block
-                //Claw opening and arm downing
-                if (!gamepad1.right_bumper && gamepad1.left_bumper && armPosition >= .15 && targetPositionClaw != 1) {
-                    clawServo.setPosition(.1);
-                    targetPositionClaw = .1;
-                    positionSetDown = false;
-                }
-                if (clawPosition <= .15 && positionSetDown == false) {
-                    armServo.setPosition(.1);
-                    targetPositionArm = .1;
-                    positionSetDown = true;
-                }
+                armCooldownDown.reset();
+                positionSetDown = false;
+            }
+            if (clawPosition <= .15 && positionSetDown == false && armCooldownDown.milliseconds() >= 600) {
+                armServo.setPosition(.1);
+                positionSetDown = true;
+            }
+            //Spinner down
+            if (gamepad1.dpad_left || gamepad2.dpad_left) {
+                spinnyBoy1.setPosition(.45);
+                spinnyBoy2.setPosition(.45);
+            }
+            //Spinner Up
+            if (gamepad1.dpad_right || gamepad2.dpad_right) {
+                spinnyBoy1.setPosition(.9);
+                spinnyBoy2.setPosition(0);
             }
         }
         //If opMode is turned off, instantly power off motors

@@ -24,8 +24,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
-@Autonomous(name="Autonomous_Foundation Blue", group="Autonomous Competition")
-public class AutoFoundationBlue extends GodFatherOfAllAutonomous {
+@Autonomous(name="AutoParkRight", group="Parking")
+public class AutoParkRight extends GodFatherOfAllAutonomous {
 
     @Override
     public void runOpMode() {
@@ -33,18 +33,12 @@ public class AutoFoundationBlue extends GodFatherOfAllAutonomous {
 
         waitForStart();
 
-        //move to foundation
-        runTo(25, allPower);
-        //attach to foundation
-        spinnyBoyDown();
-        //back up
-        runTo(-20, allPower);
-        //Unattach from foundation
-        spinnyBoyUp();
-        runTo(-2.5, allPower);
-        //turn and move to line
-        turnRight(70, allPower);
-        accurateTurnRight(-90, allPower);
-        runTo(30, allPower);
+        sleep(20000);
+
+        runTo(15, allPower / 2);
+
+        accurateTurnLeft(85, allPower);
+
+        runTo(30, allPower / 2);
     }
 }
