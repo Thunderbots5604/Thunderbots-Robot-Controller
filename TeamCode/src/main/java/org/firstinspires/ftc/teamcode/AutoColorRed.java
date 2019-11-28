@@ -41,17 +41,15 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
 
         //get to the first block, might need editiing depending on color sensor placement
         runTo(19, allPower);
-        runUntil(90, allPower);
+        runUntil(3, allPower);
         sleep(500);
-        turnLeft(45, allPower);
-        runTo(3, allPower);
-        sleep(500);
-        accurateTurnLeft(90, allPower);
-        runTo(-10, allPower);
-        turnRight(10, allPower);
+        turnLeft(90, allPower);
+        runTo(-16, allPower);
+        accurateTurnRight(90, allPower);
+        runTo(4, allPower);
         color = senseColor();
         if (color.equals("Yellow")) {
-            runTo(6, allPower);
+            runTo(8, allPower);
             color = senseColor();
             blockNumber -= 1;
             if (color.equals("Yellow")) {
@@ -63,32 +61,47 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
         turnRight(30, allPower);
         runTo(-2, allPower);
         accurateTurnRight(0, allPower);
-        runUntil(20, allPower);
+        runTo(12, allPower / 2);
         armDown();
         //back up and turn towards other side
         runTo(-10, allPower);
         turnRight(70, allPower);
-        accurateTurnRight(-88, allPower);
+        accurateTurnRight(-90, allPower);
         //move (distance depending on block location) to other side
-        runTo(8*(6-blockNumber)+17, allPower);
+        runTo(10*(6-blockNumber)+17, allPower);
         //drop in block
         armUp();
         //back to original place + 3 block lengths to go to next block
-
-        /*if (blockNumber != 4) {
-            runTo(-(12*(6-blockNumber)+20), allPower);
-            runTo(-24, allPower);
-            turnLeft(120, allPower);
-            runTo(10, allPower);
+        turnLeft(5, allPower);
+        if (blockNumber != 4){
+            runTo(-48, allPower + .25);
+            if (blockNumber == 5){
+                runTo(-8, allPower);
+            }
+            turnLeft(85, allPower);
+            runTo(12, allPower / 2);
+            armDown();
+            runTo(-12, allPower);
+            turnRight(45, allPower);
+            accurateTurnRight(-90, allPower);
+            turnRight(10, allPower);
+            runTo(60, allPower);
+            if (blockNumber == 5){
+                runTo(8, allPower);
+            }
+            armUp();
+        } else {
+            runTo(-54, allPower + .25);
+            turnLeft(110, allPower + .25);
+            runTo(8, allPower);
+            armDown();
+            runTo(-8, allPower);
+            turnRight(90, allPower);
+            accurateTurnRight(-90, allPower);
+            runTo(60, allPower);
+            armUp();
         }
-        else {
-            runTo(-48, allPower);
-            turnLeft(100, allPower);
-            turnLeft(60, allPower);
-            runTo(5, allPower);
-            accurateTurnRight(10, allPower);
-            runTo(5, allPower);
-        }
+        /*
         //orient towards next skystone
 
         //grab next skystone
