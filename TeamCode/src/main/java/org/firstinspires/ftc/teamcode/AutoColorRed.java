@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -78,7 +79,8 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
             if (blockNumber == 5){
                 runTo(-8, allPower);
             }
-            turnLeft(85, allPower);
+            turnLeft(75, allPower);
+            accurateTurnLeft(0, allPower);
             runTo(12, allPower / 2);
             armDown();
             runTo(-12, allPower);
@@ -89,33 +91,18 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
             if (blockNumber == 5){
                 runTo(8, allPower);
             }
-            armUp();
         } else {
             runTo(-54, allPower + .25);
-            turnLeft(110, allPower + .25);
-            runTo(8, allPower);
+            turnLeft(90, allPower + .25);
+            accurateTurnLeft(25, allPower + .25);
+            runTo(10, allPower);
+            runTo(2, allPower);
             armDown();
             runTo(-8, allPower);
             turnRight(90, allPower);
             accurateTurnRight(-90, allPower);
-            runTo(60, allPower);
-            armUp();
+            turnRight(10, allPower);
+            runTo(60, allPower + .25);
         }
-        /*
-        //orient towards next skystone
-
-        //grab next skystone
-        runUntil(20, allPower);
-        armDown();
-        //head to base again
-        runTo(-18, allPower);
-        turnRight(70, allPower);
-        accurateTurnRight(-90, allPower);
-        runTo(8*(6-blockNumber)+17, allPower);
-        runTo(24, allPower);
-        //drop in next skystone
-        armUp();
-        //Run to park below bridge
-        runTo(2, allPower);*/
     }
 }

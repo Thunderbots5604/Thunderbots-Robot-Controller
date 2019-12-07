@@ -80,7 +80,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public final float TICKS_PER_DEGREE_RLB = -10.34888889F;
     public final float TICKS_PER_DEGREE_RRF = 8.142222222F;
     public final float TICKS_PER_DEGREE_RRB = 12.42888889F;
-    public final float TICKS_MULTIPLIER = (20F / 25F);//(2750F / 3501.83333333333333333333F);/*(Ticks in competition for wall to foundation) / (Ticks in testing for wall to foundation) */
+    public final float TICKS_MULTIPLIER = 1F;
 
     //Vuforia
     public int location = -1;
@@ -383,19 +383,19 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         turnRight(degrees, power);
     }
     public void spinnyBoyDown() {
-        spinnyBoy1.setPosition(.58);
-        spinnyBoy2.setPosition(.29);
+        spinnyBoy1.setPosition(.5);
+        spinnyBoy2.setPosition(.4);
     }
     public void spinnyBoyUp() {
         spinnyBoy1.setPosition(.9);
         spinnyBoy2.setPosition(0);
     }
     //25 mm = max distance before unable to pick up blocks
-    public void runUntil(double mm,double power) {
+    public void runUntil(double inches,double power) {
         sleep(600);
         mmAway= getDistance();
         inchesAway = mmAway / 25.4;
-        inches = mm / 25.4;
+        //inches = mm / 25.4;
         if (inchesAway < inches) {
             return;
         }
