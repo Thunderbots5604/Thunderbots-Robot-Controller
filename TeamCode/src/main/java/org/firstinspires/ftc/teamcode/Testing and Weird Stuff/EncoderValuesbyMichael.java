@@ -23,7 +23,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.Came
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
-
+/* Michael, please comment your code*/
 @Autonomous(name="EncoderValueTest_Michael", group="Test")
 public class EncoderValuesbyMichael extends GodFatherOfAllAutonomous {
     private ElapsedTime time = new ElapsedTime();

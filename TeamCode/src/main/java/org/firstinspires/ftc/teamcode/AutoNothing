@@ -24,7 +24,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
-
+/*Does literal nothing except explaining it won't do anything in the telemetry data. Only use this if
+something is very broken */
 
 @Autonomous(name="Autonomous Nothing", group="Autonomous Competition")
 public class AutoNothing extends GodFatherOfAllAutonomous {

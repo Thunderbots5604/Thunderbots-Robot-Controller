@@ -24,6 +24,11 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
+/*This is the encoder values program made by Jack. It should be run after setting the TICKS_MULTIPLIER
+to 0 in GodFatherOfAllAutonomous. Then, change the value to 20F / How far it actually went. This means
+that the ticks will be multiplied such that they go to 20 inches when they are told to go to 20 inches.
+ */
+
 @Autonomous(name="EncoderValueTest_Jack", group="Test")
 public class EncoderValuesbyJack extends GodFatherOfAllAutonomous {
     private ElapsedTime time = new ElapsedTime();
@@ -33,11 +38,10 @@ public class EncoderValuesbyJack extends GodFatherOfAllAutonomous {
         initialization();
 
         waitForStart();
-
-        time.reset();
-
+        //Runs for what it thinks is 20 inches using the non changed tick multiplier. This is also
+        //where the 20 in the TICKS_MULTIPLIER comes from.
         runTo(20, allPower);
-
+        //make sure everything is stopped, just in case
         leftMotorFront.setPower(0);
         leftMotorBack.setPower(0);
         rightMotorFront.setPower(0);

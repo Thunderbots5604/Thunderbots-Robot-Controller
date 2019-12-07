@@ -7,7 +7,12 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+/*This is a program that we mess with from time to time, mostly as a joke. It is designed to be needlessly
+hard to control.
+Here is a list of what it does:
+Go forward is rotate left joystick counterclockwise
 
+ */
 
 @TeleOp(name="TeleOpGamma", group="Linear Opmode")
 public class TeleOpGamma extends LinearOpMode {

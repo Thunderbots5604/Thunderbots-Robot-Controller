@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -165,13 +166,13 @@ public class TeleOpAlpha2 extends LinearOpMode {
             }
             //grabs block
             //Claw opening and arm downing
-            if (!gamepad1.right_bumper && gamepad1.left_bumper && clawMoving == false && clawPosition >= .15) {
-                clawServo.setPosition(.1);
+            if (!gamepad1.right_bumper && gamepad1.left_bumper && clawMoving == false && armPosition >= .15) {
+                armServo.setPosition(.1);
                 armCooldownDown.reset();
                 positionSetDown = false;
             }
-            if (clawPosition <= .15 && positionSetDown == false && armCooldownDown.milliseconds() >= 600) {
-                armServo.setPosition(.1);
+            if (armPosition <= .15 && positionSetDown == false && armCooldownDown.milliseconds() >= 600) {
+                clawServo.setPosition(.1);
                 positionSetDown = true;
             }
             //Spinner down
