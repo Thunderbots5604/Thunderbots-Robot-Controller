@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -25,21 +24,23 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
+@Autonomous(name="AutoPark", group="Parking")
+public class AutoPark extends GodFatherOfAllAutonomous {
 
-//Basically Pseudo code at this point. We need to have the robot arm methods and make some other stuff before something like this will work
-
-
-@Autonomous(name="AutoColorBlue", group="Block side")
-public class AutoColorBlue extends GodFatherOfAllAutonomous {
-    private String color = null;
-    private int blockNumber = 6;
     @Override
     public void runOpMode() {
 
+        //Just parks on the line
+
         initialization();
+
+        telemetry.addData("Robot should", "face the line.");
+        telemetry.update();
 
         waitForStart();
 
-        runTo(24, allPower, )
+        //sleep first to allow the other robot to maneuver
+        sleep(20000);
+        runTo(24, allPower / 3);
     }
 }

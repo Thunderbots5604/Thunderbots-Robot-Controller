@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -25,21 +24,34 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
+@Autonomous(name="Value Test", group="Test")
+public class ValuesTest extends GodFatherOfAllAutonomous {
 
-//Basically Pseudo code at this point. We need to have the robot arm methods and make some other stuff before something like this will work
-
-
-@Autonomous(name="AutoColorBlue", group="Block side")
-public class AutoColorBlue extends GodFatherOfAllAutonomous {
-    private String color = null;
-    private int blockNumber = 6;
+    private double distance;
+    private double heading1;
+    private double heading2;
+    private double heading3;
     @Override
     public void runOpMode() {
-
         initialization();
 
         waitForStart();
 
-        runTo(24, allPower, )
+
+        while(opModeIsActive()) {
+
+            telemetry.addData("Angle 1", heading1);
+            telemetry.addData("Angle 2", heading2);
+            telemetry.addData("Angle 3", heading3);
+            telemetry.update();
+            heading1 = 0; heading2 = 0; heading3 = 0;
+            runtime.reset();
+            while (runtime.milliseconds() < 1000 && heading1 == 0 && heading2 == 0 && heading3 == 0) {
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                heading1 = formatAngle(angles.angleUnit, angles.firstAngle);
+                heading2 = formatAngle(angles.angleUnit, angles.secondAngle);
+                heading3 = formatAngle(angles.angleUnit, angles.thirdAngle);
+            }
+        }
     }
 }

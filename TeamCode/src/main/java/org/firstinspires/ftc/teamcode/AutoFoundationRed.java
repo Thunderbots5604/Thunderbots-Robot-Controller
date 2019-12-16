@@ -24,7 +24,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
-@Autonomous(name="Autonomous_Foundation Red", group="Autonomous Competition")
+@Autonomous(name="Autonomous_Foundation Red", group="Foundation")
 public class AutoFoundationRed extends GodFatherOfAllAutonomous {
 
     @Override
@@ -33,45 +33,6 @@ public class AutoFoundationRed extends GodFatherOfAllAutonomous {
 
         waitForStart();
 
-        //move to foundation
-
-
-        turnLeft(20, allPower);
-        runTo(-42, allPower);
-        turnLeft(60, allPower);
-        accurateTurnLeft(90, allPower);
-        turnRight(10, allPower);
-        runTo(-32.5, allPower * .7);
-        runTo(-3, allPower * .6);
-        sleep(1000);
-        //attach to foundation
-        spinnyBoyDown();
-        //back up
-        sleep(1000);
-        mmAway = getDistance();
-        leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftMotorFront.setPower(.9);
-        leftMotorBack.setPower(.9);
-        rightMotorFront.setPower(.5);
-        rightMotorBack.setPower(.4);
-        while(mmAway > 250) {
-            mmAway = getDistance();
-        }
-        leftMotorFront.setPower(0);
-        leftMotorBack.setPower(0);
-        rightMotorFront.setPower(0);
-        rightMotorBack.setPower(0);
-        //Unattach from foundation
-        spinnyBoyUp();
-        sleep(1000);
-        runTo(1, allPower);
-        //turn and move to line
-        turnRight(70, allPower);
-        accurateTurnRight(0, allPower);
-        runTo(37, .9);
 
     }
 }

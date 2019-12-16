@@ -35,10 +35,6 @@ public class AutoParkRight extends GodFatherOfAllAutonomous {
 
         sleep(20000);
 
-        runTo(15, allPower / 2);
 
-        accurateTurnLeft(85, allPower);
-
-        runTo(30, allPower / 2);
     }
 }

@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -25,21 +24,49 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
+@Disabled
+@Autonomous(name="AutoTest", group="Test")
+public class AutoTest extends GodFatherOfAllAutonomous {
 
-//Basically Pseudo code at this point. We need to have the robot arm methods and make some other stuff before something like this will work
+    private double distance;
 
-
-@Autonomous(name="AutoColorBlue", group="Block side")
-public class AutoColorBlue extends GodFatherOfAllAutonomous {
-    private String color = null;
-    private int blockNumber = 6;
     @Override
     public void runOpMode() {
-
         initialization();
+
+        spinnyBoyDown();
 
         waitForStart();
 
-        runTo(24, allPower, )
+
+        runTo(1, allPower);
+
+        leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        leftMotorFront.setPower(allPower / 4);
+        leftMotorBack.setPower(allPower / 2);
+        rightMotorFront.setPower(allPower);
+        rightMotorBack.setPower(allPower);
+
+        mmAway = getDistance();
+        telemetry.addData("mmAway", mmAway);
+        telemetry.update();
+        sleep(2000);
+        while(mmAway > 400) {
+            mmAway = getDistance();
+            telemetry.addData("mmAway", mmAway);
+            telemetry.update();
+            sleep(1000);
+        }
+        telemetry.addData("Done", ":)");
+        telemetry.update();
+        leftMotorFront.setPower(0);
+        leftMotorBack.setPower(0);
+        rightMotorFront.setPower(0);
+        rightMotorBack.setPower(0);
+        sleep(50000);
     }
 }

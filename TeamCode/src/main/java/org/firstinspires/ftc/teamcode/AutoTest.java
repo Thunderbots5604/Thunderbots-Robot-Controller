@@ -33,39 +33,8 @@ public class AutoTest extends GodFatherOfAllAutonomous {
     public void runOpMode() {
         initialization();
 
-        spinnyBoyDown();
-
         waitForStart();
 
-
-        runTo(1, allPower);
-
-        leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        leftMotorFront.setPower(allPower / 4);
-        leftMotorBack.setPower(allPower / 2);
-        rightMotorFront.setPower(allPower);
-        rightMotorBack.setPower(allPower);
-
-        mmAway = getDistance();
-        telemetry.addData("mmAway", mmAway);
-        telemetry.update();
-        sleep(2000);
-        while(mmAway > 400) {
-            mmAway = getDistance();
-            telemetry.addData("mmAway", mmAway);
-            telemetry.update();
-            sleep(1000);
-        }
-        telemetry.addData("Done", ":)");
-        telemetry.update();
-        leftMotorFront.setPower(0);
-        leftMotorBack.setPower(0);
-        rightMotorFront.setPower(0);
-        rightMotorBack.setPower(0);
-        sleep(50000);
+        runTo(36, .7, .3);
     }
 }

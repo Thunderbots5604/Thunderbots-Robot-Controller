@@ -33,10 +33,8 @@ public class AutoParkLeft extends GodFatherOfAllAutonomous {
 
         waitForStart();
 
-        runTo(15, allPower);
+        sleep(20000);
 
-        turnRight(60, allPower);
 
-        runTo(30, allPower);
     }
 }

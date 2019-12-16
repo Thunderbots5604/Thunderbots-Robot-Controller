@@ -48,20 +48,13 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public DcMotor leftMotorBack = null;
     public DcMotor rightMotorFront = null;
     public DcMotor rightMotorBack = null;
-    /*public DcMotor verticalSlide1 = null;
-    public DcMotor verticalSlide2 = null;
-    public DcMotor feed1 = null;
-    public DcMotor feed2 = null;
-    public Servo horizontalSlide = null;
-    public Servo armServo = null;*/
-    public Servo armServo = null;
     public Servo clawServo = null;
+    public Servo armServo = null;
     public Servo spinnyBoy1 = null;
     public Servo spinnyBoy2 = null;
 
     //All Power for autonomous running
-    public double allPower = .6;
-    public double slowPower = .35;
+    public double allPower = .55;
 
     //Color Sensor
     public ColorSensor colorSensor;
@@ -78,9 +71,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public double inches;
 
     //Ticks
-    //Ticks for forward and backwards
     public final float TICKS_PER_INCH = 45.501275F;
-    //Ticks for Turning
     public final float TICKS_PER_DEGREE_LLF = 6.761111111F;
     public final float TICKS_PER_DEGREE_LLB = 16.54305556F;
     public final float TICKS_PER_DEGREE_LRF = -11.22222222F;
@@ -89,15 +80,6 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public final float TICKS_PER_DEGREE_RLB = -10.34888889F;
     public final float TICKS_PER_DEGREE_RRF = 8.142222222F;
     public final float TICKS_PER_DEGREE_RRB = 12.42888889F;
-    //Ticks for Strafing
-    public final float TICKS_PER_STRAFE_LLF = 10F;
-    public final float TICKS_PER_STRAFE_LLB = 10F;
-    public final float TICKS_PER_STRAFE_LRF = 10F;
-    public final float TICKS_PER_STRAFE_LRB = 10F;
-    public final float TICKS_PER_STRAFE_RLF = 10F;
-    public final float TICKS_PER_STRAFE_RLB = 10F;
-    public final float TICKS_PER_STRAFE_RRF = 10F;
-    public final float TICKS_PER_STRAFE_RRB = 10F;
     public final float TICKS_MULTIPLIER = 20F / 24.5F;
 
     //Vuforia
@@ -117,8 +99,6 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public double angle = 0;
     public double degrees = 0;
     public int side = 0;
-    boolean angleNeg;
-    boolean targetNeg;
 
     @Override
     public void runOpMode() {
@@ -126,7 +106,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         telemetry.update();
     }
     //Use encoders to move robot a certain number of inches. For power, use allPower
-    public void runTo(double inches, double power, double slowerPower) {
+    public void runTo(double inches, double power) {
         runtime.reset();
         leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -137,9 +117,8 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         int targetPosition = (int)(inches * TICKS_PER_INCH * TICKS_MULTIPLIER);
-
         if (inches > 0) {
-            while ((leftMotorBack.getCurrentPosition() < targetPosition * .7) && (rightMotorBack.getCurrentPosition() > -targetPosition * .7) && opModeIsActive() && runtime.milliseconds() < 4000) {
+            while ((leftMotorBack.getCurrentPosition() < targetPosition) && (rightMotorBack.getCurrentPosition() > -targetPosition) && opModeIsActive() && runtime.milliseconds() < 4000) {
                 telemetry.addData("Target Position", targetPosition);
                 telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
                 telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
@@ -155,43 +134,19 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                 rightMotorFront.setPower(power);
                 rightMotorBack.setPower(power);
             }
-            leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            while ((leftMotorBack.getCurrentPosition() < targetPosition) && (rightMotorBack.getCurrentPosition() > -targetPosition) && opModeIsActive() && runtime.milliseconds() < 4000) {
-                telemetry.addData("Target Position", targetPosition);
-                telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
-                telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
-                telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
-                telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
-                telemetry.addData("Left Motor Front Power", leftMotorFront.getPower());
-                telemetry.addData("Left Motor Back Power", leftMotorBack.getPower());
-                telemetry.addData("Right Motor Front Power", rightMotorFront.getPower());
-                telemetry.addData("Right Motor Back Power", rightMotorBack.getPower());
-                telemetry.update();
-                leftMotorFront.setPower(slowerPower);
-                leftMotorBack.setPower(slowerPower);
-                rightMotorFront.setPower(slowerPower);
-                rightMotorBack.setPower(slowerPower);
-            }
         }
         else {
-            while ((leftMotorBack.getCurrentPosition() < targetPosition) && (rightMotorBack.getCurrentPosition() > -targetPosition) && opModeIsActive() && runtime.milliseconds() < 4000) {
-                telemetry.addData("Target Position", targetPosition);
+            while ((leftMotorBack.getCurrentPosition() < -targetPosition) && (rightMotorBack.getCurrentPosition() < -targetPosition) && opModeIsActive() && runtime.milliseconds() < 4000) {
+                telemetry.addData("Target Position", -targetPosition);
                 telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
                 telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
                 telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
                 telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
-                telemetry.addData("Left Motor Front Power", leftMotorFront.getPower());
-                telemetry.addData("Left Motor Back Power", leftMotorBack.getPower());
-                telemetry.addData("Right Motor Front Power", rightMotorFront.getPower());
-                telemetry.addData("Right Motor Back Power", rightMotorBack.getPower());
                 telemetry.update();
-                leftMotorFront.setPower(-slowerPower);
-                leftMotorBack.setPower(-slowerPower);
-                rightMotorFront.setPower(-slowerPower);
-                rightMotorBack.setPower(-slowerPower);
+                leftMotorFront.setPower(-power);
+                leftMotorBack.setPower(-power);
+                rightMotorFront.setPower(-power);
+                rightMotorBack.setPower(-power);
             }
         }
         leftMotorFront.setPower(0);
@@ -204,7 +159,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
     //Turns left a certain number of degrees.
-    public void turnLeft(double degrees, double power, double slowerPower) {
+    public void turnLeft(double degrees, double power) {
         runtime.reset();
         leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -220,7 +175,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         int targetTurn_LRF = (int)(degrees * TICKS_PER_DEGREE_LRF * TICKS_MULTIPLIER);
         int targetTurn_LRB = (int)(degrees * TICKS_PER_DEGREE_LRB * TICKS_MULTIPLIER);
 
-        while ((leftMotorFront.getCurrentPosition() < targetTurn_LLF * .7) && (rightMotorBack.getCurrentPosition() > targetTurn_LRB * .7) && (leftMotorBack.getCurrentPosition() < targetTurn_LLB * .7) && (rightMotorFront.getCurrentPosition() > targetTurn_LRF * .7) && opModeIsActive() && runtime.milliseconds() < 4000) {
+        while ((leftMotorFront.getCurrentPosition() < targetTurn_LLF) && (rightMotorBack.getCurrentPosition() > targetTurn_LRB) && (leftMotorBack.getCurrentPosition() < targetTurn_LLB) && (rightMotorFront.getCurrentPosition() > targetTurn_LRF) && opModeIsActive() && runtime.milliseconds() < 4000) {
             telemetry.addData("Target Position", targetTurn_LLF);
             telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
             telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
@@ -232,25 +187,13 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             rightMotorFront.setPower(power);
             rightMotorBack.setPower(power);
         }
-        while ((leftMotorFront.getCurrentPosition() < targetTurn_LLF) && (rightMotorBack.getCurrentPosition() > targetTurn_LRB) && (leftMotorBack.getCurrentPosition() < targetTurn_LLB) && (rightMotorFront.getCurrentPosition() > targetTurn_LRF) && opModeIsActive() && runtime.milliseconds() < 4000) {
-            telemetry.addData("Target Position", targetTurn_LLF);
-            telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
-            telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
-            telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
-            telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
-            telemetry.update();
-            leftMotorFront.setPower(-slowerPower);
-            leftMotorBack.setPower(-slowerPower);
-            rightMotorFront.setPower(slowerPower);
-            rightMotorBack.setPower(slowerPower);
-        }
         leftMotorFront.setPower(0);
         leftMotorBack.setPower(0);
         rightMotorFront.setPower(0);
         rightMotorBack.setPower(0);
     }
     //Turns right a certain number of degrees.
-    public void turnRight(double degrees, double power, double slowerPower) {
+    public void turnRight(double degrees, double power) {
         runtime.reset();
         leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -266,18 +209,6 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         int targetTurn_RRF = (int)(degrees * TICKS_PER_DEGREE_RRF * TICKS_MULTIPLIER);
         int targetTurn_RRB = (int)(degrees * TICKS_PER_DEGREE_RRB * TICKS_MULTIPLIER);
 
-        while ((leftMotorFront.getCurrentPosition() > targetTurn_RLF * .7) && (rightMotorBack.getCurrentPosition() < targetTurn_RRB * .7) && (leftMotorBack.getCurrentPosition() > targetTurn_RLB * .8) && (rightMotorFront.getCurrentPosition() < targetTurn_RRF * .8) && opModeIsActive() && runtime.milliseconds() < 4000) {
-            telemetry.addData("Target Position", targetTurn_RLF);
-            telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
-            telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
-            telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
-            telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
-            telemetry.update();
-            leftMotorFront.setPower(power);
-            leftMotorBack.setPower(power);
-            rightMotorFront.setPower(-power);
-            rightMotorBack.setPower(-power);
-        }
         while ((leftMotorFront.getCurrentPosition() > targetTurn_RLF) && (rightMotorBack.getCurrentPosition() < targetTurn_RRB) && (leftMotorBack.getCurrentPosition() > targetTurn_RLB) && (rightMotorFront.getCurrentPosition() < targetTurn_RRF) && opModeIsActive() && runtime.milliseconds() < 4000) {
             telemetry.addData("Target Position", targetTurn_RLF);
             telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
@@ -285,119 +216,23 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
             telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
             telemetry.update();
-            leftMotorFront.setPower(slowerPower);
-            leftMotorBack.setPower(slowerPower);
-            rightMotorFront.setPower(-slowerPower);
-            rightMotorBack.setPower(-slowerPower);
-        }
-        leftMotorFront.setPower(0);
-        leftMotorBack.setPower(0);
-        rightMotorFront.setPower(0);
-        rightMotorBack.setPower(0);
-    }
-    public void strafeLeft(double inches, double power, double slowerPower) {
-        runtime.reset();
-        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        int targetStrafe_LLF = (int) (degrees * TICKS_PER_STRAFE_LLF * TICKS_MULTIPLIER);
-        int targetStrafe_LLB = (int) (degrees * TICKS_PER_STRAFE_LLB * TICKS_MULTIPLIER);
-        int targetStrafe_LRF = (int) (degrees * TICKS_PER_STRAFE_LRF * TICKS_MULTIPLIER);
-        int targetStrafe_LRB = (int) (degrees * TICKS_PER_STRAFE_LRB * TICKS_MULTIPLIER);
-
-        while ((leftMotorFront.getCurrentPosition() > targetStrafe_LLF * .7) && (rightMotorBack.getCurrentPosition() > targetStrafe_LRB * .7) && (leftMotorBack.getCurrentPosition() < targetStrafe_LLB * .7) && (rightMotorFront.getCurrentPosition() < targetStrafe_LRF * .7) && opModeIsActive() && runtime.milliseconds() < 4000) {
-            telemetry.addData("Target Position", targetStrafe_LLF);
-            telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
-            telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
-            telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
-            telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
-            telemetry.update();
             leftMotorFront.setPower(power);
-            leftMotorBack.setPower(-power);
-            rightMotorFront.setPower(-power);
-            rightMotorBack.setPower(power);
-        }
-        while ((leftMotorFront.getCurrentPosition() > targetStrafe_LLF) && (rightMotorBack.getCurrentPosition() > targetStrafe_LRB) && (leftMotorBack.getCurrentPosition() < targetStrafe_LLB) && (rightMotorFront.getCurrentPosition() < targetStrafe_LRF) && opModeIsActive() && runtime.milliseconds() < 4000) {
-            telemetry.addData("Target Position", targetStrafe_LLF);
-            telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
-            telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
-            telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
-            telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
-            telemetry.update();
-            leftMotorFront.setPower(slowerPower);
-            leftMotorBack.setPower(-slowerPower);
-            rightMotorFront.setPower(-slowerPower);
-            rightMotorBack.setPower(slowerPower);
-        }
-        leftMotorFront.setPower(0);
-        leftMotorBack.setPower(0);
-        rightMotorFront.setPower(0);
-        rightMotorBack.setPower(0);
-    }
-    public void strafeRight(double inches, double power, double slowerPower) {
-        runtime.reset();
-        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        int targetStrafe_RLF = (int)(degrees * TICKS_PER_STRAFE_RLF * TICKS_MULTIPLIER);
-        int targetStrafe_RLB = (int)(degrees * TICKS_PER_STRAFE_RLB * TICKS_MULTIPLIER);
-        int targetStrafe_RRF = (int)(degrees * TICKS_PER_STRAFE_RRF * TICKS_MULTIPLIER);
-        int targetStrafe_RRB = (int)(degrees * TICKS_PER_STRAFE_RRB * TICKS_MULTIPLIER);
-
-        while ((leftMotorFront.getCurrentPosition() < targetStrafe_RLF * .7) && (rightMotorBack.getCurrentPosition() < targetStrafe_RRB * .7) && (leftMotorBack.getCurrentPosition() > targetStrafe_RLB * .7) && (rightMotorFront.getCurrentPosition() > targetStrafe_RRF * .7) && opModeIsActive() && runtime.milliseconds() < 4000) {
-            telemetry.addData("Target Position", targetStrafe_RLF);
-            telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
-            telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
-            telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
-            telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
-            telemetry.update();
-            leftMotorFront.setPower(-power);
             leftMotorBack.setPower(power);
-            rightMotorFront.setPower(power);
+            rightMotorFront.setPower(-power);
             rightMotorBack.setPower(-power);
         }
-        while ((leftMotorFront.getCurrentPosition() < targetStrafe_RLF) && (rightMotorBack.getCurrentPosition() < targetStrafe_RRB) && (leftMotorBack.getCurrentPosition() > targetStrafe_RLB) && (rightMotorFront.getCurrentPosition() > targetStrafe_RRF) && opModeIsActive() && runtime.milliseconds() < 4000) {
-            telemetry.addData("Target Position", targetStrafe_RLF);
-            telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
-            telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
-            telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
-            telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
-            telemetry.update();
-            leftMotorFront.setPower(-slowerPower);
-            leftMotorBack.setPower(slowerPower);
-            rightMotorFront.setPower(slowerPower);
-            rightMotorBack.setPower(-slowerPower);
-        }
         leftMotorFront.setPower(0);
         leftMotorBack.setPower(0);
         rightMotorFront.setPower(0);
         rightMotorBack.setPower(0);
     }
+
     //Does all the stuff when init is pressed on phone
     public void initialization() {
         leftMotorFront = hardwareMap.get(DcMotor.class, "left_motor_front");
         leftMotorBack = hardwareMap.get(DcMotor.class, "left_motor_back");
         rightMotorFront = hardwareMap.get(DcMotor.class, "right_motor_front");
         rightMotorBack = hardwareMap.get(DcMotor.class, "right_motor_back");
-        /*verticalslide1 = hardwareMap.get(DcMotor.class, "vertical_slide1");
-        verticalslide2 = hardwareMap.get(DcMotor.class, "vertical_slide2");
-        feed1 = hardwareMap.get(DcMotor.class, "feed1");
-        feed2 = hardwareMap.get(DcMotor.class, "feed2");
-        horizontalSlide = hardwareMap.get(Servo.class, "horizontal_slide");
-        armServo = hardwareMap.get(Servo.class, "arm_servo");
-         */
         clawServo = hardwareMap.get(Servo.class, "claw_servo");
         armServo = hardwareMap.get(Servo.class, "arm_servo");
         spinnyBoy1 = hardwareMap.get(Servo.class, "spin1");
@@ -501,27 +336,16 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             side = 2;
         }
         while (degrees > 20) {
-            turnLeft(10, power, slowPower);
-            sleep(250);
+            turnLeft(10, power);
             angle = getAngle();
             if (side == 1) {
-                if (targetAngle > angle) {
-                    degrees = targetAngle - angle;
-                }
-                else {
-                    return;
-                }
+                degrees = targetAngle - angle;
             }
             else if (side == 2) {
-                if (targetAngle < angle) {
-                    degrees = 360 - (angle - targetAngle);
-                }
-                else {
-                    return;
-                }
+                degrees = 360 - (angle - targetAngle);
             }
         }
-        turnLeft(degrees, power, slowPower);
+        turnLeft(degrees, power);
     }
     //Turns right using gyroscope and angle. Turns right towards angle based on initial position
     public void accurateTurnRight(double targetAngle, double power) {
@@ -538,7 +362,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             side = 2;
         }
         while (degrees > 20) {
-            turnRight(10, power, slowPower);
+            turnRight(10, power);
             angle = getAngle();
             if (side == 1) {
                 degrees = angle - targetAngle;
@@ -556,7 +380,15 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             degrees = 360 - (targetAngle - angle);
             side = 2;
         }
-        turnRight(degrees, power, slowPower);
+        turnRight(degrees, power);
+    }
+    public void spinnyBoyDown() {
+        spinnyBoy1.setPosition(.5);
+        spinnyBoy2.setPosition(.4);
+    }
+    public void spinnyBoyUp() {
+        spinnyBoy1.setPosition(.9);
+        spinnyBoy2.setPosition(0);
     }
     //25 mm = max distance before unable to pick up blocks
     public void runUntil(double inches,double power) {
@@ -569,11 +401,11 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         }
         inchesTraveling = inchesAway - inches;
         if (inchesTraveling > 4) {
-            runTo((inchesTraveling - 4) * .6, power, slowPower);
+            runTo((inchesTraveling - 4) * .6, power);
         }
         mmAway= getDistance();
         inchesAway = mmAway / 25.4;
         inchesTraveling = inchesAway - inches;
-        runTo(inchesTraveling * .6, power * .8, allPower * .5);
+        runTo(inchesTraveling * .6, power * .8);
     }
 }
