@@ -24,30 +24,20 @@ public class TeleOpAlpha extends LinearOpMode {
     private DcMotor leftMotorBack = null;
     private DcMotor rightMotorFront = null;
     private DcMotor rightMotorBack = null;
-    private Servo clawServo = null;
-    private Servo armServo = null;
     public Servo spinnyBoy1 = null;
     public Servo spinnyBoy2 = null;
-    /*public DcMotor verticalSlide1 = null;
+    public DcMotor verticalSlide1 = null;
     public DcMotor verticalSlide2 = null;
     public DcMotor feed1 = null;
     public DcMotor feed2 = null;
     public Servo horizontalSlide = null;
-    public Servo armServo = null;*/
+    public Servo armServo = null;
 
     //Multipliers
     private boolean reversed = false;
     private boolean halfSpeed = false;
     private double multiplier = -1;
 
-    //If arm or claw is moved
-    private boolean positionSetDown = true;
-    private boolean positionSetUp = true;
-    //If crane is still moving
-    private boolean clawMoving = false;
-    //Position of claw and arm
-    private double clawPosition = 0;
-    private double armPosition = 0;
     //Motor powers
     private double powerFRBL = 0;
     private double powerFLBR = 0;
@@ -60,15 +50,16 @@ public class TeleOpAlpha extends LinearOpMode {
         leftMotorBack = hardwareMap.get(DcMotor.class, "left_motor_back");
         rightMotorFront = hardwareMap.get(DcMotor.class, "right_motor_front");
         rightMotorBack = hardwareMap.get(DcMotor.class, "right_motor_back");
-        spinnyBoy1 = hardwareMap.get(Servo.class, "spin1");
-        spinnyBoy2 = hardwareMap.get(Servo.class, "spin2");
-        /*verticalslide1 = hardwareMap.get(DcMotor.class, "vertical_slide1");
-        verticalslide2 = hardwareMap.get(DcMotor.class, "vertical_slide2");
+        /*
+        verticalSlide1 = hardwareMap.get(DcMotor.class, "vertical_slide1");
+        verticalSlide2 = hardwareMap.get(DcMotor.class, "vertical_slide2");
         feed1 = hardwareMap.get(DcMotor.class, "feed1");
         feed2 = hardwareMap.get(DcMotor.class, "feed2");
+        */
+        spinnyBoy1 = hardwareMap.get(Servo.class, "spin1");
+        spinnyBoy2 = hardwareMap.get(Servo.class, "spin2");
         horizontalSlide = hardwareMap.get(Servo.class, "horizontal_slide");
         armServo = hardwareMap.get(Servo.class, "arm_servo");
-         */
 
         leftMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -78,12 +69,6 @@ public class TeleOpAlpha extends LinearOpMode {
 
         waitForStart();
 
-        cooldown.reset();
-        armCooldown.reset();
-        clawServo.setPosition(0.1);
-        sleep(1000);
-        armServo.setPosition(.1);
-
         while (opModeIsActive()) {
             telemetry.addData("Reversed: ", reversed);
             telemetry.addData("Half Speed" , halfSpeed);
@@ -92,8 +77,6 @@ public class TeleOpAlpha extends LinearOpMode {
             telemetry.addData("Right Front: ", rightMotorFront.getCurrentPosition());
             telemetry.addData("Right Back: ", rightMotorBack.getCurrentPosition());
             telemetry.update();
-            clawPosition = clawServo.getPosition();
-            armPosition = armServo.getPosition();
 
             if((gamepad1.y) && cooldown.seconds() > .5) {
                 reversed = !reversed;
@@ -148,11 +131,11 @@ public class TeleOpAlpha extends LinearOpMode {
                 spinnyBoy1.setPosition(.9);
                 spinnyBoy2.setPosition(0);
             }
-            if (gamepad1.dpad_up) {
-                verticalslide1.setPower(.5);
-                verticalslide2.setPower(-.5);
+            /*if (gamepad1.dpad_up) {
+                //verticalslide1.setPower(.5);
+                //verticalslide2.setPower(-.5);
             }
-            /*else if (gamepad1.dpad_down) {
+            else if (gamepad1.dpad_down) {
                 verticalslide1.setPower(-.5);
                 verticalslide2.setPower(.5);
             }
@@ -160,10 +143,12 @@ public class TeleOpAlpha extends LinearOpMode {
                 verticalslide1.setPower(0);
                 verticalslide2.setPower(0);
             }
+            // in or grab block
             if (gamepad1.right_trigger > 0) {
                 feed1.setPower(gamepad1.right_trigger);
                 feed2.setPower(-gamepad1.right_trigger);
             }
+            // push block out
             else if (gamepad1.left_trigger > 0) {
                 feed1.setPower(-gamepad1.left_trigger);
                 feed2.setPower(gamepad1.left_trigger);

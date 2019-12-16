@@ -27,14 +27,14 @@ import java.util.List;
 @Autonomous(name="AutoTest", group="Test")
 public class AutoTest extends GodFatherOfAllAutonomous {
 
-    private double distance;
-
     @Override
     public void runOpMode() {
         initialization();
 
         waitForStart();
 
-        runTo(36, .7, .3);
+        strafeLeft(100, allPower, slowPower);
+        sleep(3000);
+        strafeRight(100, allPower, slowPower);
     }
 }
