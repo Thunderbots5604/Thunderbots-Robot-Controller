@@ -26,15 +26,15 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
 
-//Basically Pseudo code at this point. We need to have the robot arm methods and make some other stuff before something like this will work
+//Still Needs Testing.
 
 
-@Autonomous(name="AutoColorBlue", group="Block side")
-public class AutoColorBlue extends GodFatherOfAllAutonomous {
+@Autonomous(name="AutoColorRed_Wall", group="Block side")
+public class AutoColorRedWall extends GodFatherOfAllAutonomous {
     private String color = null;
     private int blockNumber = 6;
-    private boolean wall = false;
-    private int side = 2;
+    private boolean wall = true;
+    private int side = 1;
     @Override
     public void runOpMode() {
 
@@ -42,23 +42,6 @@ public class AutoColorBlue extends GodFatherOfAllAutonomous {
 
         waitForStart();
 
-        strafeLeft(16, allPower, slowPower);
-        strafeLeftUntil(2.2, allPower);
-        color = senseColor(side);
-        if (color.equals("Yellow")) {
-            blockNumber -= 1;
-            runTo(8, allPower, slowPower);
-            color = senseColor(side);
-            if (color.equals("Yellow")) {
-                blockNumber -= 1;
-                runTo(-8, allPower, slowPower);
-            }
-        }
-        if (blockNumber > 4) {
-            runTo(-16, allPower, slowPower);
-        }
-        strafeLeft(16, allPower, slowPower);
-        runTo(2, allPower, slowPower);
-        pickUpBlock();
+
     }
 }

@@ -31,6 +31,7 @@ public class ValuesTest extends GodFatherOfAllAutonomous {
     private double heading1;
     private double heading2;
     private double heading3;
+    private String color = null;
     @Override
     public void runOpMode() {
         initialization();
@@ -39,12 +40,16 @@ public class ValuesTest extends GodFatherOfAllAutonomous {
 
 
         while(opModeIsActive()) {
-
+            color = senseColor(1);
+            distance = getDistance(1);
             telemetry.addData("Angle 1", heading1);
             telemetry.addData("Angle 2", heading2);
             telemetry.addData("Angle 3", heading3);
+            telemetry.addData("Color: ", color);
+            telemetry.addData("Distance: ", distance);
             telemetry.update();
             heading1 = 0; heading2 = 0; heading3 = 0;
+
             runtime.reset();
             while (runtime.milliseconds() < 1000 && heading1 == 0 && heading2 == 0 && heading3 == 0) {
                 angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
@@ -52,6 +57,7 @@ public class ValuesTest extends GodFatherOfAllAutonomous {
                 heading2 = formatAngle(angles.angleUnit, angles.secondAngle);
                 heading3 = formatAngle(angles.angleUnit, angles.thirdAngle);
             }
+
         }
     }
 }

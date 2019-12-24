@@ -174,6 +174,16 @@ public class TeleOpAlpha extends LinearOpMode {
                     armServo.setPosition(.9);
                 }
             }*/
+            if (gamepad2.b) {
+                leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            }
         }
         //If opMode is turned off, instantly power off motors
         leftMotorFront.setPower(0);

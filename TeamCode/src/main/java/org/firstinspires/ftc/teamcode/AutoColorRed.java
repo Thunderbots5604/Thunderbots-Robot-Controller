@@ -33,6 +33,8 @@ import java.util.List;
 public class AutoColorRed extends GodFatherOfAllAutonomous {
     private String color = null;
     private int blockNumber = 6;
+    private boolean wall = false;
+    private int side = 1;
     @Override
     public void runOpMode() {
 
@@ -40,5 +42,23 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
 
         waitForStart();
 
+        strafeRight(16, allPower, slowPower);
+        strafeRightUntil(2.2, allPower);
+        color = senseColor(side);
+        if (color.equals("Yellow")) {
+            blockNumber -= 1;
+            runTo(8, allPower, slowPower);
+            color = senseColor(side);
+            if (color.equals("Yellow")) {
+                blockNumber -= 1;
+                runTo(-8, allPower, slowPower);
+            }
+        }
+        if (blockNumber > 4) {
+            runTo(-16, allPower, slowPower);
+        }
+        strafeRight(16, allPower, slowPower);
+        runTo(2, allPower, slowPower);
+        //pickUpBlock();
     }
 }
