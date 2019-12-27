@@ -24,8 +24,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
-@Autonomous(name="Autonomous_Foundation Red & Block", group="Foundation")
-public class AutoFoundationRedAndBlock extends GodFatherOfAllAutonomous {
+@Autonomous(name="Autonomous_Foundation Red_Wall", group="Foundation")
+public class AutoFoundationRedWall extends GodFatherOfAllAutonomous {
 
     @Override
     public void runOpMode() {
@@ -38,15 +38,6 @@ public class AutoFoundationRedAndBlock extends GodFatherOfAllAutonomous {
         spinnyBoyDown();
         runTo(-55, .9, .8);
         spinnyBoyUp();
-        strafeLeft(45, allPower, slowPower);
-        runTo(10, allPower, slowPower);
-        accurateTurnLeft(90, allPower);
-        runTo(30, allPower, slowPower);
-        strafeRightUntil(2.2, allPower);
-        strafeRight(16, allPower, slowPower);
-        runTo(2, allPower, slowPower);
-        pickUpBlock();
-        strafeLeft(16, allPower, slowPower);
-        runTo(-40, allPower, slowPower);
+        strafeLeft(30, allPower, slowPower);
     }
 }

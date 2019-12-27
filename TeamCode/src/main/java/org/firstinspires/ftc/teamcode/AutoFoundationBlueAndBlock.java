@@ -33,6 +33,20 @@ public class AutoFoundationBlueAndBlock extends GodFatherOfAllAutonomous {
 
         waitForStart();
 
-
+        runTo(50, allPower, slowPower);
+        runTo(10, allPower, slowPower * .8);
+        spinnyBoyDown();
+        runTo(-55, .9, .8);
+        spinnyBoyUp();
+        strafeRight(45, allPower, slowPower);
+        runTo(10, allPower, slowPower);
+        accurateTurnRight(-90, allPower);
+        runTo(30, allPower, slowPower);
+        strafeLeftUntil(2.2, allPower);
+        strafeLeft(16, allPower, slowPower);
+        runTo(2, allPower, slowPower);
+        pickUpBlock();
+        strafeRight(16, allPower, slowPower);
+        runTo(-40, allPower, slowPower);
     }
 }

@@ -99,7 +99,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public final float TICKS_PER_STRAFE_RLB = 51.875F;
     public final float TICKS_PER_STRAFE_RRF = 56.5F;
     public final float TICKS_PER_STRAFE_RRB = -59.3333333F;
-    public final float TICKS_MULTIPLIER = 20F / 20F;
+    public final float TICKS_MULTIPLIER = 20F / 21.5F;
     public float strafePower_LLF = Math.abs(48 / TICKS_PER_STRAFE_LLF);
     public float strafePower_LLB = Math.abs(48 / TICKS_PER_STRAFE_LLB);
     public float strafePower_LRF = Math.abs(48 / TICKS_PER_STRAFE_LRF);
@@ -228,7 +228,27 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             }
         }
         else {
-            while ((leftMotorBack.getCurrentPosition() < targetPosition) && (rightMotorBack.getCurrentPosition() > -targetPosition) && opModeIsActive() && runtime.milliseconds() < 4000) {
+            while ((leftMotorBack.getCurrentPosition() > targetPosition * .7) && (rightMotorBack.getCurrentPosition() < -targetPosition * .7) && opModeIsActive() && runtime.milliseconds() < 4000) {
+                telemetry.addData("Target Position", targetPosition);
+                telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
+                telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
+                telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
+                telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
+                telemetry.addData("Left Motor Front Power", leftMotorFront.getPower());
+                telemetry.addData("Left Motor Back Power", leftMotorBack.getPower());
+                telemetry.addData("Right Motor Front Power", rightMotorFront.getPower());
+                telemetry.addData("Right Motor Back Power", rightMotorBack.getPower());
+                telemetry.update();
+                leftMotorFront.setPower(-power);
+                leftMotorBack.setPower(-+power);
+                rightMotorFront.setPower(-power);
+                rightMotorBack.setPower(-power);
+            }
+            leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            while ((leftMotorBack.getCurrentPosition() > targetPosition) && (rightMotorBack.getCurrentPosition() < -targetPosition) && opModeIsActive() && runtime.milliseconds() < 4000) {
                 telemetry.addData("Target Position", targetPosition);
                 telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
                 telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());

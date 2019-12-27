@@ -33,6 +33,12 @@ public class AutoFoundationRed extends GodFatherOfAllAutonomous {
 
         waitForStart();
 
-
+        runTo(50, allPower, slowPower);
+        runTo(10, allPower, slowPower * .8);
+        spinnyBoyDown();
+        runTo(-55, .9, .8);
+        spinnyBoyUp();
+        strafeLeft(30, allPower, slowPower);
+        runTo(30, allPower, slowPower);
     }
 }

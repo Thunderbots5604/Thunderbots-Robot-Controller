@@ -42,23 +42,41 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
 
         waitForStart();
 
-        strafeRight(16, allPower, slowPower);
-        strafeRightUntil(2.2, allPower);
+        strafeRight(20, allPower, slowPower);
+        strafeRightUntil(3, slowPower);
         color = senseColor(side);
         if (color.equals("Yellow")) {
             blockNumber -= 1;
             runTo(8, allPower, slowPower);
+            sleep(500);
             color = senseColor(side);
             if (color.equals("Yellow")) {
                 blockNumber -= 1;
-                runTo(-8, allPower, slowPower);
+                runTo(-10, allPower, slowPower);
+                sleep(500);
             }
         }
         if (blockNumber > 4) {
-            runTo(-16, allPower, slowPower);
+            runTo(-13, allPower, slowPower);
         }
-        strafeRight(16, allPower, slowPower);
-        runTo(2, allPower, slowPower);
+        strafeRight(14, allPower, slowPower);
+        runTo(3, allPower, slowPower);
         //pickUpBlock();
+        strafeLeft(18, allPower, slowPower);
+        runTo(-24 - 12*(6-blockNumber),allPower, slowPower);
+        //runTo(-10, allPower, slowPower);
+        turnRight(90, allPower, slowPower);
+        sleep(500);
+        //spitOutBlock();
+        turnLeft(70, allPower, slowPower);
+        accurateTurnLeft(0, allPower);
+        //runTo(10, allPower, slowPower);
+        turnLeft(5, allPower, slowPower);
+        runTo(50 + 12*(6-blockNumber),allPower, slowPower);
+        strafeRight(18, allPower, slowPower);
+        runTo(3, allPower, slowPower);
+        //pickUpBlock();
+        strafeLeft(15, allPower, slowPower);
+        runTo(-60 - 12*(6-blockNumber),allPower, slowPower);
     }
 }

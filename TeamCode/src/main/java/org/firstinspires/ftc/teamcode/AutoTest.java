@@ -33,8 +33,6 @@ public class AutoTest extends GodFatherOfAllAutonomous {
 
         waitForStart();
 
-        strafeLeft(10, allPower, slowPower);
-        strafeRightUntil(2, slowPower);
-        sleep(1000000);
+        runTo(10, allPower / 2, slowPower / 2);
     }
 }
