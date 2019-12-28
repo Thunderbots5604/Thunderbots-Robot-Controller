@@ -34,6 +34,8 @@ public class AutoColorBlue extends GodFatherOfAllAutonomous {
     private String color = null;
     private int blockNumber = 6;
     private boolean wall = false;
+    //2 color & distance sensor. side determines which one to use.
+    //1 = Right side of robot, 2 = Left side of robot
     private int side = 2;
     @Override
     public void runOpMode() {
@@ -42,23 +44,6 @@ public class AutoColorBlue extends GodFatherOfAllAutonomous {
 
         waitForStart();
 
-        strafeLeft(16, allPower, slowPower);
-        strafeLeftUntil(2.2, allPower);
-        color = senseColor(side);
-        if (color.equals("Yellow")) {
-            blockNumber -= 1;
-            runTo(8, allPower, slowPower);
-            color = senseColor(side);
-            if (color.equals("Yellow")) {
-                blockNumber -= 1;
-                runTo(-8, allPower, slowPower);
-            }
-        }
-        if (blockNumber > 4) {
-            runTo(-16, allPower, slowPower);
-        }
-        strafeLeft(16, allPower, slowPower);
-        runTo(2, allPower, slowPower);
-        pickUpBlock();
+
     }
 }

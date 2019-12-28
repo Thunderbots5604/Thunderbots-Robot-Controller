@@ -58,8 +58,8 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public Servo armServo = null;
 
     //All Power for autonomous running
-    public double allPower = .6;
-    public double slowPower = .35;
+    public double allPower = .65;
+    public double slowPower = .4;
 
     //Color Sensor
     public ColorSensor colorSensor1;
@@ -99,7 +99,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public final float TICKS_PER_STRAFE_RLB = 51.875F;
     public final float TICKS_PER_STRAFE_RRF = 56.5F;
     public final float TICKS_PER_STRAFE_RRB = -59.3333333F;
-    public final float TICKS_MULTIPLIER = 20F / 21.5F;
+    public final float TICKS_MULTIPLIER = 20F / 22F;
     public float strafePower_LLF = Math.abs(48 / TICKS_PER_STRAFE_LLF);
     public float strafePower_LLB = Math.abs(48 / TICKS_PER_STRAFE_LLB);
     public float strafePower_LRF = Math.abs(48 / TICKS_PER_STRAFE_LRF);
@@ -173,6 +173,8 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
 
         leftMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        colorSensor1.enableLed(false);
 
         //spinnyBoyUp();
     }
@@ -464,6 +466,9 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     //Returns if it's yellow or not. if it is, it returns "Yellow"
     public String senseColor(int side) {
         color = "Yellow";
+        //Scooch to sense better
+        strafeRight(1, allPower, slowPower);
+        sleep(500);
         if (side == 1) {
             red = colorSensor1.red();
             blue = colorSensor1.blue();
@@ -484,6 +489,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                 color = "Black";
             }
         }
+        strafeLeft(1, allPower, slowPower);
         return color;
     }
     //Uses distance sensor, but we don't have one yet, on the robot
@@ -680,5 +686,38 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     }
     public void spinnyBoyUp() {
         //Move them
+    }
+    //Method to set robot to angle it was initially at
+    public void adjustToInitialAngle() {
+        degrees = 0;
+        sleep(300);
+        angle = getAngle();
+        degrees = angle;
+        if (angle == 0) {
+            return;
+        }
+        else if (angle < 0) {
+            side = 1;
+        }
+        else {
+            side = 2;
+        }
+
+        if (side == 1) {
+            while (angle < -30) {
+                turnLeft(15, allPower, slowPower);
+                sleep(300);
+                angle = getAngle();
+            }
+            turnLeft(-angle, allPower, slowPower);
+        }
+        else if (side == 2) {
+            while (angle > 30) {
+                turnRight(15, allPower, slowPower);
+                sleep(300);
+                angle = getAngle();
+            }
+            turnRight(angle, allPower, slowPower);
+        }
     }
 }

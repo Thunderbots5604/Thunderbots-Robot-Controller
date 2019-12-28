@@ -34,6 +34,8 @@ public class AutoColorBlueWall extends GodFatherOfAllAutonomous {
     private String color = null;
     private int blockNumber = 6;
     private boolean wall = true;
+    //2 color & distance sensor. side determines which one to use.
+    //1 = Right side of robot, 2 = Left side of robot
     private int side = 2;
     @Override
     public void runOpMode() {
