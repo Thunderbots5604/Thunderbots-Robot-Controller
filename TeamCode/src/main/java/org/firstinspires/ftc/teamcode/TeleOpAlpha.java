@@ -26,12 +26,6 @@ public class TeleOpAlpha extends LinearOpMode {
     private DcMotor rightMotorBack = null;
     public Servo spinnyBoy1 = null;
     public Servo spinnyBoy2 = null;
-    public DcMotor verticalSlide1 = null;
-    public DcMotor verticalSlide2 = null;
-    public DcMotor feed1 = null;
-    public DcMotor feed2 = null;
-    public Servo horizontalSlide = null;
-    public Servo armServo = null;
 
     //Multipliers
     private boolean reversed = false;
@@ -50,16 +44,9 @@ public class TeleOpAlpha extends LinearOpMode {
         leftMotorBack = hardwareMap.get(DcMotor.class, "left_motor_back");
         rightMotorFront = hardwareMap.get(DcMotor.class, "right_motor_front");
         rightMotorBack = hardwareMap.get(DcMotor.class, "right_motor_back");
-        /*
-        verticalSlide1 = hardwareMap.get(DcMotor.class, "vertical_slide1");
-        verticalSlide2 = hardwareMap.get(DcMotor.class, "vertical_slide2");
-        feed1 = hardwareMap.get(DcMotor.class, "feed1");
-        feed2 = hardwareMap.get(DcMotor.class, "feed2");
-        */
+
         spinnyBoy1 = hardwareMap.get(Servo.class, "spin1");
         spinnyBoy2 = hardwareMap.get(Servo.class, "spin2");
-        horizontalSlide = hardwareMap.get(Servo.class, "horizontal_slide");
-        armServo = hardwareMap.get(Servo.class, "arm_servo");
 
         leftMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -142,20 +129,6 @@ public class TeleOpAlpha extends LinearOpMode {
             else {
                 verticalslide1.setPower(0);
                 verticalslide2.setPower(0);
-            }
-            // in or grab block
-            if (gamepad1.right_trigger > 0) {
-                feed1.setPower(gamepad1.right_trigger);
-                feed2.setPower(-gamepad1.right_trigger);
-            }
-            // push block out
-            else if (gamepad1.left_trigger > 0) {
-                feed1.setPower(-gamepad1.left_trigger);
-                feed2.setPower(gamepad1.left_trigger);
-            }
-            else {
-                feed1.setPower(0);
-                feed2.setPower(0);
             }
             if (gamepad1.right_bumper && !gamepad1.left_bumper) {
                 horizontalSlide.setPosition(0);

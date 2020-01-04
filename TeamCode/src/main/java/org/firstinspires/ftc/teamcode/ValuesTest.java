@@ -40,8 +40,8 @@ public class ValuesTest extends GodFatherOfAllAutonomous {
 
 
         while(opModeIsActive()) {
-            color = senseColor(1);
-            distance = getDistance(1);
+            color = senseColor();
+            distance = getDistance();
             telemetry.addData("Angle 1", heading1);
             telemetry.addData("Angle 2", heading2);
             telemetry.addData("Angle 3", heading3);

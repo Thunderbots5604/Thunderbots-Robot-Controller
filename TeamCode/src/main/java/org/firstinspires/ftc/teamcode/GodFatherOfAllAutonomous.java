@@ -50,28 +50,20 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public DcMotor rightMotorBack = null;
     public Servo spinnyBoy1 = null;
     public Servo spinnyBoy2 = null;
-    public DcMotor verticalSlide1 = null;
-    public DcMotor verticalSlide2 = null;
-    public DcMotor feed1 = null;
-    public DcMotor feed2 = null;
-    public Servo horizontalSlide = null;
-    public Servo armServo = null;
 
     //All Power for autonomous running
     public double allPower = .65;
     public double slowPower = .4;
 
     //Color Sensor
-    public ColorSensor colorSensor1;
-    public ColorSensor colorSensor2;
+    public ColorSensor colorSensor;
     public String color = null;
     public int blue = 0;
     public int red = 0;
     public int green = 0;
 
     //Distance Sensor
-    public DistanceSensor distance1 = null;
-    public DistanceSensor distance2 = null;
+    public DistanceSensor distance = null;
     public double mmAway;
     public double inchesAway;
     public double inchesTraveling;
@@ -129,6 +121,30 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     boolean angleNeg;
     boolean targetNeg;
 
+    //Constant Values used in all or most codes, order = when it's used
+    //Block Side
+    public double colorRun1 = 20;
+    public double colorRunUntil1 = 4;
+    public double strafeToNextBlock = 8;
+    public double colorRun2 = 2;
+    public double colorRun3 = 3;
+    public double colorRun4 = 24;
+    public double colorRunMultiplier1 = 12;
+    public double colorRun5 = colorRun4 + 26;
+    public double colorRun6 = colorRun5 + 5;
+    public double colorRunToWall = 23;
+
+    //Foundation Side
+    public double foundationRun1 = 50;
+    public double foundationRun2 = 10;
+    public double foundationRun3 = 55;
+    public double foundationRun4 = 4;
+    public double foundationPower1 = .9;
+    public double foundationPower2 = .8;
+    public double foundationStrafe1 = 35;
+    public double foundationRun5 = 25;
+    public double foundationStrafe2 = 30;
+
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -140,20 +156,12 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         leftMotorBack = hardwareMap.get(DcMotor.class, "left_motor_back");
         rightMotorFront = hardwareMap.get(DcMotor.class, "right_motor_front");
         rightMotorBack = hardwareMap.get(DcMotor.class, "right_motor_back");
-        /*
-        verticalSlide1 = hardwareMap.get(DcMotor.class, "vertical_slide1");
-        verticalSlide2 = hardwareMap.get(DcMotor.class, "vertical_slide2");
-        feed1 = hardwareMap.get(DcMotor.class, "feed1");
-        feed2 = hardwareMap.get(DcMotor.class, "feed2");
-        */
+
         spinnyBoy1 = hardwareMap.get(Servo.class, "spin1");
         spinnyBoy2 = hardwareMap.get(Servo.class, "spin2");
-        horizontalSlide = hardwareMap.get(Servo.class, "horizontal_slide");
-        armServo = hardwareMap.get(Servo.class, "arm_servo");
-        colorSensor1 = hardwareMap.colorSensor.get("color_sensor1");
-        colorSensor2 = hardwareMap.colorSensor.get("color_sensor2");
-        distance1 = hardwareMap.get(DistanceSensor.class, "distance1");
-        distance2 = hardwareMap.get(DistanceSensor.class, "distance2");
+
+        colorSensor = hardwareMap.colorSensor.get("color_sensor");
+        distance = hardwareMap.get(DistanceSensor.class, "distance");
 
         leftMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -174,7 +182,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         leftMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        colorSensor1.enableLed(false);
+        colorSensor.enableLed(false);
 
         //spinnyBoyUp();
     }
@@ -464,21 +472,14 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         return AngleUnit.DEGREES.fromUnit(angleUnit, angle);
     }
     //Returns if it's yellow or not. if it is, it returns "Yellow"
-    public String senseColor(int side) {
+    public String senseColor() {
         color = "Yellow";
-        //Scooch to sense better
-        strafeRight(1, allPower, slowPower);
+        //Move forward a little for better read
+        runTo(2, allPower, slowPower);
         sleep(500);
-        if (side == 1) {
-            red = colorSensor1.red();
-            blue = colorSensor1.blue();
-            green = colorSensor1.green();
-        }
-        else {
-            red = colorSensor2.red();
-            blue = colorSensor2.blue();
-            green = colorSensor2.green();
-        }
+        red = colorSensor.red();
+        blue = colorSensor.blue();
+        green = colorSensor.green();
         if (green < 25) {
             if (Math.abs(red - green) > 2) {
                 color = "Black";
@@ -489,17 +490,13 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                 color = "Black";
             }
         }
-        strafeLeft(1, allPower, slowPower);
+        //Go Back to original position
+        runTo(-2, allPower, slowPower);
         return color;
     }
     //Uses distance sensor, but we don't have one yet, on the robot
-    public double getDistance(int side) {
-        if (side == 1) {
-            mmAway = distance1.getDistance(DistanceUnit.MM);
-        }
-        else {
-            mmAway = distance2.getDistance(DistanceUnit.MM);
-        }
+    public double getDistance() {
+        mmAway = distance.getDistance(DistanceUnit.MM);
         return mmAway;
     }
     //Method that returns current angle relative to start
@@ -586,17 +583,15 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         }
         turnRight(degrees, power, slowPower);
     }
-    public void strafeRightUntil(double inches, double power) {
+    public void runUntil(double inches, double power) {
 
         leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        int side = 1;
         sleep(600);
         runtime.reset();
-        mmAway= getDistance(side);
+        mmAway= getDistance();
         inchesAway = mmAway / 25.4;
         //inches = mm / 25.4;
         power = Math.abs(power);
@@ -606,80 +601,31 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         inchesTraveling = inchesAway - inches;
         totalDistance = inchesTraveling;
         while (inchesTraveling > 2 && runtime.milliseconds() < 3000 && totalDistance * 1.4 >= inchesTraveling) {
-            mmAway = getDistance(side);
+            mmAway = getDistance();
             inchesAway = mmAway / 25.4;
             inchesTraveling = inchesAway - inches;
             leftMotorFront.setPower(power);
-            leftMotorBack.setPower(-power);
-            rightMotorFront.setPower(-power);
+            leftMotorBack.setPower(power);
+            rightMotorFront.setPower(power);
             rightMotorBack.setPower(power);
         }
         leftMotorFront.setPower(0);
         leftMotorBack.setPower(0);
         rightMotorFront.setPower(0);
         rightMotorBack.setPower(0);
-        mmAway= getDistance(side);
+        mmAway= getDistance();
         inchesAway = mmAway / 25.4;
         if (inchesAway < inches || totalDistance < inchesAway) {
             return;
         }
         inchesTraveling = inchesAway - inches;
-        strafeRight(inchesTraveling * .8, power * .8, power * .6);
-    }
-    public void strafeLeftUntil(double inches, double power) {
-
-        leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        int side = 1;
-        sleep(600);
-        runtime.reset();
-        mmAway = getDistance(side);
-        inchesAway = mmAway / 25.4;
-        //inches = mm / 25.4;
-        power = Math.abs(power);
-        if (inchesAway < inches || mmAway > 500) {
-            return;
-        }
-        inchesTraveling = inchesAway - inches;
-        totalDistance = inchesTraveling;
-        while (inchesTraveling > 3 && runtime.milliseconds() < 3000 && totalDistance * 1.4 >= inchesTraveling) {
-            mmAway= getDistance(side);
-            inchesAway = mmAway / 25.4;
-            inchesTraveling = inchesAway - inches;
-            leftMotorFront.setPower(-power);
-            leftMotorBack.setPower(power);
-            rightMotorFront.setPower(power);
-            rightMotorBack.setPower(-power);
-        }
-        leftMotorFront.setPower(0);
-        leftMotorBack.setPower(0);
-        rightMotorFront.setPower(0);
-        rightMotorBack.setPower(0);
-        mmAway= getDistance(side);
-        inchesAway = mmAway / 25.4;
-        if (inchesAway < inches || totalDistance < inchesAway) {
-            return;
-        }
-        inchesTraveling = inchesAway - inches;
-        strafeLeft(inchesTraveling * .8, power * .8, power * .6);
+        runTo(inchesTraveling * .8, power * .8, power * .6);
     }
     public void pickUpBlock () {
-        feed1.setPower(gamepad1.right_trigger);
-        feed2.setPower(-gamepad1.right_trigger);
-        runTo(4, allPower * .8, slowPower * .8);
-        sleep(500);
-        feed1.setPower(0);
-        feed2.setPower(0);
+
     }
-    public void spitOutBlock () {
-        feed1.setPower(-gamepad1.right_trigger);
-        feed2.setPower(gamepad1.right_trigger);
-        sleep(1000);
-        feed1.setPower(0);
-        feed2.setPower(0);
+    public void dropBlock () {
+
     }
     public void spinnyBoyDown() {
         //Move them
@@ -690,7 +636,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     //Method to set robot to angle it was initially at
     public void adjustToInitialAngle() {
         degrees = 0;
-        sleep(300);
+        sleep(100);
         angle = getAngle();
         degrees = angle;
         if (angle == 0) {

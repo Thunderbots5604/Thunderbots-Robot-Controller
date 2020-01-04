@@ -34,9 +34,6 @@ public class AutoColorBlueWall extends GodFatherOfAllAutonomous {
     private String color = null;
     private int blockNumber = 6;
     private boolean wall = true;
-    //2 color & distance sensor. side determines which one to use.
-    //1 = Right side of robot, 2 = Left side of robot
-    private int side = 2;
     @Override
     public void runOpMode() {
 
@@ -44,6 +41,40 @@ public class AutoColorBlueWall extends GodFatherOfAllAutonomous {
 
         waitForStart();
 
-
+        runTo(colorRun1, allPower, slowPower);
+        adjustToInitialAngle();
+        runUntil(colorRunUntil1, allPower * .9);
+        color = senseColor();
+        if (color == "Yellow") {
+            strafeRight(strafeToNextBlock, allPower, slowPower);
+            blockNumber -= 1;
+            senseColor();
+            if (color == "Yellow") {
+                blockNumber -= 1;
+                strafeRight(strafeToNextBlock, allPower, slowPower);
+            }
+        }
+        runTo(colorRun2, allPower * .8, slowPower * .7);
+        sleep(1000);
+        //pickUpBlock();
+        runTo(-colorRunToWall, allPower, slowPower);
+        turnLeft(70, allPower, slowPower);
+        accurateTurnLeft(90, allPower);
+        runTo(colorRun4 + colorRunMultiplier1 * (6 - blockNumber), allPower, slowPower);
+        //dropBlock();
+        sleep(1000);
+        runTo(-colorRun5 - colorRunMultiplier1 * (6 - blockNumber), allPower, slowPower);
+        adjustToInitialAngle();
+        sleep(500);
+        adjustToInitialAngle();
+        runTo(colorRunToWall, allPower * .8, slowPower * .7);
+        //pickUpBlock();
+        sleep(1000);
+        runTo(-colorRunToWall, allPower, slowPower);
+        turnLeft(70, allPower, slowPower);
+        accurateTurnLeft(90, allPower);
+        runTo(colorRun6 + colorRunMultiplier1 * (6 - blockNumber), allPower, slowPower);
+        //dropBlock();
+        sleep(1000);
     }
 }

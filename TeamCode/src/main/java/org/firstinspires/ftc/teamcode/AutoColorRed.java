@@ -44,81 +44,40 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
 
         waitForStart();
 
-        //Go to blocks to start sensing
-        strafeRight(20, allPower, slowPower);
+        runTo(colorRun1, allPower, slowPower);
         adjustToInitialAngle();
-        strafeRightUntil(4, slowPower);
-
-        //Sense the blocks
-        color = senseColor(side);
-        if (color.equals("Yellow")) {
+        runUntil(colorRunUntil1, allPower * .9);
+        color = senseColor();
+        if (color == "Yellow") {
+            strafeLeft(strafeToNextBlock, allPower, slowPower);
             blockNumber -= 1;
-            runTo(7, allPower, slowPower);
-            color = senseColor(side);
-            if (color.equals("Yellow")) {
+            senseColor();
+            if (color == "Yellow") {
                 blockNumber -= 1;
-                runTo(-5, allPower, slowPower);
-                sleep(500);
+                strafeLeft(strafeToNextBlock, allPower, slowPower);
             }
         }
-        if (blockNumber > 4) {
-            runTo(2*(blockNumber) - 21, allPower, slowPower);
-        }
-
-        //Pick up the block once color is sensed
-        strafeRight(12, allPower, slowPower);
-        runTo(3, allPower, slowPower);
+        runTo(colorRun2, allPower * .8, slowPower * .7);
+        sleep(1000);
         //pickUpBlock();
-
-        //Bring block to foundation side and place it faced towards bridge
-        strafeLeft(24, allPower, slowPower);
-        runTo(-20 - 12*(6-blockNumber), allPower, slowPower);
-        turnRight(90, allPower, slowPower);
-        sleep(500);
-        //spitOutBlock();
-
-        //Readjust to face to go back for second block
-        turnLeft(70, allPower, slowPower);
+        runTo(-colorRun3, allPower, slowPower);
+        turnRight(70, allPower, slowPower);
+        accurateTurnRight(-90, allPower);
+        runTo(colorRun4 + colorRunMultiplier1 * (6 - blockNumber), allPower, slowPower);
+        //dropBlock();
+        sleep(1000);
+        runTo(-colorRun5 - colorRunMultiplier1 * (6 - blockNumber), allPower, slowPower);
         adjustToInitialAngle();
         sleep(500);
         adjustToInitialAngle();
-        runTo(46 + 12*(6-blockNumber), allPower, slowPower);
-
-        //Pick up second block
-        strafeRight(18, allPower, slowPower);
-        runTo(3, allPower, slowPower);
-        sleep(500);
+        runTo(colorRun3, allPower * .8, slowPower * .7);
         //pickUpBlock();
-        adjustToInitialAngle();
-        sleep(500);
-        adjustToInitialAngle();
-
-        //Bring block to foundation side
-        strafeLeft(22, allPower, slowPower);
-        runTo(-60 - 12*(6-blockNumber), allPower, slowPower);
-        turnRight(90, allPower, slowPower);
-        //spitOutBlock();
-
-        //Readjust to face to go back for third block
-        adjustToInitialAngle();
-        sleep(500);
-        adjustToInitialAngle();
-        runTo(36, allPower, slowPower);
-        if (blockNumber == 6) {
-            runTo(8, allPower, slowPower);
-        }
-
-        //Pick up third block (Haven't tested yet)
-        strafeRight(20, allPower, slowPower);
-        runTo(3, allPower, slowPower);
-        sleep(500);
-        //pickUpBlock();
-        adjustToInitialAngle();
-        sleep(500);
-        adjustToInitialAngle();
-
-        //Run back to foundation
-        strafeLeft(24, allPower, slowPower);
-        runTo(-30, allPower + .15, allPower);
+        sleep(1000);
+        runTo(-colorRun3, allPower, slowPower);
+        turnRight(70, allPower, slowPower);
+        accurateTurnRight(-90, allPower);
+        runTo(colorRun6 + colorRunMultiplier1 * (6 - blockNumber), allPower, slowPower);
+        //dropBlock();
+        sleep(1000);
     }
 }

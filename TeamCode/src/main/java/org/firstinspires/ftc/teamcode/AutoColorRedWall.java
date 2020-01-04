@@ -44,47 +44,40 @@ public class AutoColorRedWall extends GodFatherOfAllAutonomous {
 
         waitForStart();
 
-        strafeRight(20, allPower, slowPower);
+        runTo(colorRun1, allPower, slowPower);
         adjustToInitialAngle();
-        strafeRightUntil(4.5, slowPower);
-        strafeRight(1, allPower, slowPower);
-        sleep(500);
-        color = senseColor(side);
-        if (color.equals("Yellow")) {
+        runUntil(colorRunUntil1, allPower * .9);
+        color = senseColor();
+        if (color == "Yellow") {
+            strafeLeft(strafeToNextBlock, allPower, slowPower);
             blockNumber -= 1;
-            runTo(8, allPower, slowPower);
-            sleep(500);
-            color = senseColor(side);
-            if (color.equals("Yellow")) {
+            senseColor();
+            if (color == "Yellow") {
                 blockNumber -= 1;
-                runTo(-4, allPower, slowPower);
-                sleep(500);
+                strafeLeft(strafeToNextBlock, allPower, slowPower);
             }
         }
-        if (blockNumber > 4) {
-            runTo(2*(blockNumber) - 20, allPower, slowPower);
-        }
-        strafeRight(12, allPower, slowPower);
-        runTo(3, allPower, slowPower);
+        runTo(colorRun2, allPower * .8, slowPower * .7);
+        sleep(1000);
         //pickUpBlock();
-        strafeLeft(44, allPower, slowPower);
-        runTo(-20 - 12*(6-blockNumber), allPower, slowPower);
-        turnRight(90, allPower, slowPower);
-        sleep(500);
-        //spitOutBlock();
-        turnLeft(70, allPower, slowPower);
+        runTo(-colorRunToWall, allPower, slowPower);
+        turnRight(70, allPower, slowPower);
+        accurateTurnRight(-90, allPower);
+        runTo(colorRun4 + colorRunMultiplier1 * (6 - blockNumber), allPower, slowPower);
+        //dropBlock();
+        sleep(1000);
+        runTo(-colorRun5 - colorRunMultiplier1 * (6 - blockNumber), allPower, slowPower);
         adjustToInitialAngle();
         sleep(500);
         adjustToInitialAngle();
-        runTo(48 + 12*(6-blockNumber), allPower, slowPower);
-        strafeRight(36, allPower, slowPower);
-        runTo(3, allPower, slowPower);
-        sleep(500);
+        runTo(colorRunToWall, allPower * .8, slowPower * .7);
         //pickUpBlock();
-        adjustToInitialAngle();
-        sleep(500);
-        adjustToInitialAngle();
-        strafeLeft(44, allPower, slowPower);
-        runTo(-60 - 12*(6-blockNumber), allPower, slowPower);
+        sleep(1000);
+        runTo(-colorRunToWall, allPower, slowPower);
+        turnRight(70, allPower, slowPower);
+        accurateTurnRight(-90, allPower);
+        runTo(colorRun6 + colorRunMultiplier1 * (6 - blockNumber), allPower, slowPower);
+        //dropBlock();
+        sleep(1000);
     }
 }
