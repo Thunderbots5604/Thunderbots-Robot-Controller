@@ -48,12 +48,17 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public DcMotor leftMotorBack = null;
     public DcMotor rightMotorFront = null;
     public DcMotor rightMotorBack = null;
+
+    public DcMotor vertical1 = null;
+    public DcMotor vertical2 = null;
+
     public Servo spinnyBoy1 = null;
     public Servo spinnyBoy2 = null;
 
     //All Power for autonomous running
-    public double allPower = .65;
-    public double slowPower = .4;
+    //increasing all power b/c slower motors/drive system. originally .65
+    public double allPower = .8;
+    public double slowPower = .5;
 
     //Color Sensor
     public ColorSensor colorSensor;
@@ -128,11 +133,14 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public double strafeToNextBlock = 8;
     public double colorRun2 = 2;
     public double colorRun3 = 3;
-    public double colorRun4 = 24;
+    public double colorRun4 = 36;
     public double colorRunMultiplier1 = 12;
     public double colorRun5 = colorRun4 + 26;
-    public double colorRun6 = colorRun5 + 5;
+    public double colorRun6 = colorRun5 - 4;
     public double colorRunToWall = 23;
+
+    //Shift sideways slightly since color sensor isn't centered
+    public double colorSense = 2;
 
     //Foundation Side
     public double foundationRun1 = 50;
@@ -156,6 +164,9 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         leftMotorBack = hardwareMap.get(DcMotor.class, "left_motor_back");
         rightMotorFront = hardwareMap.get(DcMotor.class, "right_motor_front");
         rightMotorBack = hardwareMap.get(DcMotor.class, "right_motor_back");
+
+        vertical1 = hardwareMap.get(DcMotor.class, "vertical1");
+        vertical2 = hardwareMap.get(DcMotor.class, "vertical2");
 
         spinnyBoy1 = hardwareMap.get(Servo.class, "spin1");
         spinnyBoy2 = hardwareMap.get(Servo.class, "spin2");
@@ -181,6 +192,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
 
         leftMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        vertical2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         colorSensor.enableLed(false);
 

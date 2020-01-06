@@ -24,6 +24,10 @@ public class TeleOpAlpha extends LinearOpMode {
     private DcMotor leftMotorBack = null;
     private DcMotor rightMotorFront = null;
     private DcMotor rightMotorBack = null;
+
+    public DcMotor vertical1 = null;
+    public DcMotor vertical2 = null;
+
     public Servo spinnyBoy1 = null;
     public Servo spinnyBoy2 = null;
 
@@ -45,11 +49,15 @@ public class TeleOpAlpha extends LinearOpMode {
         rightMotorFront = hardwareMap.get(DcMotor.class, "right_motor_front");
         rightMotorBack = hardwareMap.get(DcMotor.class, "right_motor_back");
 
+        vertical1 = hardwareMap.get(DcMotor.class, "vertical1");
+        vertical2 = hardwareMap.get(DcMotor.class, "vertical2");
+
         spinnyBoy1 = hardwareMap.get(Servo.class, "spin1");
         spinnyBoy2 = hardwareMap.get(Servo.class, "spin2");
 
         leftMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        vertical2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -120,21 +128,15 @@ public class TeleOpAlpha extends LinearOpMode {
             }
             /*if (gamepad1.dpad_up) {
                 //verticalslide1.setPower(.5);
-                //verticalslide2.setPower(-.5);
+                //verticalslide2.setPower(.5);
             }
             else if (gamepad1.dpad_down) {
-                verticalslide1.setPower(-.5);
-                verticalslide2.setPower(.5);
+                vertical1.setPower(-.5);
+                vertical2.setPower(-.5);
             }
             else {
                 verticalslide1.setPower(0);
                 verticalslide2.setPower(0);
-            }
-            if (gamepad1.right_bumper && !gamepad1.left_bumper) {
-                horizontalSlide.setPosition(0);
-            }
-            if (gamepad1.left_bumper && !gamepad1.right_bumper) {
-                horizontalSlide.setPosition(1);
             }
             if (gamepad1.left_bumper && gamepad1.right_bumper) {
                 armServo.setPosition(.5);

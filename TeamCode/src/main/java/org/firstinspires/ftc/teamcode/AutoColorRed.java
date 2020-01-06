@@ -37,6 +37,8 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
     //2 color & distance sensor. side determines which one to use.
     //1 = Right side of robot, 2 = Left side of robot
     private int side = 1;
+    //2 methods to test
+    private int method = 2;
     @Override
     public void runOpMode() {
 
@@ -61,23 +63,43 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
         sleep(1000);
         //pickUpBlock();
         runTo(-colorRun3, allPower, slowPower);
-        turnRight(70, allPower, slowPower);
-        accurateTurnRight(-90, allPower);
-        runTo(colorRun4 + colorRunMultiplier1 * (6 - blockNumber), allPower, slowPower);
-        //dropBlock();
-        sleep(1000);
-        runTo(-colorRun5 - colorRunMultiplier1 * (6 - blockNumber), allPower, slowPower);
-        adjustToInitialAngle();
-        sleep(500);
-        adjustToInitialAngle();
-        runTo(colorRun3, allPower * .8, slowPower * .7);
-        //pickUpBlock();
-        sleep(1000);
-        runTo(-colorRun3, allPower, slowPower);
-        turnRight(70, allPower, slowPower);
-        accurateTurnRight(-90, allPower);
-        runTo(colorRun6 + colorRunMultiplier1 * (6 - blockNumber), allPower, slowPower);
-        //dropBlock();
-        sleep(1000);
+        if (method == 1) {
+            turnRight(70, allPower, slowPower);
+            accurateTurnRight(-90, allPower);
+            runTo(colorRun4 + colorRunMultiplier1 * (6 - blockNumber), allPower, slowPower);
+            //dropBlock();
+            sleep(1000);
+            runTo(-colorRun5 - colorRunMultiplier1 * (6 - blockNumber), allPower, slowPower);
+            adjustToInitialAngle();
+            sleep(500);
+            adjustToInitialAngle();
+            runTo(colorRun3, allPower * .8, slowPower * .7);
+            //pickUpBlock();
+            sleep(1000);
+            runTo(-colorRun3, allPower, slowPower);
+            turnRight(70, allPower, slowPower);
+            accurateTurnRight(-90, allPower);
+            runTo(colorRun6 + colorRunMultiplier1 * (6 - blockNumber), allPower, slowPower);
+            //dropBlock();
+            sleep(1000);
+        }
+        else if (method == 2) {
+            strafeRight(colorRun4 + colorRunMultiplier1 * (6 - blockNumber), allPower, slowPower);
+            //dropblock();
+            sleep(1000);
+            adjustToInitialAngle();
+            sleep(500);
+            adjustToInitialAngle();
+            strafeLeft(colorRun5 + colorRunMultiplier1 * (6 - blockNumber), allPower, slowPower);
+            adjustToInitialAngle();
+            sleep(500);
+            adjustToInitialAngle();
+            runTo(colorRun3, allPower, slowPower);
+            //pickUpBlock();
+            sleep(1000);
+            runTo(-colorRun3, allPower, slowPower);
+            strafeRight(colorRun6 + colorRunMultiplier1 * (6 - blockNumber), allPower, slowPower);
+            //dropblock();
+        }
     }
 }
