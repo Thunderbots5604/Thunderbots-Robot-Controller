@@ -30,15 +30,14 @@ public class TeleOpAlpha extends LinearOpMode {
 
     public Servo spinnyBoy1 = null;
     public Servo spinnyBoy2 = null;
+    public Servo armServo = null;
+
+    public double armPosition = .8;
 
     //Multipliers
     private boolean reversed = false;
     private boolean halfSpeed = false;
-    private double multiplier = -1;
-
-    //Motor powers
-    private double powerFRBL = 0;
-    private double powerFLBR = 0;
+    private double multiplier = -.7;
 
 
     @Override
@@ -55,9 +54,11 @@ public class TeleOpAlpha extends LinearOpMode {
         spinnyBoy1 = hardwareMap.get(Servo.class, "spin1");
         spinnyBoy2 = hardwareMap.get(Servo.class, "spin2");
 
+        armServo = hardwareMap.get(Servo.class, "armServo");
+
         leftMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
-        vertical2.setDirection(DcMotorSimple.Direction.REVERSE);
+        spinnyBoy1.setDirection(Servo.Direction.REVERSE);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -73,12 +74,14 @@ public class TeleOpAlpha extends LinearOpMode {
             telemetry.addData("Right Back: ", rightMotorBack.getCurrentPosition());
             telemetry.update();
 
-            if((gamepad1.y) && cooldown.seconds() > .5) {
+            armPosition = armServo.getPosition();
+
+            if((gamepad1.y || gamepad2.y) && cooldown.seconds() > .5) {
                 reversed = !reversed;
                 multiplier *= -1;
                 cooldown.reset();
             }
-            if((gamepad1.x) && cooldown.seconds() > .5) {
+            if((gamepad1.x || gamepad2.x) && cooldown.seconds() > .5) {
                 halfSpeed = !halfSpeed;
                 if (halfSpeed) {
                     multiplier *= .5;
@@ -89,24 +92,31 @@ public class TeleOpAlpha extends LinearOpMode {
                 cooldown.reset();
             }
 
-            //Movement, in one if statement hopefully
-            if (gamepad1.left_stick_y != 0 || gamepad1.left_stick_x != 0) {
-                //FR BL pair
-                powerFRBL = (gamepad1.left_stick_x + gamepad1.left_stick_y) / 2;
-                leftMotorBack.setPower(multiplier * powerFRBL);
-                rightMotorFront.setPower(multiplier * powerFRBL);
-                //FL BR pair
-                powerFLBR = (gamepad1.left_stick_y - gamepad1.left_stick_x) / 2;
-                leftMotorFront.setPower(multiplier * powerFLBR);
-                rightMotorBack.setPower(multiplier * powerFLBR);
+            if (Math.abs(gamepad1.left_stick_y) > .1) {
+                leftMotorFront.setPower(gamepad1.left_stick_y * multiplier);
+                leftMotorBack.setPower(gamepad1.left_stick_y * multiplier);
+                rightMotorFront.setPower(gamepad1.left_stick_y * multiplier);
+                rightMotorBack.setPower(gamepad1.left_stick_y * multiplier);
+            }
+            else if (gamepad1.left_stick_x > .1) {
+                leftMotorFront.setPower(gamepad1.left_stick_x * Math.abs(multiplier) * .91732283);
+                leftMotorBack.setPower(-gamepad1.left_stick_x * Math.abs(multiplier));
+                rightMotorFront.setPower(-gamepad1.left_stick_x * Math.abs(multiplier) * .9507874);
+                rightMotorBack.setPower(gamepad1.left_stick_x * Math.abs(multiplier) * 9980315);
+            }
+            else if (gamepad1.left_stick_x < -.1) {
+                leftMotorFront.setPower(gamepad1.left_stick_x * Math.abs(multiplier) * .93644068);
+                leftMotorBack.setPower(-gamepad1.left_stick_x * Math.abs(multiplier));
+                rightMotorFront.setPower(-gamepad1.left_stick_x * Math.abs(multiplier) * .93644068);
+                rightMotorBack.setPower(gamepad1.left_stick_x * Math.abs(multiplier) * .96610169);
             }
             //Point Turn
             //If right stick is moving on the x axis
-            else if (gamepad1.left_stick_y == 0 && gamepad1.right_stick_x != 0) {
-                leftMotorFront.setPower(Math.abs(multiplier) * gamepad1.right_stick_x);
-                leftMotorBack.setPower(Math.abs(multiplier) * gamepad1.right_stick_x);
-                rightMotorFront.setPower(-Math.abs(multiplier) * gamepad1.right_stick_x);
-                rightMotorBack.setPower(-Math.abs(multiplier) * gamepad1.right_stick_x);
+            else if ((gamepad1.left_stick_y == 0 && gamepad1.right_stick_x != 0) || (gamepad2.left_stick_y == 0 && gamepad2.right_stick_x != 0)) {
+                leftMotorFront.setPower(Math.abs(multiplier) * gamepad1.right_stick_x * .7);
+                leftMotorBack.setPower(Math.abs(multiplier) * gamepad1.right_stick_x * .7);
+                rightMotorFront.setPower(-Math.abs(multiplier) * gamepad1.right_stick_x * .7);
+                rightMotorBack.setPower(-Math.abs(multiplier) * gamepad1.right_stick_x * .7);
                 telemetry.addData("Right stick", gamepad1.right_stick_x);
             }
             //Don't move if no joysticks moved
@@ -117,39 +127,36 @@ public class TeleOpAlpha extends LinearOpMode {
                 rightMotorBack.setPower(0);
             }
             //Spinner down
+            //#1 = left side
             if (gamepad1.dpad_left || gamepad2.dpad_left) {
-                spinnyBoy1.setPosition(.45);
-                spinnyBoy2.setPosition(.45);
+                spinnyBoy1.setPosition(.7);
+                spinnyBoy2.setPosition(.7);
             }
             //Spinner Up
             if (gamepad1.dpad_right || gamepad2.dpad_right) {
-                spinnyBoy1.setPosition(.9);
-                spinnyBoy2.setPosition(0);
+                spinnyBoy1.setPosition(.29);
+                spinnyBoy2.setPosition(.29);
             }
-            /*if (gamepad1.dpad_up) {
-                //verticalslide1.setPower(.5);
-                //verticalslide2.setPower(.5);
-            }
-            else if (gamepad1.dpad_down) {
+            if (gamepad1.dpad_up || gamepad2.dpad_up) {
                 vertical1.setPower(-.5);
+                vertical2.setPower(.5);
+            }
+            else if (gamepad1.dpad_down || gamepad2.dpad_down) {
+                vertical1.setPower(.5);
                 vertical2.setPower(-.5);
             }
             else {
-                verticalslide1.setPower(0);
-                verticalslide2.setPower(0);
+                vertical1.setPower(0);
+                vertical2.setPower(0);
             }
-            if (gamepad1.left_bumper && gamepad1.right_bumper) {
-                armServo.setPosition(.5);
+
+            if (gamepad1.left_bumper || gamepad2.left_bumper) {
+                armServo.setPosition(1);
             }
-            if (gamepad1.left_bumper && gamepad1.right_bumper) {
-                if (armPosition > .7) {
-                    armServo.setPosition(.5);
-                }
-                else {
-                    armServo.setPosition(.9);
-                }
-            }*/
-            if (gamepad2.b) {
+            if (gamepad1.right_bumper || gamepad2.right_bumper) {
+                armServo.setPosition(.2);
+            }
+            if (gamepad1.b || gamepad2.b) {
                 leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

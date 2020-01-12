@@ -34,6 +34,7 @@ public class AutoColorBlueWall extends GodFatherOfAllAutonomous {
     private String color = null;
     private int blockNumber = 6;
     private boolean wall = true;
+    private int method = 2;
     @Override
     public void runOpMode() {
 
@@ -41,40 +42,101 @@ public class AutoColorBlueWall extends GodFatherOfAllAutonomous {
 
         waitForStart();
 
+        //Go to block
         runTo(colorRun1, allPower, slowPower);
         adjustToInitialAngle();
-        runUntil(colorRunUntil1, allPower * .9);
+        runUntil(colorRunUntil1, allPower * .7);
+        runTo(colorRun2, allPower, slowPower);
+        strafeLeft(colorRunExtra1, allPower, slowPower);
         color = senseColor();
+        sleep(1000);
+        //Strafe left until in front of correct block
         if (color == "Yellow") {
             strafeRight(strafeToNextBlock, allPower, slowPower);
             blockNumber -= 1;
-            senseColor();
+            color = senseColor();
+            sleep(500);
             if (color == "Yellow") {
                 blockNumber -= 1;
                 strafeRight(strafeToNextBlock, allPower, slowPower);
             }
         }
+        telemetry.addData("Block number: ", blockNumber);
+        telemetry.update();
+        sleep(1000);
+        strafeRight(colorRunExtra2, allPower, slowPower);
+        //Goes to pick up block
         runTo(colorRun2, allPower * .8, slowPower * .7);
-        sleep(1000);
-        //pickUpBlock();
+        pickUpBlock();
+        //Goes backwards a little. Wall backs up a little more
         runTo(-colorRunToWall, allPower, slowPower);
-        turnLeft(70, allPower, slowPower);
-        accurateTurnLeft(90, allPower);
-        runTo(colorRun4 + colorRunMultiplier1 * (6 - blockNumber), allPower, slowPower);
-        //dropBlock();
-        sleep(1000);
-        runTo(-colorRun5 - colorRunMultiplier1 * (6 - blockNumber), allPower, slowPower);
+        sleep(300);
         adjustToInitialAngle();
-        sleep(500);
-        adjustToInitialAngle();
-        runTo(colorRunToWall, allPower * .8, slowPower * .7);
-        //pickUpBlock();
         sleep(1000);
-        runTo(-colorRunToWall, allPower, slowPower);
-        turnLeft(70, allPower, slowPower);
-        accurateTurnLeft(90, allPower);
-        runTo(colorRun6 + colorRunMultiplier1 * (6 - blockNumber), allPower, slowPower);
-        //dropBlock();
-        sleep(1000);
+        angle = getAngle();
+        if (Math.abs(angle) > 40) {
+            adjustToInitialAngle();
+        }
+        //Suckier method
+        if (method == 1) {
+            turnRight(70, allPower, slowPower);
+            accurateTurnRight(-90, allPower);
+            runTo(colorRun4 + colorRunMultiplier1 * (6 - blockNumber), allPower, slowPower);
+            resetArm();
+            sleep(500);
+            runTo(-colorRun5 - colorRunMultiplier1 * (6 - blockNumber), allPower, slowPower);
+            adjustToInitialAngle();
+            sleep(200);
+            adjustToInitialAngle();
+            runTo(colorRunToWall, allPower * .8, slowPower * .7);
+            pickUpBlock();
+            sleep(200);
+            runTo(-colorRunToWall, allPower, slowPower);
+            turnRight(70, allPower, slowPower);
+            accurateTurnRight(-90, allPower);
+            runTo(colorRun6 + colorRunMultiplier1 * (6 - blockNumber), allPower, slowPower);
+            resetArm();
+            sleep(500);
+        }
+        //Better Method
+        else if (method == 2) {
+            //Strafes right until tile #4 from left wall. Foundation side
+            strafeRight(colorRun4 + colorRunMultiplier1 * (6 - blockNumber), .8, slowPower);
+            dropBlock();
+            sleep(200);
+            //Adjusts back to angle for picking up block
+            adjustToInitialAngle();
+            //Go to next skystone halfway
+            strafeRight((colorRun5 + colorRunMultiplier1 * (6 - blockNumber)) / 2, .8, slowPower);
+            //Adjusts back to angle for picking up block
+            resetArm();
+            //finish moving to next skystone
+            strafeRight((colorRun5 + colorRunMultiplier1 * (6 - blockNumber)) / 2, .8, slowPower);
+            //Pick up next block
+            adjustToInitialAngle();
+            if (blockNumber < 5) {
+                strafeRight(colorRunExtra4, allPower, slowPower);
+                turnRight((colorRun2 * colorRunMultiplier3 + colorRunMultiplier2 * (6 - blockNumber)) / 2, allPower, slowPower);
+            }
+            sleep(500);
+            runTo(colorRunToWall * .8, allPower, slowPower);
+            runUntil(colorRunUntil1, allPower * .7);
+            resetArm();
+            runTo(colorRun2 + colorRunMultiplier3 * (blockNumber - 4), allPower, slowPower);
+            sleep(200);
+            runTo(colorRun2, allPower, slowPower);
+            pickUpBlock();
+            sleep(200);
+            runTo(-colorRunExtra3, allPower, slowPower);
+            //Drop next block
+            adjustToInitialAngle();
+            turnLeft(colorRunMultiplier2 * (6 - blockNumber), allPower, slowPower);
+            if (blockNumber > 4) {
+                runTo(-colorRun2 / 2, allPower, slowPower);
+            }
+            strafeLeft(colorRun6 + colorRunMultiplier1 * (6 - blockNumber), .9, allPower);
+            dropBlock();
+            strafeRight(colorRun7, allPower, slowPower);
+        }
     }
 }
