@@ -40,7 +40,7 @@ public class EncoderValuesbyJack extends GodFatherOfAllAutonomous {
         waitForStart();
         //Runs for what it thinks is 20 inches using the non changed tick multiplier. This is also
         //where the 20 in the TICKS_MULTIPLIER comes from.
-        runTo(20, allPower);
+        runTo(20, allPower, slowPower);
         //make sure everything is stopped, just in case
         leftMotorFront.setPower(0);
         leftMotorBack.setPower(0);
