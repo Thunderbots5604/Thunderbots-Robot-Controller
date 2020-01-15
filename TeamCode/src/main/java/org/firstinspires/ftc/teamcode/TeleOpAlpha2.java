@@ -39,6 +39,10 @@ public class TeleOpAlpha2 extends LinearOpMode {
     private boolean halfSpeed = false;
     private double multiplier = -.7;
 
+    //Powers
+    private double powerFRBL;
+    private double powerFLBR;
+
     //Toggles
     private boolean down;
 

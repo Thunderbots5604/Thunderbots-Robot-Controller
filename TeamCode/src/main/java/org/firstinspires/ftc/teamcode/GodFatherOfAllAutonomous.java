@@ -187,14 +187,15 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         vertical1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         vertical2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        if (foundation == false) {
+        //there's nothing that talks about foundation anywhere else. fix later
+        /*if (foundation == false) {
             resetArm();
-        }
+        }*/
 
-        float maxLeft = 0;
-        float maxRight = 0;
-        float tickPowers = {TICKS_PER_STRAFE_LLF, TICKS_PER_STRAFE_LLB, TICKS_PER_STRAFE_LRF, TICKS_PER_STRAFE_LRB, TICKS_PER_STRAFE_RLF, TICKS_PER_STRAFE_RLB, TICKS_PER_STRAFE_RRF, TICKS_PER_STRAFE_LRB}
-        for (float i : tickPowers) {
+        double maxLeft = 0;
+        double maxRight = 0;
+        double[] tickPowers = {TICKS_PER_STRAFE_LLF, TICKS_PER_STRAFE_LLB, TICKS_PER_STRAFE_LRF, TICKS_PER_STRAFE_LRB, TICKS_PER_STRAFE_RLF, TICKS_PER_STRAFE_RLB, TICKS_PER_STRAFE_RRF, TICKS_PER_STRAFE_LRB};
+        for (double i : tickPowers) {
             if (i < 4) {
                 if (i > maxLeft) {
                     maxLeft = i;
@@ -854,29 +855,29 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         angle = getAngle();
         angleDifference = getAngleDifference(targetAngle, angle);
         turnTowards = closerSide(angle, targetAngle);
-        double angleDifferenceInitial = angleDifference
+        double angleDifferenceInitial = angleDifference;
         if (turnTowards == "Left") {
-           while (angleDifference > 15 && runtime.milliseconds() < 3000) {
-               turnLeft(20, allPower, slowerPower);
-               angle = getAngle();
-               angleDifference = getAngleDifference(targetAngle, angle);
-               turnTowards = closerSide(angle, targetAngle);
-               if ((angleDifference > angleDifferenceInitial && angleDifferenceInitial > 30) || turnTowards == "Right") {
-                   turnRight(angleDifference, allPower, slowerPower);
-                   return;
-               }
-           }
-           sleep(500);
-           angle = getAngle();
-           angleDifference = getAngleDifference(angle, targetAngle);
-           turnTowards = closerSide(angle, targetAngle);
-           if (turnTowards == "Left") {
-               turnLeft(angleDifference, allPower, slowerPower);
-           }
-           else {
-               turnRight(angleDifference, allPower, slowerPower);
-           }
-           return;
+            while (angleDifference > 15 && runtime.milliseconds() < 3000) {
+                turnLeft(20, allPower, slowerPower);
+                angle = getAngle();
+                angleDifference = getAngleDifference(targetAngle, angle);
+                turnTowards = closerSide(angle, targetAngle);
+                if ((angleDifference > angleDifferenceInitial && angleDifferenceInitial > 30) || turnTowards == "Right") {
+                    turnRight(angleDifference, allPower, slowerPower);
+                    return;
+                }
+            }
+            sleep(500);
+            angle = getAngle();
+            angleDifference = getAngleDifference(angle, targetAngle);
+            turnTowards = closerSide(angle, targetAngle);
+            if (turnTowards == "Left") {
+                turnLeft(angleDifference, allPower, slowerPower);
+            }
+            else {
+                turnRight(angleDifference, allPower, slowerPower);
+            }
+            return;
         }
         else {
             while (angleDifference > 15 && runtime.milliseconds() < 3000) {
