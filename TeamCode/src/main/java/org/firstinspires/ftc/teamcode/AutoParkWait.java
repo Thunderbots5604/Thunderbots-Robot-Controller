@@ -24,49 +24,24 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
-@Disabled
-@Autonomous(name="AutoTest", group="Test")
-public class AutoTest extends GodFatherOfAllAutonomous {
-
-    private double distance;
+@Autonomous(name="AutoPark Wait", group="Parking")
+public class AutoParkWait extends GodFatherOfAllAutonomous {
 
     @Override
     public void runOpMode() {
+
+        //Just parks on the line
+
         initialization();
 
-        spinnyBoyDown();
+        telemetry.addData("Robot should", "face the line.");
+        telemetry.update();
 
         waitForStart();
 
+        //sleep first to allow the other robot to maneuver
+        sleep(20000);
+        runTo(12, allPower, slowPower);
 
-        runTo(1, allPower);
-
-        leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        leftMotorFront.setPower(allPower / 4);
-        leftMotorBack.setPower(allPower / 2);
-        rightMotorFront.setPower(allPower);
-        rightMotorBack.setPower(allPower);
-
-        mmAway = getDistance();
-        telemetry.addData("mmAway", mmAway);
-        telemetry.update();
-        sleep(2000);
-        while(mmAway > 400) {
-            mmAway = getDistance();
-            telemetry.addData("mmAway", mmAway);
-            telemetry.update();
-            sleep(1000);
-        }
-        telemetry.addData("Done", ":)");
-        telemetry.update();
-        leftMotorFront.setPower(0);
-        leftMotorBack.setPower(0);
-        rightMotorFront.setPower(0);
-        rightMotorBack.setPower(0);
-        sleep(50000);
     }
 }

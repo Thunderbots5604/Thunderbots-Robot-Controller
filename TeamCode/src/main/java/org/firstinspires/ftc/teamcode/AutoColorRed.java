@@ -33,12 +33,6 @@ import java.util.List;
 public class AutoColorRed extends GodFatherOfAllAutonomous {
     private String color = null;
     private int blockNumber = 6;
-    private boolean wall = false;
-    //2 color & distance sensor. side determines which one to use.
-    //1 = Right side of robot, 2 = Left side of robot
-    private int side = 1;
-    //2 methods to test
-    private int method = 2;
     @Override
     public void runOpMode() {
 

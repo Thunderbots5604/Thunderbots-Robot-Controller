@@ -33,19 +33,6 @@ public class AutoFoundationBlueWall extends GodFatherOfAllAutonomous {
 
         waitForStart();
 
-        strafeLeft(foundationStrafeInitial, allPower, slowPower);
-        runTo(foundationRunInitial, allPower, slowPower);
-        turnLeft(40, allPower, slowPower);
-        sleep(1000);
-        accurateTurnRight(0, allPower);
-        runTo(foundationRun1, allPower, slowPower);
-        runTo(foundationRun2, allPower, slowPower * .8);
-        spinnyBoyDown();
-        sleep(1000);
-        runTo(-foundationRun3, foundationPower1, foundationPower2);
-        spinnyBoyUp();
-        sleep(500);
-        adjustToInitialAngle();
-        strafeRight(foundationStrafe1, allPower, slowPower);
+
     }
 }

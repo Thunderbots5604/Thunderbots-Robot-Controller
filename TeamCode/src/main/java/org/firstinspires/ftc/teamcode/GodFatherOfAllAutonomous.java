@@ -123,51 +123,12 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public double angle = 0;
     public double degrees = 0;
     public int side = 0;
-    boolean angleNeg;
-    boolean targetNeg;
+    public double targetAngle;
+    public double currentAngle;
+    public double initialAngle;
+    public double angleDifference;
+    public String turnTowards;
 
-    //Constant Values used in all or most codes, order = when it's used
-    //Block Side
-    /*
-    1 = first go forward, 2 = go to pick up block, 3 = back up after picking up block
-    4 = strafe before dropping block, 5 = strafe to next skystone, 6 = 4 but second time, 7 = park
-    extras:
-    1 = adjust for color sensor, 2 = readjust for feed after color
-    runToWall replaecs 4 in colorWall program
-    */
-    public double colorRunUntil1 = 10;
-
-    public double colorRun1 = 12;
-    public double colorRun2 = 4;
-    public double colorRun3 = 5 + colorRun2;
-    public double colorRun4 = 64;
-    public double colorRunToWall = 23;
-    public double colorRun5 = colorRun4 + 36;
-    public double colorRun6 = colorRun5 - 6;
-    public double colorRun7 = 10;
-
-    public double strafeToNextBlock = 10;
-    public double colorRunMultiplier1 = 9;
-    public double colorRunMultiplier2 = 6;
-    public double colorRunMultiplier3 = 3;
-    public double colorRunExtra1 = 9;
-    public double colorRunExtra2 = colorRunExtra1 - 3;
-    public double colorRunExtra3 = 10;
-    public double colorRunExtra4 = 4;
-
-    //Foundation Side
-    public double foundationStrafe3 = 6;
-    public double foundationRun1 = 20;
-    public double foundationRun2 = 12;
-    public double foundationRun3 = 46;
-    public double foundationRun4 = 1;
-    public double foundationPower1 = .8;
-    public double foundationPower2 = .6;
-    public double foundationStrafe1 = 70;
-    public double foundationRun5 = 25;
-    public double foundationStrafe2 = 30;
-    public double foundationStrafeInitial = 23;
-    public double foundationRunInitial = 5;
 
     @Override
     public void runOpMode() {
@@ -218,6 +179,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     }
     //Use encoders to move robot a certain number of inches. For power, use allPower
     public void runTo(double inches, double power, double slowerPower) {
+        initialAngle = getAngle();
         runtime.reset();
         leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -245,6 +207,21 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                 leftMotorBack.setPower(power);
                 rightMotorFront.setPower(power);
                 rightMotorBack.setPower(power);
+
+                //New code to adjust in running methods if angle curves off too much. Like strafing. Gonna use for strafing and runTo
+                //getAngleDifference gives a positive result of difference between 2 angles
+                currentAngle = getAngle();
+                angleDifference = getAngleDifference(currentAngle, initialAngle);
+                turnTowards = closerSide(currentAngle, initialAngle);
+                if (angleDifference > 6) {
+                    if (turnTowards == "Left") {
+                        turnLeft(angleDifference, power, slowerPower);
+                    }
+                    else {
+                        turnRight(angleDifference, power, slowerPower);
+                    }
+                }
+                //End of the new code
             }
             leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -265,6 +242,21 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                 leftMotorBack.setPower(slowerPower);
                 rightMotorFront.setPower(slowerPower);
                 rightMotorBack.setPower(slowerPower);
+
+                //New code to adjust in running methods if angle curves off too much. Like strafing. Gonna use for strafing and runTo
+                //getAngleDifference gives a positive result of difference between 2 angles
+                currentAngle = getAngle();
+                angleDifference = getAngleDifference(currentAngle, initialAngle);
+                turnTowards = closerSide(currentAngle, initialAngle);
+                if (angleDifference > 6) {
+                    if (turnTowards == "Left") {
+                        turnLeft(angleDifference, power, slowerPower);
+                    }
+                    else {
+                        turnRight(angleDifference, power, slowerPower);
+                    }
+                }
+                //End of the new code
             }
         }
         else {
@@ -407,6 +399,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         rightMotorBack.setPower(0);
     }
     public void strafeLeft(double inches, double power, double slowerPower) {
+        initialAngle = getAngle();
         runtime.reset();
         leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -433,6 +426,21 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             leftMotorBack.setPower(power * strafePower_LLB);
             rightMotorFront.setPower(power * strafePower_LRF);
             rightMotorBack.setPower(-power * strafePower_LRB);
+
+            //New code to adjust in running methods if angle curves off too much. Like strafing. Gonna use for strafing and runTo
+            //getAngleDifference gives a positive result of difference between 2 angles
+            currentAngle = getAngle();
+            angleDifference = getAngleDifference(currentAngle, initialAngle);
+            turnTowards = closerSide(currentAngle, initialAngle);
+            if (angleDifference > 6) {
+                if (turnTowards == "Left") {
+                    turnLeft(angleDifference, power, slowerPower);
+                }
+                else {
+                    turnRight(angleDifference, power, slowerPower);
+                }
+            }
+            //End of the new code
         }
         while ((leftMotorFront.getCurrentPosition() > targetStrafe_LLF) && (rightMotorBack.getCurrentPosition() > targetStrafe_LRB) && (leftMotorBack.getCurrentPosition() < targetStrafe_LLB) && (rightMotorFront.getCurrentPosition() < targetStrafe_LRF) && opModeIsActive() && runtime.milliseconds() < 4000) {
             telemetry.addData("Target Position", targetStrafe_LLF);
@@ -445,6 +453,21 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             leftMotorBack.setPower(slowerPower * strafePower_LLB);
             rightMotorFront.setPower(slowerPower * strafePower_LRF);
             rightMotorBack.setPower(-slowerPower * strafePower_LRB);
+
+            //New code to adjust in running methods if angle curves off too much. Like strafing. Gonna use for strafing and runTo
+            //getAngleDifference gives a positive result of difference between 2 angles
+            currentAngle = getAngle();
+            angleDifference = getAngleDifference(currentAngle, initialAngle);
+            turnTowards = closerSide(currentAngle, initialAngle);
+            if (angleDifference > 6) {
+                if (turnTowards == "Left") {
+                    turnLeft(angleDifference, power, slowerPower);
+                }
+                else {
+                    turnRight(angleDifference, power, slowerPower);
+                }
+            }
+            //End of the new code
         }
         leftMotorFront.setPower(0);
         leftMotorBack.setPower(0);
@@ -452,6 +475,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         rightMotorBack.setPower(0);
     }
     public void strafeRight(double inches, double power, double slowerPower) {
+        initialAngle = getAngle();
         runtime.reset();
         leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -478,6 +502,21 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             leftMotorBack.setPower(-power * strafePower_RLB);
             rightMotorFront.setPower(-power * strafePower_RRF);
             rightMotorBack.setPower(power * strafePower_RRB);
+
+            //New code to adjust in running methods if angle curves off too much. Like strafing. Gonna use for strafing and runTo
+            //getAngleDifference gives a positive result of difference between 2 angles
+            currentAngle = getAngle();
+            angleDifference = getAngleDifference(currentAngle, initialAngle);
+            turnTowards = closerSide(currentAngle, initialAngle);
+            if (angleDifference > 6) {
+                if (turnTowards == "Left") {
+                    turnLeft(angleDifference, power, slowerPower);
+                }
+                else {
+                    turnRight(angleDifference, power, slowerPower);
+                }
+            }
+            //End of the new code
         }
         while ((leftMotorFront.getCurrentPosition() < targetStrafe_RLF) && (rightMotorBack.getCurrentPosition() < targetStrafe_RRB) && (leftMotorBack.getCurrentPosition() > targetStrafe_RLB) && (rightMotorFront.getCurrentPosition() > targetStrafe_RRF) && opModeIsActive() && runtime.milliseconds() < 4000) {
             telemetry.addData("Target Position", targetStrafe_RLF);
@@ -490,6 +529,21 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             leftMotorBack.setPower(-slowerPower * strafePower_RLB);
             rightMotorFront.setPower(-slowerPower * strafePower_RRF);
             rightMotorBack.setPower(slowerPower * strafePower_LLF);
+
+            //New code to adjust in running methods if angle curves off too much. Like strafing. Gonna use for strafing and runTo
+            //getAngleDifference gives a positive result of difference between 2 angles
+            currentAngle = getAngle();
+            angleDifference = getAngleDifference(currentAngle, initialAngle);
+            turnTowards = closerSide(currentAngle, initialAngle);
+            if (angleDifference > 6) {
+                if (turnTowards == "Left") {
+                    turnLeft(angleDifference, power, slowerPower);
+                }
+                else {
+                    turnRight(angleDifference, power, slowerPower);
+                }
+            }
+            //End of the new code
         }
         leftMotorFront.setPower(0);
         leftMotorBack.setPower(0);
@@ -532,7 +586,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public double getAngle() {
         heading = 0;
         runtime.reset();
-        while (runtime.milliseconds() < 3000 && heading == 0) {
+        while (runtime.milliseconds() < 1000 && heading == 0) {
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             heading = formatAngle(angles.angleUnit, angles.firstAngle);
         }
@@ -724,6 +778,35 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             }
             turnRight(angle, allPower, slowPower);
             return;
+        }
+    }
+    //Returns minimum difference between 2 angles. Mainly current and target Angle
+    public double getAngleDifference(double angle1, double angle2) {
+        //Set angle1 as smaller
+        double tempAngle = angle1;
+        double checkAngle = 360 + angle1;
+        double angleCheck;
+        if (angle1 < angle2) {
+            angle1 = angle2;
+            angle2 = tempAngle;
+        }
+        angleCheck = angle2 - angle1;
+        if (angleCheck > 180) {
+            angleCheck = 360 - angleCheck;
+        }
+        return angleCheck;
+    }
+    //Returns side that would be closer to turn towards
+    public String closerSide (double currentAngle,double targetAngle) {
+        if (currentAngle > targetAngle) {
+            currentAngle *= -1;
+            targetAngle *= -1;
+        }
+        if (targetAngle - currentAngle < 180) {
+            return "Right";
+        }
+        else {
+            return "Left";
         }
     }
 }

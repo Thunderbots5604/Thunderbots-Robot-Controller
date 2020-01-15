@@ -34,37 +34,5 @@ public class AutoFoundationRedAndBlock extends GodFatherOfAllAutonomous {
         waitForStart();
 
         runtime.reset();
-        strafeRight(foundationStrafeInitial, allPower, slowPower);
-        runTo(foundationRunInitial, allPower, slowPower);
-        turnRight(40, allPower, slowPower);
-        sleep(1000);
-        accurateTurnLeft(0, allPower);
-        runTo(foundationRun1, allPower, slowPower);
-        runTo(foundationRun2, allPower, slowPower * .8);
-        spinnyBoyDown();
-        sleep(1000);
-        runTo(-foundationRun3, foundationPower1, foundationPower2);
-        spinnyBoyUp();
-        sleep(500);
-        adjustToInitialAngle();
-        strafeLeft(foundationStrafe1, allPower, slowPower);
-        runTo(foundationRun4, allPower, slowPower);
-        //Wait until 20 seconds left so teamate can get  skystones
-        while (runtime.milliseconds() < 20000) {}
-        strafeLeft(foundationStrafe2, allPower, slowPower);
-        //Pick up blocks, use colorRun
-        runTo(colorRun1, allPower, slowPower);
-        mmAway = getDistance();
-        if (mmAway > 300) {
-            strafeLeft(colorRunUntil1, allPower, slowPower);
-        }
-        runUntil(colorRunUntil1, slowPower);
-        runTo(colorRun2, allPower * .8, slowPower * .7);
-        sleep(1000);
-        //pickUpBlock();
-        runTo(-colorRunToWall, allPower, slowPower);
-        turnRight(70, allPower, slowPower);
-        accurateTurnRight(-90, allPower);
-        runTo(foundationStrafe2, allPower, slowPower);
     }
 }

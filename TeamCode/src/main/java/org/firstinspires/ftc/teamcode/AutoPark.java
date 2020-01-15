@@ -40,7 +40,7 @@ public class AutoPark extends GodFatherOfAllAutonomous {
         waitForStart();
 
         //sleep first to allow the other robot to maneuver
-        sleep(20000);
+        runTo(12, allPower, slowPower);
 
 
     }
