@@ -39,6 +39,9 @@ public class TeleOpAlpha extends LinearOpMode {
     private boolean halfSpeed = false;
     private double multiplier = -.7;
 
+    //Toggles
+    private boolean down;
+
 
     @Override
     public void runOpMode() {
@@ -63,6 +66,13 @@ public class TeleOpAlpha extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
+        if (armServo.getPosition() < .6) {
+            down = true;
+        }
+        else {
+            down = false;
+        }
+
         waitForStart();
 
         while (opModeIsActive()) {
@@ -76,12 +86,12 @@ public class TeleOpAlpha extends LinearOpMode {
 
             armPosition = armServo.getPosition();
 
-            if((gamepad1.y || gamepad2.y) && cooldown.seconds() > .5) {
+            if((/*gamepad1.y || */gamepad2.y) && cooldown.seconds() > .5) {
                 reversed = !reversed;
                 multiplier *= -1;
                 cooldown.reset();
             }
-            if((gamepad1.x || gamepad2.x) && cooldown.seconds() > .5) {
+            if((/*gamepad1.x || */gamepad2.x) && cooldown.seconds() > .5) {
                 halfSpeed = !halfSpeed;
                 if (halfSpeed) {
                     multiplier *= .5;
@@ -149,12 +159,15 @@ public class TeleOpAlpha extends LinearOpMode {
                 vertical1.setPower(0);
                 vertical2.setPower(0);
             }
-
-            if (gamepad1.left_bumper || gamepad2.left_bumper) {
-                armServo.setPosition(1);
-            }
             if (gamepad1.right_bumper || gamepad2.right_bumper) {
-                armServo.setPosition(.2);
+                if (down) {
+                    armServo.setPosition(1);
+                    down = false;
+                }
+                else {
+                    armServo.setPosition(.2);
+                    down = true;
+                }
             }
             if (gamepad1.b || gamepad2.b) {
                 leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

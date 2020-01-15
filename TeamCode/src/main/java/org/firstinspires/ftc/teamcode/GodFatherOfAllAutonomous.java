@@ -88,6 +88,9 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public final float TICKS_PER_DEGREE_RRF = -11.7F;
     public final float TICKS_PER_DEGREE_RRB = -10.81F;
     //Ticks for Strafing
+    //First Initial = side of strafing
+    //Second Initial = side of Robot the motor is on
+    //Third Initial = Front or back of robot
     public final float TICKS_PER_STRAFE_LLF = -45.9F;
     public final float TICKS_PER_STRAFE_LLB = 47.9F;
     public final float TICKS_PER_STRAFE_LRF = 49.7F;
@@ -105,6 +108,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public float strafePower_RLB = Math.abs(48 / TICKS_PER_STRAFE_RLB);
     public float strafePower_RRF = Math.abs(48 / TICKS_PER_STRAFE_RRF);
     public float strafePower_RRB = Math.abs(48 / TICKS_PER_STRAFE_RRB);
+    public float tickPowers[];
 
     //Vuforia
     public int location = -1;
@@ -175,7 +179,33 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         colorSensor.enableLed(false);
 
         spinnyBoyUp();
-        resetArm();
+        if (foundation == false) {
+            resetArm();
+        }
+
+        float maxLeft = 0;
+        float maxRight = 0;
+        float tickPowers = {TICKS_PER_STRAFE_LLF, TICKS_PER_STRAFE_LLB, TICKS_PER_STRAFE_LRF, TICKS_PER_STRAFE_LRB, TICKS_PER_STRAFE_RLF, TICKS_PER_STRAFE_RLB, TICKS_PER_STRAFE_RRF, TICKS_PER_STRAFE_LRB}
+        for (float i : tickPowers) {
+            if (i < 4) {
+                if (i > maxLeft) {
+                    maxLeft = i;
+                }
+            }
+            else {
+                if (i > maxRight) {
+                    maxRight = i;
+                }
+            }
+        }
+        strafePower_LLF = Math.abs(TICKS_PER_STRAFE_LLF / maxLeft);
+        strafePower_LLB = Math.abs(TICKS_PER_STRAFE_LLB / maxLeft);
+        strafePower_LRF = Math.abs(TICKS_PER_STRAFE_LRF / maxLeft);
+        strafePower_LRB = Math.abs(TICKS_PER_STRAFE_LRB / maxLeft);
+        strafePower_RLF = Math.abs(TICKS_PER_STRAFE_RLF / maxRight);
+        strafePower_RLB = Math.abs(TICKS_PER_STRAFE_RLB / maxRight);
+        strafePower_RRF = Math.abs(TICKS_PER_STRAFE_RRF / maxRight);
+        strafePower_RRB = Math.abs(TICKS_PER_STRAFE_RRB / maxRight);
     }
     //Use encoders to move robot a certain number of inches. For power, use allPower
     public void runTo(double inches, double power, double slowerPower) {
@@ -192,7 +222,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         int targetPosition = (int)(inches * TICKS_PER_INCH * TICKS_MULTIPLIER);
 
         if (inches > 0) {
-            while ((leftMotorBack.getCurrentPosition() < targetPosition * .7) && (rightMotorBack.getCurrentPosition() > -targetPosition * .7) && opModeIsActive() && runtime.milliseconds() < 4000) {
+            while ((leftMotorBack.getCurrentPosition() < targetPosition * .6) && (rightMotorBack.getCurrentPosition() > -targetPosition * .6) && opModeIsActive() && runtime.milliseconds() < 4000) {
                 telemetry.addData("Target Position", targetPosition);
                 telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
                 telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
@@ -260,7 +290,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             }
         }
         else {
-            while ((leftMotorBack.getCurrentPosition() > targetPosition * .7) && (rightMotorBack.getCurrentPosition() < -targetPosition * .7) && opModeIsActive() && runtime.milliseconds() < 4000) {
+            while ((leftMotorBack.getCurrentPosition() > targetPosition * .6) && (rightMotorBack.getCurrentPosition() < -targetPosition * .6) && opModeIsActive() && runtime.milliseconds() < 4000) {
                 telemetry.addData("Target Position", targetPosition);
                 telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
                 telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
@@ -323,7 +353,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         int targetTurn_LRF = (int)(degrees * TICKS_PER_DEGREE_LRF * TICKS_MULTIPLIER);
         int targetTurn_LRB = (int)(degrees * TICKS_PER_DEGREE_LRB * TICKS_MULTIPLIER);
 
-        while ((leftMotorFront.getCurrentPosition() > targetTurn_LLF * .7) && (rightMotorBack.getCurrentPosition() < targetTurn_LRB * .7) && (leftMotorBack.getCurrentPosition() > targetTurn_LLB * .7) && (rightMotorFront.getCurrentPosition() < targetTurn_LRF * .7) && opModeIsActive() && runtime.milliseconds() < 4000) {
+        while ((leftMotorFront.getCurrentPosition() > targetTurn_LLF * .6) && (rightMotorBack.getCurrentPosition() < targetTurn_LRB * .6) && (leftMotorBack.getCurrentPosition() > targetTurn_LLB * .6) && (rightMotorFront.getCurrentPosition() < targetTurn_LRF * .6) && opModeIsActive() && runtime.milliseconds() < 4000) {
             telemetry.addData("Target Position", targetTurn_LLF);
             telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
             telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
@@ -369,7 +399,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         int targetTurn_RRF = (int)(degrees * TICKS_PER_DEGREE_RRF * TICKS_MULTIPLIER);
         int targetTurn_RRB = (int)(degrees * TICKS_PER_DEGREE_RRB * TICKS_MULTIPLIER);
 
-        while ((leftMotorFront.getCurrentPosition() < targetTurn_RLF * .7) && (rightMotorBack.getCurrentPosition() > targetTurn_RRB * .7) && (leftMotorBack.getCurrentPosition() < targetTurn_RLB * .8) && (rightMotorFront.getCurrentPosition() > targetTurn_RRF * .8) && opModeIsActive() && runtime.milliseconds() < 4000) {
+        while ((leftMotorFront.getCurrentPosition() < targetTurn_RLF * .6) && (rightMotorBack.getCurrentPosition() > targetTurn_RRB * .6) && (leftMotorBack.getCurrentPosition() < targetTurn_RLB * .6) && (rightMotorFront.getCurrentPosition() > targetTurn_RRF * .6) && opModeIsActive() && runtime.milliseconds() < 4000) {
             telemetry.addData("Target Position", targetTurn_RLF);
             telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
             telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
@@ -415,7 +445,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         int targetStrafe_LRF = (int)(inches * TICKS_PER_STRAFE_LRF * TICKS_MULTIPLIER);
         int targetStrafe_LRB = (int)(inches * TICKS_PER_STRAFE_LRB * TICKS_MULTIPLIER);
 
-        while ((leftMotorFront.getCurrentPosition() > targetStrafe_LLF * .7) && (rightMotorBack.getCurrentPosition() > targetStrafe_LRB * .7) && (leftMotorBack.getCurrentPosition() < targetStrafe_LLB * .7) && (rightMotorFront.getCurrentPosition() < targetStrafe_LRF * .7) && opModeIsActive() && runtime.milliseconds() < 4000) {
+        while ((leftMotorFront.getCurrentPosition() > targetStrafe_LLF * .6) && (rightMotorBack.getCurrentPosition() > targetStrafe_LRB * .6) && (leftMotorBack.getCurrentPosition() < targetStrafe_LLB * .6) && (rightMotorFront.getCurrentPosition() < targetStrafe_LRF * .6) && opModeIsActive() && runtime.milliseconds() < 4000) {
             telemetry.addData("Target Position", targetStrafe_LLF);
             telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
             telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
@@ -491,7 +521,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         int targetStrafe_RRF = (int)(inches * TICKS_PER_STRAFE_RRF * TICKS_MULTIPLIER);
         int targetStrafe_RRB = (int)(inches * TICKS_PER_STRAFE_RRB * TICKS_MULTIPLIER);
 
-        while ((leftMotorFront.getCurrentPosition() < targetStrafe_RLF * .7) && (rightMotorBack.getCurrentPosition() < targetStrafe_RRB * .7) && (leftMotorBack.getCurrentPosition() > targetStrafe_RLB * .7) && (rightMotorFront.getCurrentPosition() > targetStrafe_RRF * .7) && opModeIsActive() && runtime.milliseconds() < 4000) {
+        while ((leftMotorFront.getCurrentPosition() < targetStrafe_RLF * .6) && (rightMotorBack.getCurrentPosition() < targetStrafe_RRB * .6) && (leftMotorBack.getCurrentPosition() > targetStrafe_RLB * .6) && (rightMotorFront.getCurrentPosition() > targetStrafe_RRF * .6) && opModeIsActive() && runtime.milliseconds() < 4000) {
             telemetry.addData("Target Position", targetStrafe_RLF);
             telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
             telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
@@ -782,11 +812,10 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     }
     //Returns minimum difference between 2 angles. Mainly current and target Angle
     public double getAngleDifference(double angle1, double angle2) {
-        //Set angle1 as smaller
         double tempAngle = angle1;
-        double checkAngle = 360 + angle1;
         double angleCheck;
-        if (angle1 < angle2) {
+        //Set angle1 as smaller
+        if (angle1 > angle2) {
             angle1 = angle2;
             angle2 = tempAngle;
         }
@@ -797,7 +826,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         return angleCheck;
     }
     //Returns side that would be closer to turn towards
-    public String closerSide (double currentAngle,double targetAngle) {
+    public String closerSide (double currentAngle, double targetAngle) {
         if (currentAngle > targetAngle) {
             currentAngle *= -1;
             targetAngle *= -1;
@@ -807,6 +836,61 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         }
         else {
             return "Left";
+        }
+    }
+    //Superior accurate turn. Faster but haven't been tested
+    public void turnTo(double targetAngle, double allPower, double slowerPower) {
+        sleep(500);
+        runtime.reset();
+        angle = getAngle();
+        angleDifference = getAngleDifference(targetAngle, angle);
+        turnTowards = closerSide(angle, targetAngle);
+        double angleDifferenceInitial = angleDifference
+        if (turnTowards == "Left") {
+           while (angleDifference > 15 && runtime.milliseconds() < 3000) {
+               turnLeft(20, allPower, slowerPower);
+               angle = getAngle();
+               angleDifference = getAngleDifference(targetAngle, angle);
+               turnTowards = closerSide(angle, targetAngle);
+               if ((angleDifference > angleDifferenceInitial && angleDifferenceInitial > 30) || turnTowards == "Right") {
+                   turnRight(angleDifference, allPower, slowerPower);
+                   return;
+               }
+           }
+           sleep(500);
+           angle = getAngle();
+           angleDifference = getAngleDifference(angle, targetAngle);
+           turnTowards = closerSide(angle, targetAngle);
+           if (turnTowards == "Left") {
+               turnLeft(angleDifference, allPower, slowerPower);
+           }
+           else {
+               turnRight(angleDifference, allPower, slowerPower);
+           }
+           return;
+        }
+        else {
+            while (angleDifference > 15 && runtime.milliseconds() < 3000) {
+                turnRight(20, allPower, slowerPower);
+                angle = getAngle();
+                angleDifference = getAngleDifference(targetAngle, angle);
+                turnTowards = closerSide(angle, targetAngle);
+                if (angleDifference > angleDifferenceInitial || turnTowards == "Left") {
+                    turnLeft(angleDifference, allPower, slowerPower);
+                    return;
+                }
+            }
+            sleep(500);
+            angle = getAngle();
+            angleDifference = getAngleDifference(angle, targetAngle);
+            turnTowards = closerSide(angle, targetAngle);
+            if (turnTowards == "Left") {
+                turnLeft(angleDifference, allPower, slowerPower);
+            }
+            else {
+                turnRight(angleDifference, allPower, slowerPower);
+            }
+            return;
         }
     }
 }
