@@ -66,6 +66,11 @@ public class TeleOpAlpha extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
+        vertical1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        vertical2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        vertical1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        vertical2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         if (armServo.getPosition() < .6) {
             down = true;
         }
@@ -158,6 +163,10 @@ public class TeleOpAlpha extends LinearOpMode {
             else {
                 vertical1.setPower(0);
                 vertical2.setPower(0);
+            }
+            if (gamepad1.left_bumper || gamepad2.left_bumper) {
+                armServo.setPosition(.4);
+                down = true;
             }
             if (gamepad1.right_bumper || gamepad2.right_bumper) {
                 if (down) {

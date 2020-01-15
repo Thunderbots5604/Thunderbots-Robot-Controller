@@ -159,7 +159,10 @@ public class TeleOpAlpha2 extends LinearOpMode {
                 vertical1.setPower(0);
                 vertical2.setPower(0);
             }
-
+            if (gamepad1.left_bumper || gamepad2.left_bumper) {
+                armServo.setPosition(.4);
+                down = true;
+            }
             if (gamepad1.right_bumper || gamepad2.right_bumper) {
                 if (down) {
                     armServo.setPosition(1);

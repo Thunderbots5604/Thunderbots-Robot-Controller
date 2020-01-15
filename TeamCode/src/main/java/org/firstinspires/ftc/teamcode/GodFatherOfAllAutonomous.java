@@ -77,38 +77,40 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
 
     //Ticks
     //Ticks for forward and backwards
-    public final float TICKS_PER_INCH = 55F;
+    public final double TICKS_PER_INCH = 55;
     //Ticks for Turning
-    public final float TICKS_PER_DEGREE_LLF = -11.13F;
-    public final float TICKS_PER_DEGREE_LLB = -9.84F;
-    public final float TICKS_PER_DEGREE_LRF = 11.64F;
-    public final float TICKS_PER_DEGREE_LRB = 9.59F;
-    public final float TICKS_PER_DEGREE_RLF = 11.63F;
-    public final float TICKS_PER_DEGREE_RLB = 10.74F;
-    public final float TICKS_PER_DEGREE_RRF = -11.7F;
-    public final float TICKS_PER_DEGREE_RRB = -10.81F;
+    public final double TICKS_PER_DEGREE_LLF = -11.13;
+    public final double TICKS_PER_DEGREE_LLB = -9.84;
+    public final double TICKS_PER_DEGREE_LRF = 11.64;
+    public final double TICKS_PER_DEGREE_LRB = 9.59;
+    public final double TICKS_PER_DEGREE_RLF = 11.63;
+    public final double TICKS_PER_DEGREE_RLB = 10.74;
+    public final double TICKS_PER_DEGREE_RRF = -11.7;
+    public final double TICKS_PER_DEGREE_RRB = -10.81;
     //Ticks for Strafing
     //First Initial = side of strafing
     //Second Initial = side of Robot the motor is on
     //Third Initial = Front or back of robot
-    public final float TICKS_PER_STRAFE_LLF = -45.9F;
-    public final float TICKS_PER_STRAFE_LLB = 47.9F;
-    public final float TICKS_PER_STRAFE_LRF = 49.7F;
-    public final float TICKS_PER_STRAFE_LRB = -41.1F;
-    public final float TICKS_PER_STRAFE_RLF = 44.2F;
-    public final float TICKS_PER_STRAFE_RLB = -47.2F;
-    public final float TICKS_PER_STRAFE_RRF = -44.2F;
-    public final float TICKS_PER_STRAFE_RRB = 45.6F;
-    public final float TICKS_MULTIPLIER = 20F / 22F;
-    public float strafePower_LLF = Math.abs(50 / TICKS_PER_STRAFE_LLF);
-    public float strafePower_LLB = Math.abs(50 / TICKS_PER_STRAFE_LLB);
-    public float strafePower_LRF = Math.abs(48 / TICKS_PER_STRAFE_LRF);
-    public float strafePower_LRB = Math.abs(50 / TICKS_PER_STRAFE_LRB);
-    public float strafePower_RLF = Math.abs(48 / TICKS_PER_STRAFE_RLF);
-    public float strafePower_RLB = Math.abs(48 / TICKS_PER_STRAFE_RLB);
-    public float strafePower_RRF = Math.abs(48 / TICKS_PER_STRAFE_RRF);
-    public float strafePower_RRB = Math.abs(48 / TICKS_PER_STRAFE_RRB);
-    public float tickPowers[];
+    public final double TICKS_PER_STRAFE_LLF = -45.9;
+    public final double TICKS_PER_STRAFE_LLB = 47.9;
+    public final double TICKS_PER_STRAFE_LRF = 49.7;
+    public final double TICKS_PER_STRAFE_LRB = -41.1;
+    public final double TICKS_PER_STRAFE_RLF = 44.2;
+    public final double TICKS_PER_STRAFE_RLB = -47.2;
+    public final double TICKS_PER_STRAFE_RRF = -44.2;
+    public final double TICKS_PER_STRAFE_RRB = 45.6;
+    public final double TICKS_MULTIPLIER = 20 / 20;
+    public double strafePower_LLF = Math.abs(50 / TICKS_PER_STRAFE_LLF);
+    public double strafePower_LLB = Math.abs(50 / TICKS_PER_STRAFE_LLB);
+    public double strafePower_LRF = Math.abs(48 / TICKS_PER_STRAFE_LRF);
+    public double strafePower_LRB = Math.abs(50 / TICKS_PER_STRAFE_LRB);
+    public double strafePower_RLF = Math.abs(48 / TICKS_PER_STRAFE_RLF);
+    public double strafePower_RLB = Math.abs(48 / TICKS_PER_STRAFE_RLB);
+    public double strafePower_RRF = Math.abs(48 / TICKS_PER_STRAFE_RRF);
+    public double strafePower_RRB = Math.abs(48 / TICKS_PER_STRAFE_RRB);
+    public double tickPowers[];
+    //Ticks for Vertical
+    public double blockTick= 20;
 
     //Vuforia
     public int location = -1;
@@ -179,6 +181,12 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         colorSensor.enableLed(false);
 
         spinnyBoyUp();
+
+        vertical1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        vertical2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        vertical1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        vertical2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         if (foundation == false) {
             resetArm();
         }
@@ -739,6 +747,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         if (inchesAway < inches || totalDistance < inchesAway) {
             return;
         }
+        sleep(300);
         inchesTraveling = inchesAway - inches;
         runTo(inchesTraveling * .8, power * .8, power * .6);
     }
