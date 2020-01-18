@@ -29,9 +29,10 @@ import java.util.List;
 //Still Needs Testing.
 
 
-@Autonomous(name="AutoColorRed", group="All")
-public class AutoColorRed extends GodFatherOfAllAutonomous {
+@Autonomous(name="AutoEverythingBlue", group="All")
+public class AutoEverythingBlue extends GodFatherOfAllAutonomous {
     private String color = null;
+    private boolean red = false;
     private int blockNumber = 0;
     @Override
     public void runOpMode() {
@@ -40,22 +41,7 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
 
         waitForStart();
 
-        runUntil(2, allPower);
-        color = senseColor();
-        if (color == "Yellow") {
-            blockNumber += 1;
-            strafeLeft(8, allPower, slowPower);
-            color = senseColor();
-            if (color == "Yellow") {
-                blockNumber += 1;
-                strafeLeft(8, allPower, slowPower);
-            }
-        }
-        runTo(1, allPower * .6, slowPower * .8);
-        pickUpBlock();
-        runTo(-3, allPower, slowPower);
-        turnRight(80, allPower, slowPower);
-        turnTo(-90, allPower, slowPower);
+        startBlock(red);
         //Branch off based off blockNumber
         if (blockNumber == 0) {
             runTo(45, allPower, slowPower);

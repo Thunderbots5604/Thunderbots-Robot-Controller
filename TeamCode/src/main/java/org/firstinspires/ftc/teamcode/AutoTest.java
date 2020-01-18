@@ -32,8 +32,17 @@ public class AutoTest extends GodFatherOfAllAutonomous {
         initialization();
 
         waitForStart();
-        turnRight(60, allPower, slowPower);
-        sleep(2000);
-        adjustToInitialAngle();
+
+        turnRight(90, allPower * .5, slowPower * .8);
+        sleep(500);
+
+        strafeRight(25, allPower * .5, slowPower * .8);
+        sleep(500);
+
+        runTo(25, allPower * .5, slowPower * .8);
+        sleep(500);
+
+        turnTo(0, allPower * .5, slowPower * .8);
+        sleep(500);
     }
 }

@@ -765,10 +765,12 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public void spinnyBoyDown() {
         spinnyBoy1.setPosition(.29);
         spinnyBoy2.setPosition(.29);
+        sleep(500);
     }
     public void spinnyBoyUp() {
         spinnyBoy1.setPosition(.7);
         spinnyBoy2.setPosition(.7);
+        sleep(500);
     }
     //Method to set robot to angle it was initially at
     public void adjustToInitialAngle() {
@@ -848,6 +850,47 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             return "Left";
         }
     }
+
+    public void startBlock(boolean red) {
+        if (red) {
+            runUntil(2, allPower);
+            color = senseColor();
+            if (color == "Yellow") {
+                blockNumber += 1;
+                strafeLeft(8, allPower, slowPower);
+                color = senseColor();
+                if (color == "Yellow") {
+                    blockNumber += 1;
+                    strafeLeft(8, allPower, slowPower);
+                }
+            }
+            runTo(1, allPower * .6, slowPower * .8);
+            pickUpBlock();
+            runTo(-3, allPower, slowPower);
+            turnRight(80, allPower, slowPower);
+            turnTo(-90, allPower, slowPower);
+        }
+
+        else {
+            runUntil(2, allPower);
+            color = senseColor();
+            if (color == "Yellow") {
+                blockNumber += 1;
+                strafeRight(8, allPower, slowPower);
+                color = senseColor();
+                if (color == "Yellow") {
+                    blockNumber += 1;
+                    strafeRight(8, allPower, slowPower);
+                }
+            }
+            runTo(1, allPower * .6, slowPower * .8);
+            pickUpBlock();
+            runTo(-3, allPower, slowPower);
+            turnLeft(80, allPower, slowPower);
+            turnTo(90, allPower, slowPower);
+        }
+    }
+
     //Superior accurate turn. Faster but haven't been tested
     public void turnTo(double targetAngle, double allPower, double slowerPower) {
         sleep(500);
