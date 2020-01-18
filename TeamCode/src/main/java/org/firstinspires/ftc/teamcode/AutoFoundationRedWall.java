@@ -27,12 +27,8 @@ import java.util.List;
 @Autonomous(name="Autonomous_Foundation Red_Wall", group="Foundation")
 public class AutoFoundationRedWall extends GodFatherOfAllAutonomous {
 
-    private boolean red = true;
-
-
     @Override
     public void runOpMode() {
-        foundation = true;
         initialization();
 
         waitForStart();

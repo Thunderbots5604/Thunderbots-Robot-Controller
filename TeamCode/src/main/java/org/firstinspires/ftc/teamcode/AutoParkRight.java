@@ -35,7 +35,6 @@ public class AutoParkRight extends GodFatherOfAllAutonomous {
 
         sleep(20000);
 
-        strafeRight(30, allPower, slowPower);
-        runTo(12, allPower, slowPower);
+
     }
 }

@@ -16,6 +16,8 @@ public class TeleOpAlpha extends LinearOpMode {
     //What's the time
     private ElapsedTime cooldown = new ElapsedTime();
     private ElapsedTime armCooldown = new ElapsedTime();
+    private ElapsedTime armCooldownUp = new ElapsedTime();
+    private ElapsedTime armCooldownDown = new ElapsedTime();
 
     //Motors and Servos
     private DcMotor leftMotorFront = null;
@@ -166,7 +168,7 @@ public class TeleOpAlpha extends LinearOpMode {
                 armServo.setPosition(.4);
                 down = true;
             }
-            if (gamepad1.right_bumper || gamepad2.right_bumper && armCooldown.milliseconds() < 500) {
+            if (gamepad1.right_bumper || gamepad2.right_bumper) {
                 if (down) {
                     armServo.setPosition(1);
                     down = false;
@@ -175,7 +177,6 @@ public class TeleOpAlpha extends LinearOpMode {
                     armServo.setPosition(.2);
                     down = true;
                 }
-                armCooldown.reset();
             }
             if (gamepad1.b || gamepad2.b) {
                 leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

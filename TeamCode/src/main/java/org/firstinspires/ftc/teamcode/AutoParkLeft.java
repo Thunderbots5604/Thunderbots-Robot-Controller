@@ -35,7 +35,6 @@ public class AutoParkLeft extends GodFatherOfAllAutonomous {
 
         sleep(20000);
 
-        strafeLeft(30, allPower, slowPower);
-        runTo(12, allPower, slowPower);
+
     }
 }

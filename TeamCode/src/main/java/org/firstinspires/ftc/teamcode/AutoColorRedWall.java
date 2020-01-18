@@ -32,7 +32,7 @@ import java.util.List;
 @Autonomous(name="AutoColorRed_Wall", group="Block side")
 public class AutoColorRedWall extends GodFatherOfAllAutonomous {
     private String color = null;
-    private boolean red = true;
+    private int blockNumber = 6;
     @Override
     public void runOpMode() {
 

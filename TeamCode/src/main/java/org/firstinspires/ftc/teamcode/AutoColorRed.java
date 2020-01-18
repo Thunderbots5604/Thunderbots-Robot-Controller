@@ -26,60 +26,21 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
 
-//Still Needs Testing. Could probably use some more sensors, particularly if blockNumber == 2
+//Still Needs Testing.
 
 
 @Autonomous(name="AutoColorRed", group="Block side")
 public class AutoColorRed extends GodFatherOfAllAutonomous {
     private String color = null;
-    private boolean red = true;
+    private int blockNumber = 6;
     @Override
     public void runOpMode() {
 
         initialization();
 
         waitForStart();
-        //Get first block and point towards foundation side
-        startBlock(red);
-        //Move to foundation and drop block at stack level 1
-        runTo(8 * (blockNumber), allPower, slowPower);
-        raiseAndRun(1, 45, allPower, slowPower);
-        dropBlock();
-        //Move back under bridge to get other blocks
-        runTo(-6, allPower, slowPower);
-        raiseAndRun(0, -39, allPower, slowPower);
-        runTo(-8 * (blockNumber), allPower, slowPower);
-        turnLeft(70, allPower, slowPower);
-        turnTo(0, allPower, slowPower);
-        if (blockNumber != 2){
-            strafeLeft(24, allPower, slowPower);
-            strafeLeft(8 * (blockNumber), allPower, slowPower);
-            turnTo(0, allPower, slowPower);
-            runUntil(1.5, allPower);
-            pickUpBlock();
-            runTo(-2, allPower, slowPower);
-            turnRight(70, allPower, slowPower);
-            turnTo(-90, allPower, slowPower);
-            raiseAndRun(2, 45, allPower, slowPower);
-            runTo(8 * (blockNumber), allPower, slowPower);
-            dropBlock();
-        }
-        else{
-            strafeLeft(32, allPower, slowPower);
-            turnLeft(30, allPower, slowPower);
-            turnTo(45, allPower, slowPower);
-            runTo(5, allPower, slowPower);
-            pickUpBlock();
-            runTo(-5, allPower, slowPower);
-            turnRight(-30, allPower, slowPower);
-            turnTo(0, allPower, slowPower);
-            turnRight(70, allPower, slowPower);
-            turnTo(-90, allPower, slowPower);
-            runTo(77, allPower, slowPower);
-            dropBlock();
-        }
-        runTo(-2, allPower, slowPower);
-        raiseAndRun(0, -22, allPower, slowPower);
+
+
     }
 }
 
