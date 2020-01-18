@@ -35,7 +35,7 @@ public class TeleOpAlpha2 extends LinearOpMode {
     //Multipliers
     private boolean reversed = false;
     private boolean halfSpeed = false;
-    private double multiplier = -.7;
+    private double multiplier = -1;
 
     //Powers
     private double powerFRBL;
@@ -102,10 +102,10 @@ public class TeleOpAlpha2 extends LinearOpMode {
             if((/*gamepad1.x || */gamepad2.x) && cooldown.seconds() > .5) {
                 halfSpeed = !halfSpeed;
                 if (halfSpeed) {
-                    multiplier *= .5;
+                    multiplier *= .25;
                 }
                 else {
-                    multiplier *= 2;
+                    multiplier *= 4;
                 }
                 cooldown.reset();
             }
@@ -167,7 +167,7 @@ public class TeleOpAlpha2 extends LinearOpMode {
                 armServo.setPosition(.4);
                 down = true;
             }
-            if (gamepad1.right_bumper || gamepad2.right_bumper && armCooldown.millisecond() < 500) {
+            if ((gamepad1.right_bumper || gamepad2.right_bumper) && armCooldown.milliseconds() > 500) {
                 if (down) {
                     armServo.setPosition(1);
                     down = false;

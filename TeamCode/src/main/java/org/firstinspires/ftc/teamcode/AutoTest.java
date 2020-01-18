@@ -26,23 +26,12 @@ import java.util.List;
 
 @Autonomous(name="AutoTest", group="Test")
 public class AutoTest extends GodFatherOfAllAutonomous {
-
     @Override
     public void runOpMode() {
         initialization();
 
         waitForStart();
 
-        turnRight(90, allPower * .5, slowPower * .8);
-        sleep(500);
-
-        strafeRight(25, allPower * .5, slowPower * .8);
-        sleep(500);
-
-        runTo(25, allPower * .5, slowPower * .8);
-        sleep(500);
-
-        turnTo(0, allPower * .5, slowPower * .8);
-        sleep(500);
+        turnTo(-90, allPower, slowPower);
     }
 }

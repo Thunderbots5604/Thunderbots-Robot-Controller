@@ -42,18 +42,18 @@ public class EncodersTest extends GodFatherOfAllAutonomous {
         rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        leftMotorFront.setPower(-allPower);
-        leftMotorBack.setPower(-allPower);
-        rightMotorFront.setPower(allPower);
-        rightMotorBack.setPower(allPower);
-        while (angle < 60) {
+        leftMotorFront.setPower(allPower);
+        leftMotorBack.setPower(allPower);
+        rightMotorFront.setPower(-allPower);
+        rightMotorBack.setPower(-allPower);
+        while (angle > -40) {
             angle = getAngle();
         }
-        leftMotorFront.setPower(-slowPower * .8);
-        leftMotorBack.setPower(-slowPower * .8);
-        rightMotorFront.setPower(slowPower * .8);
-        rightMotorBack.setPower(slowPower * .8);
-        while (angle < 99) {
+        leftMotorFront.setPower(slowPower * .8);
+        leftMotorBack.setPower(slowPower * .8);
+        rightMotorFront.setPower(-slowPower * .8);
+        rightMotorBack.setPower(-slowPower * .8);
+        while (angle > -80) {
             angle = getAngle();
         }
         leftMotorFront.setPower(0);

@@ -33,7 +33,6 @@ import java.util.List;
 public class AutoEverythingRed extends GodFatherOfAllAutonomous {
     private String color = null;
     private boolean red = true;
-    private int blockNumber = 0;
     @Override
     public void runOpMode() {
 
@@ -44,28 +43,22 @@ public class AutoEverythingRed extends GodFatherOfAllAutonomous {
         startBlock(red);
         //Branch off based off blockNumber
         if (blockNumber == 0) {
-            runTo(45, allPower, slowPower);
+            runTo(60, allPower, slowPower);
+            //raiseAndRun(1, 30, allPower, slowPower);
             turnLeft(60, allPower, slowPower);
             turnTo(0, allPower, slowPower);
-            resetArm();
+            /**/resetArm();
             strafeRight(30, allPower, slowPower);
-            dropBlock();
-            runTo(5, allPower * .6, slowPower * .7);
-            spinnyBoyDown();
-
-            //Bring block to corner
-            runTo(-24, allPower * 1.1, slowPower * 1.4);
-            turnRight(90, allPower * 1.1, slowPower * 1.4);
-            runTo(5, allPower * 1.1, slowPower * 1.4);
-            spinnyBoyUp();
-
+            dropBlock();/**/
+            runTo(20, allPower * .6, slowPower * .7);
+            moveFoundation(red);
             runTo(-5, allPower, slowPower);
+            strafeLeft(30, allPower, slowPower);
+            runTo(-110, allPower * 1.2, slowPower);
+            resetArm();
             turnLeft(80, allPower, slowPower);
             turnTo(0, allPower, slowPower);
-            runTo(10, allPower, slowPower);
-            strafeLeft(84, allPower * 1.2, slowPower);
-            resetArm();
-            runUntil(1.5, allPower, slowPower);
+            runUntil(1.5, allPower);
             pickUpBlock();
             runTo(-3, allPower, slowPower);
             turnRight(80, allPower, slowPower);
@@ -82,21 +75,15 @@ public class AutoEverythingRed extends GodFatherOfAllAutonomous {
             strafeRight(30, allPower, slowPower);
             dropBlock();
             runTo(5, allPower * .6, slowPower * .7);
-            spinnyBoyDown();
-
-            //Bring block to corner
-            runTo(-24, allPower * 1.1, slowPower * 1.4);
-            turnRight(90, allPower * 1.1, slowPower * 1.4);
-            runTo(5, allPower * 1.1, slowPower * 1.4);
-            spinnyBoyUp();
+            moveFoundation(red);
 
             runTo(-5, allPower, slowPower);
+            strafeLeft(10, allPower, slowPower);
+            runTo(-84 - 8 * (blockNumber), allPower * 1.2, slowPower);
             turnLeft(80, allPower, slowPower);
             turnTo(0, allPower, slowPower);
-            runTo(10, allPower, slowPower);
-            strafeLeft(84 + 8 * (blockNumber), allPower * 1.2, slowPower);
             resetArm();
-            runUntil(1.5, allPower, slowPower);
+            runUntil(1.5, allPower);
             pickUpBlock();
             runTo(-3, allPower, slowPower);
             turnRight(80, allPower, slowPower);
@@ -113,21 +100,15 @@ public class AutoEverythingRed extends GodFatherOfAllAutonomous {
             strafeRight(30, allPower, slowPower);
             dropBlock();
             runTo(5, allPower * .6, slowPower * .7);
-            spinnyBoyDown();
-
-            //Bring block to corner
-            runTo(-24, allPower * 1.1, slowPower * 1.4);
-            turnRight(90, allPower * 1.1, slowPower * 1.4);
-            runTo(5, allPower * 1.1, slowPower * 1.4);
-            spinnyBoyUp();
+            moveFoundation(red);
 
             runTo(-5, allPower, slowPower);
+            strafeLeft(10, allPower, slowPower);
+            runTo(-84 - 8 * (blockNumber), allPower * 1.2, slowPower);
             turnLeft(80, allPower, slowPower);
             turnTo(0, allPower, slowPower);
-            runTo(10, allPower, slowPower);
-            strafeLeft(84 + 8 * (blockNumber), allPower * 1.2, slowPower);
             resetArm();
-            runUntil(1.5, allPower, slowPower);
+            runUntil(1.5, allPower);
             pickUpBlock();
             runTo(-3, allPower, slowPower);
             turnRight(80, allPower, slowPower);
