@@ -16,8 +16,6 @@ public class TeleOpAlpha2 extends LinearOpMode {
     //What's the time
     private ElapsedTime cooldown = new ElapsedTime();
     private ElapsedTime armCooldown = new ElapsedTime();
-    private ElapsedTime armCooldownUp = new ElapsedTime();
-    private ElapsedTime armCooldownDown = new ElapsedTime();
 
     //Motors and Servos
     private DcMotor leftMotorFront = null;
@@ -37,7 +35,11 @@ public class TeleOpAlpha2 extends LinearOpMode {
     //Multipliers
     private boolean reversed = false;
     private boolean halfSpeed = false;
-    private double multiplier = -.7;
+    private double multiplier = -1;
+
+    //Powers
+    private double powerFRBL;
+    private double powerFLBR;
 
     //Toggles
     private boolean down;
@@ -58,8 +60,8 @@ public class TeleOpAlpha2 extends LinearOpMode {
 
         armServo = hardwareMap.get(Servo.class, "armServo");
 
-        leftMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
         spinnyBoy1.setDirection(Servo.Direction.REVERSE);
 
         telemetry.addData("Status", "Initialized");
@@ -100,10 +102,10 @@ public class TeleOpAlpha2 extends LinearOpMode {
             if((/*gamepad1.x || */gamepad2.x) && cooldown.seconds() > .5) {
                 halfSpeed = !halfSpeed;
                 if (halfSpeed) {
-                    multiplier *= .5;
+                    multiplier *= .25;
                 }
                 else {
-                    multiplier *= 2;
+                    multiplier *= 4;
                 }
                 cooldown.reset();
             }
@@ -141,6 +143,7 @@ public class TeleOpAlpha2 extends LinearOpMode {
             if (gamepad1.dpad_left || gamepad2.dpad_left) {
                 spinnyBoy1.setPosition(.7);
                 spinnyBoy2.setPosition(.7);
+
             }
             //Spinner Up
             if (gamepad1.dpad_right || gamepad2.dpad_right) {
@@ -150,6 +153,7 @@ public class TeleOpAlpha2 extends LinearOpMode {
             if (gamepad1.dpad_up || gamepad2.dpad_up) {
                 vertical1.setPower(-.5);
                 vertical2.setPower(.5);
+
             }
             else if (gamepad1.dpad_down || gamepad2.dpad_down) {
                 vertical1.setPower(.5);
@@ -163,7 +167,7 @@ public class TeleOpAlpha2 extends LinearOpMode {
                 armServo.setPosition(.4);
                 down = true;
             }
-            if (gamepad1.right_bumper || gamepad2.right_bumper) {
+            if ((gamepad1.right_bumper || gamepad2.right_bumper) && armCooldown.milliseconds() > 500) {
                 if (down) {
                     armServo.setPosition(1);
                     down = false;
@@ -172,6 +176,7 @@ public class TeleOpAlpha2 extends LinearOpMode {
                     armServo.setPosition(.2);
                     down = true;
                 }
+                armCooldown.reset();
             }
             if (gamepad1.b || gamepad2.b) {
                 leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

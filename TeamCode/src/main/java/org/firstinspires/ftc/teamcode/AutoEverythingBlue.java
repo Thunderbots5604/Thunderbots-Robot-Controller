@@ -29,10 +29,10 @@ import java.util.List;
 //Still Needs Testing.
 
 
-@Autonomous(name="AutoColorRed", group="All")
-public class AutoColorRed extends GodFatherOfAllAutonomous {
+@Autonomous(name="AutoEverythingBlue", group="All")
+public class AutoEverythingBlue extends GodFatherOfAllAutonomous {
     private String color = null;
-    private int blockNumber = 0;
+    private boolean red = false;
     @Override
     public void runOpMode() {
 
@@ -40,22 +40,7 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
 
         waitForStart();
 
-        runUntil(2, allPower);
-        color = senseColor();
-        if (color == "Yellow") {
-            blockNumber += 1;
-            strafeLeft(8, allPower, slowPower);
-            color = senseColor();
-            if (color == "Yellow") {
-                blockNumber += 1;
-                strafeLeft(8, allPower, slowPower);
-            }
-        }
-        runTo(1, allPower * .6, slowPower * .8);
-        pickUpBlock();
-        runTo(-3, allPower, slowPower);
-        turnRight(80, allPower, slowPower);
-        turnTo(-90, allPower, slowPower);
+        startBlock(red);
         //Branch off based off blockNumber
         if (blockNumber == 0) {
             runTo(45, allPower, slowPower);
@@ -65,21 +50,15 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
             strafeRight(30, allPower, slowPower);
             dropBlock();
             runTo(5, allPower * .6, slowPower * .7);
-            spinnyBoyDown();
-
-            //Bring block to corner
-            runTo(-24, allPower * 1.1, slowPower * 1.4);
-            turnRight(90, allPower * 1.1, slowPower * 1.4);
-            runTo(5, allPower * 1.1, slowPower * 1.4);
-            spinnyBoyUp();
+            moveFoundation(red);
 
             runTo(-5, allPower, slowPower);
+            strafeLeft(10, allPower, slowPower);
+            runTo(-84, allPower * 1.2, slowPower);
+            resetArm();
             turnLeft(80, allPower, slowPower);
             turnTo(0, allPower, slowPower);
-            runTo(10, allPower, slowPower);
-            strafeLeft(84, allPower * 1.2, slowPower);
-            resetArm();
-            runUntil(1.5, allPower, slowPower);
+            runUntil(1.5, allPower);
             pickUpBlock();
             runTo(-3, allPower, slowPower);
             turnRight(80, allPower, slowPower);
@@ -105,12 +84,12 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
             spinnyBoyUp();
 
             runTo(-5, allPower, slowPower);
+            strafeLeft(10, allPower, slowPower);
+            runTo(-84 - 8 * (blockNumber), allPower * 1.2, slowPower);
             turnLeft(80, allPower, slowPower);
             turnTo(0, allPower, slowPower);
-            runTo(10, allPower, slowPower);
-            strafeLeft(84 + 8 * (blockNumber), allPower * 1.2, slowPower);
             resetArm();
-            runUntil(1.5, allPower, slowPower);
+            runUntil(1.5, allPower);
             pickUpBlock();
             runTo(-3, allPower, slowPower);
             turnRight(80, allPower, slowPower);
@@ -136,12 +115,12 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
             spinnyBoyUp();
 
             runTo(-5, allPower, slowPower);
+            strafeLeft(10, allPower, slowPower);
+            runTo(-84 - 8 * (blockNumber), allPower * 1.2, slowPower);
             turnLeft(80, allPower, slowPower);
             turnTo(0, allPower, slowPower);
-            runTo(10, allPower, slowPower);
-            strafeLeft(84 + 8 * (blockNumber), allPower * 1.2, slowPower);
             resetArm();
-            runUntil(1.5, allPower, slowPower);
+            runUntil(1.5, allPower);
             pickUpBlock();
             runTo(-3, allPower, slowPower);
             turnRight(80, allPower, slowPower);

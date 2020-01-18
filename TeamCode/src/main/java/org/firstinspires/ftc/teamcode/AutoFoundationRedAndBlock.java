@@ -27,8 +27,12 @@ import java.util.List;
 @Autonomous(name="Autonomous_Foundation Red & Block", group="Foundation")
 public class AutoFoundationRedAndBlock extends GodFatherOfAllAutonomous {
 
+    private boolean red = true;
+
+
     @Override
     public void runOpMode() {
+        foundation = true;
         initialization();
 
         waitForStart();
