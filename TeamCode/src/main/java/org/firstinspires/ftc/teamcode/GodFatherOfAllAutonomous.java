@@ -56,7 +56,10 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
 
     public Servo spinnyBoy1 = null;
     public Servo spinnyBoy2 = null;
+
     public Servo armServo = null;
+
+    public Servo parkServo = null;
 
     //All Power for autonomous running
     public double allPower = .8;
@@ -141,7 +144,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
 
     //Hopefully magnificent raiseAndRun
     public int driveTargetPosition = 0;
-    public int vertical;
+    public int verticalTargetPosition = 0;
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -159,7 +162,10 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
 
         spinnyBoy1 = hardwareMap.get(Servo.class, "spin1");
         spinnyBoy2 = hardwareMap.get(Servo.class, "spin2");
+
         armServo = hardwareMap.get(Servo.class, "armServo");
+
+        parkServo = hardwareMap.get(Servo.class, "parkServo");
 
         colorSensor = hardwareMap.colorSensor.get("color_sensor");
         distance = hardwareMap.get(DistanceSensor.class, "distance");
@@ -1033,6 +1039,8 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                     rightMotorFront.setPower(-power);
                 }
                 if (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition){
+                    vertical2.setPower(0);
+                    vertical1.setPower(0);
                     if (leftMotorBack.getCurrentPosition() > driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() > driveTargetPosition * .6){
                         while (leftMotorBack.getCurrentPosition() > driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() > driveTargetPosition * .6){
                             leftMotorBack.setPower(-power);
@@ -1055,16 +1063,34 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                             rightMotorFront.setPower(-slowerPower);
                         }
                     }
+                    leftMotorFront.setPower(0);
+                    leftMotorBack.setPower(0);
+                    rightMotorFront.setPower(0);
+                    rightMotorBack.setPower(0);
+                    leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     return;
                 }
                 else if (leftMotorBack.getCurrentPosition() <= driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() <= driveTargetPosition * .6){
                     if (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition){
+                        vertical2.setPower(0);
+                        vertical.setPower(0);
                         while (leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition) {
                             leftMotorFront.setPower(-slowerPower);
                             leftMotorBack.setPower(-slowerPower);
                             rightMotorBack.setPower(-slowerPower);
                             rightMotorFront.setPower(-slowerPower);
                         }
+                        leftMotorFront.setPower(0);
+                        leftMotorBack.setPower(0);
+                        rightMotorFront.setPower(0);
+                        rightMotorBack.setPower(0);
+                        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     }
                     else {
                         while ((leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition) && (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition)) {
@@ -1076,6 +1102,8 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                             vertical2.setPower(.5);
                         }
                         if (vertical2.getCurrentPosition() < verticalTargetPosition || vertical1.getCurrentPosition() < -verticalTargetPosition) {
+                            vertical2.setPower(0);
+                            vertical1.setPower(0);
                             while (leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition) {
                                 leftMotorFront.setPower(-slowerPower);
                                 leftMotorBack.setPower(-slowerPower);
@@ -1083,10 +1111,20 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                                 rightMotorFront.setPower(-slowerPower);
                             }
                         } else if (leftMotorBack.getCurrentPosition() <= driveTargetPosition && rightMotorBack.getCurrentPosition() <= driveTargetPosition) {
+                            leftMotorFront.setPower(0);
+                            leftMotorBack.setPower(0);
+                            rightMotorFront.setPower(0);
+                            rightMotorBack.setPower(0);
+                            leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                             while (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition) {
                                 vertical1.setPower(-.5);
                                 vertical2.setPower(.5);
                             }
+                            vertical2.setPower(0);
+                            vertical1.setPower(0);
                         }
                         return;
                     }
@@ -1102,6 +1140,8 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                     rightMotorFront.setPower(power);
                 }
                 if (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition){
+                    vertical2.setPower(0);
+                    vetrical1.setPower(0);
                     if (leftMotorBack.getCurrentPosition() < driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() < driveTargetPosition * .6){
                         while (leftMotorBack.getCurrentPosition() < driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() < driveTargetPosition * .6){
                             leftMotorBack.setPower(power);
@@ -1115,6 +1155,14 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                             rightMotorBack.setPower(slowerPower);
                             rightMotorFront.setPower(slowerPower);
                         }
+                        leftMotorFront.setPower(0);
+                        leftMotorBack.setPower(0);
+                        rightMotorFront.setPower(0);
+                        rightMotorBack.setPower(0);
+                        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     }
                     else {
                         while(leftMotorBack.getCurrentPosition() < driveTargetPosition && rightMotorBack.getCurrentPosition() < driveTargetPosition){
@@ -1123,17 +1171,35 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                             rightMotorBack.setPower(slowerPower);
                             rightMotorFront.setPower(slowerPower);
                         }
+                        leftMotorFront.setPower(0);
+                        leftMotorBack.setPower(0);
+                        rightMotorFront.setPower(0);
+                        rightMotorBack.setPower(0);
+                        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     }
                     return;
                 }
                 else if (leftMotorBack.getCurrentPosition() >= driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() >= driveTargetPosition * .6){
                     if (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition){
+                        vertical2.setPower(0);
+                        vertical1.setPower(0);
                         while (leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition) {
                             leftMotorFront.setPower(slowerPower);
                             leftMotorBack.setPower(slowerPower);
                             rightMotorBack.setPower(slowerPower);
                             rightMotorFront.setPower(slowerPower);
                         }
+                        leftMotorFront.setPower(0);
+                        leftMotorBack.setPower(0);
+                        rightMotorFront.setPower(0);
+                        rightMotorBack.setPower(0);
+                        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     }
                     else {
                         while ((leftMotorBack.getCurrentPosition() < driveTargetPosition && rightMotorBack.getCurrentPosition() < driveTargetPosition) && (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition)) {
@@ -1144,18 +1210,38 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                             vertical1.setPower(-.5);
                             vertical2.setPower(.5);
                         }
-                        if (vertical2.getCurrentPosition() < verticalTargetPosition || vertical1.getCurrentPosition() < -verticalTargetPosition) {
+                        if (vertical2.getCurrentPosition() < verticalTargetPosition || vertical1.getCurrentPosition() > -verticalTargetPosition) {
+                            vertical2.setPower(0);
+                            vertical1.setPower(0);
                             while (leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition) {
                                 leftMotorFront.setPower(slowerPower);
                                 leftMotorBack.setPower(slowerPower);
                                 rightMotorBack.setPower(slowerPower);
                                 rightMotorFront.setPower(slowerPower);
                             }
+                            leftMotorFront.setPower(0);
+                            leftMotorBack.setPower(0);
+                            rightMotorFront.setPower(0);
+                            rightMotorBack.setPower(0);
+                            leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                         } else if (leftMotorBack.getCurrentPosition() >= driveTargetPosition && rightMotorBack.getCurrentPosition() >= driveTargetPosition) {
+                            leftMotorFront.setPower(0);
+                            leftMotorBack.setPower(0);
+                            rightMotorFront.setPower(0);
+                            rightMotorBack.setPower(0);
+                            leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                             while (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition) {
                                 vertical1.setPower(-.5);
                                 vertical2.setPower(.5);
                             }
+                            vertical2.setPower(0);
+                            vertical1.setPower(0);
                         }
                         return;
                     }
@@ -1303,5 +1389,11 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             }
         }
     }
-}
+    //parkServo methods. Adjust the values for the positions later
+    public void parkArmOut(){
+        parkServo.setPosition(.5);
+    }
+    public void parkArmIn(){
+        parkServo.setPosition(.4);
+    }
 }

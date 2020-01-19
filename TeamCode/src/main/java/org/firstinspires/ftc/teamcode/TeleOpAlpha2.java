@@ -28,7 +28,10 @@ public class TeleOpAlpha2 extends LinearOpMode {
 
     public Servo spinnyBoy1 = null;
     public Servo spinnyBoy2 = null;
+
     public Servo armServo = null;
+
+    public Servo parkServo = null;
 
     public double armPosition = .8;
 
@@ -43,6 +46,8 @@ public class TeleOpAlpha2 extends LinearOpMode {
 
     //Toggles
     private boolean down;
+    private boolean pickUpSequence;
+    private boolean extended = false;
 
     @Override
     public void runOpMode() {
@@ -59,6 +64,8 @@ public class TeleOpAlpha2 extends LinearOpMode {
         spinnyBoy2 = hardwareMap.get(Servo.class, "spin2");
 
         armServo = hardwareMap.get(Servo.class, "armServo");
+
+        parkServo = hardwareMap.get(Servo.class, "parkServo");
 
         rightMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -153,26 +160,45 @@ public class TeleOpAlpha2 extends LinearOpMode {
             if (gamepad1.dpad_up || gamepad2.dpad_up) {
                 vertical1.setPower(-.5);
                 vertical2.setPower(.5);
-
             }
             else if (gamepad1.dpad_down || gamepad2.dpad_down) {
                 vertical1.setPower(.5);
                 vertical2.setPower(-.5);
+            } else if (pickUpSequence == true && vertical1.getCurrentPosition() > -100 && vertical2.getCurrentPosition() < 100){
+                vertical1.setPower(-.5);
+                vertical2.setPower(.5);
             }
             else {
                 vertical1.setPower(0);
                 vertical2.setPower(0);
             }
-            if (gamepad1.left_bumper || gamepad2.left_bumper) {
+            //extend-y arm for parking
+            if (gamepad1.left_bumper || gamepad2.left_bumper){
+                if (extended == true){
+                    parkServo.setPosition(.4);
+                    extended = false;
+                }
+                else {
+                    parkServo.setPosition(.5);
+                    extended = true;
+                }
+            }
+            /*if (gamepad1.left_bumper || gamepad2.left_bumper) {
                 armServo.setPosition(.4);
                 down = true;
-            }
+            }*/
             if ((gamepad1.right_bumper || gamepad2.right_bumper) && armCooldown.milliseconds() > 500) {
                 if (down) {
                     armServo.setPosition(1);
                     down = false;
                 }
                 else {
+                    if (vertical1.getCurrentPosition() >= -110 && vertical2.getCurrentPosition() <= 110){
+                        while (vertical1.getCurrentPosition() <= -10 && vertical2.getCurrentPosition() >= 10){
+                            vertical1.setPower(.5);
+                            vertical2.setPower(-.5);
+                        }
+                    }
                     armServo.setPosition(.2);
                     down = true;
                 }
