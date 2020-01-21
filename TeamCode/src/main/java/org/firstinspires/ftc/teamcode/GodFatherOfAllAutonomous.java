@@ -62,8 +62,8 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public Servo parkServo = null;
 
     //All Power for autonomous running
-    public double allPower = .8;
-    public double slowPower = .45;
+    public double allPower = .9;
+    public double slowPower = .5;
 
     //Color Sensor
     public ColorSensor colorSensor;
@@ -77,6 +77,8 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public double mmAway;
     public double mmTraveling;
     public double totalDistance;
+    public double blockDistance = 50;
+    public boolean blockPickedUp = false;
 
     //Ticks
     //Ticks for forward and backwards
@@ -141,6 +143,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     //Autonomous
     public int blockNumber = 0;
     public boolean foundation = false;
+    public int blockFails = 0;
 
     //Hopefully magnificent raiseAndRun
     public int driveTargetPosition = 0;
@@ -761,7 +764,11 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     }
     //Uses distance sensor, but we don't have one yet, on the robot
     public double getDistance() {
-        mmAway = distance.getDistance(DistanceUnit.MM);
+        mmAway = 0;
+        runtime.reset();
+        while (mmAway == 0 && runtime.milliseconds() < 1000) {
+            mmAway = distance.getDistance(DistanceUnit.MM);
+        }
         return mmAway;
     }
     //Method that returns current angle relative to start
@@ -769,7 +776,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public double getAngle() {
         heading = 0;
         runtime.reset();
-        while (runtime.milliseconds() < 1000 && heading == 0) {
+        while (runtime.milliseconds() < 1500 && heading == 0) {
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             heading = formatAngle(angles.angleUnit, angles.firstAngle);
         }
@@ -781,7 +788,6 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        sleep(300);
         runtime.reset();
         mmAway = getDistance();
         power = Math.abs(power);
@@ -802,7 +808,6 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         leftMotorBack.setPower(0);
         rightMotorFront.setPower(0);
         rightMotorBack.setPower(0);
-        sleep(1000);
         mmAway = getDistance();
         if (mmAway < mm || totalDistance < mmAway) {
             return;
@@ -815,7 +820,19 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     }
     public void pickUpBlock() {
         armServo.setPosition(.2);
-        sleep(900);
+        while (armServo.getPosition() > .3){}
+        blockPickedUp = blockIsGrabbed();
+        if (!blockPickedUp && blockFails < 3) {
+            armServo.setPosition(1);
+            while (armServo.getPosition() < .9){}
+            runTo(2, allPower, slowPower);
+            armServo.setPosition(.2);
+            while (armServo.getPosition() > .3){}
+            runTo(-2, allPower, slowPower);
+            blockFails += 1;
+            pickUpBlock();
+        }
+
     }
     public void dropBlock() {
         armServo.setPosition(.35);
@@ -912,19 +929,17 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public void moveFoundation(boolean red) {
         spinnyBoyDown();
         //Bring block to corner
-        runTo(-24, allPower * 1.1, slowPower * 1.4);
+        runTo(-30, allPower * 1.1, slowPower * 1.4);
         if (red) {
             turnTo(-90, allPower * 1.1, slowPower * 1.4);
         }
         else {
             turnTo(90, allPower * 1.1, slowPower * 1.4);
         }
-        runTo(5, allPower * 1.1, slowPower * 1.4);
         spinnyBoyUp();
     }
     //Superior accurate turn. Faster but haven't been tested
     public void turnTo(double targetAngle, double allPower, double slowerPower) {
-        sleep(200);
         runtime.reset();
         angle = getAngle();
         angleDifference = getAngleDifference(targetAngle, angle);
@@ -941,7 +956,6 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                     return;
                 }
             }
-            sleep(400);
             angle = getAngle();
             angleDifference = getAngleDifference(angle, targetAngle);
             turnTowards = closerSide(angle, targetAngle);
@@ -978,7 +992,6 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                     return;
                 }
             }
-            sleep(400);
             angle = getAngle();
             angleDifference = getAngleDifference(angle, targetAngle);
             turnTowards = closerSide(angle, targetAngle);
@@ -1076,7 +1089,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                 else if (leftMotorBack.getCurrentPosition() <= driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() <= driveTargetPosition * .6){
                     if (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition){
                         vertical2.setPower(0);
-                        vertical.setPower(0);
+                        vertical1.setPower(0);
                         while (leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition) {
                             leftMotorFront.setPower(-slowerPower);
                             leftMotorBack.setPower(-slowerPower);
@@ -1141,7 +1154,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                 }
                 if (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition){
                     vertical2.setPower(0);
-                    vetrical1.setPower(0);
+                    vertical1.setPower(0);
                     if (leftMotorBack.getCurrentPosition() < driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() < driveTargetPosition * .6){
                         while (leftMotorBack.getCurrentPosition() < driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() < driveTargetPosition * .6){
                             leftMotorBack.setPower(power);
@@ -1395,5 +1408,14 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     }
     public void parkArmIn(){
         parkServo.setPosition(.4);
+    }
+    public boolean blockIsGrabbed() {
+        mmAway = getDistance();
+        if (mmAway < blockDistance) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }

@@ -51,7 +51,7 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
         runTo(-8 * (blockNumber), allPower, slowPower);
         turnLeft(70, allPower, slowPower);
         turnTo(0, allPower, slowPower);
-        if (blockNumber != 2){
+        if (blockNumber == 0){
             strafeLeft(24, allPower, slowPower);
             strafeLeft(8 * (blockNumber), allPower, slowPower);
             turnTo(0, allPower, slowPower);
@@ -63,6 +63,23 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
             raiseAndRun(2, 45, allPower, slowPower);
             runTo(8 * (blockNumber), allPower, slowPower);
             dropBlock();
+            runTo(-2, allPower, slowPower);
+            raiseAndRun(0, -22, allPower, slowPower);
+        }
+        if (blockNumber == 1){
+            strafeLeft(24, allPower, slowPower);
+            strafeLeft(8 * (blockNumber), allPower, slowPower);
+            turnTo(0, allPower, slowPower);
+            runUntil(1.5, allPower);
+            pickUpBlock();
+            runTo(-2, allPower, slowPower);
+            turnRight(70, allPower, slowPower);
+            turnTo(-90, allPower, slowPower);
+            raiseAndRun(2, 45, allPower, slowPower);
+            runTo(8 * (blockNumber), allPower, slowPower);
+            dropBlock();
+            runTo(-2, allPower, slowPower);
+            raiseAndRun(0, -22, allPower, slowPower);
         }
         else{
             strafeLeft(32, allPower, slowPower);
@@ -77,11 +94,8 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
             turnTo(-90, allPower, slowPower);
             runTo(77, allPower, slowPower);
             dropBlock();
+            runTo(-2, allPower, slowPower);
+            raiseAndRun(0, -22, allPower, slowPower);
         }
-        runTo(-2, allPower, slowPower);
-        raiseAndRun(0, -22, allPower, slowPower);
     }
 }
-
-
-

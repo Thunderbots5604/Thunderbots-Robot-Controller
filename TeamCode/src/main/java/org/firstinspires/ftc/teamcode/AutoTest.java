@@ -32,6 +32,10 @@ public class AutoTest extends GodFatherOfAllAutonomous {
 
         waitForStart();
 
-        turnTo(-90, allPower, slowPower);
+        while (opModeIsActive()) {
+            mmAway = getDistance();
+            telemetry.addData("mmAway", mmAway);
+            telemetry.update();
+        }
     }
 }

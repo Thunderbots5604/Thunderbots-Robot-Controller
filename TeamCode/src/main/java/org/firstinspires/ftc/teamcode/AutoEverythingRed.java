@@ -41,20 +41,18 @@ public class AutoEverythingRed extends GodFatherOfAllAutonomous {
         waitForStart();
 
         startBlock(red);
-        //Branch off based off blockNumber
+        //Branch off based on blockNumber
         if (blockNumber == 0) {
-            runTo(60, allPower, slowPower);
-            //raiseAndRun(1, 30, allPower, slowPower);
+            runTo(15, allPower, slowPower);
+            raiseAndRun(1, 30, allPower, slowPower);
             turnLeft(60, allPower, slowPower);
             turnTo(0, allPower, slowPower);
-            /**/resetArm();
-            strafeRight(30, allPower, slowPower);
-            dropBlock();/**/
             runTo(20, allPower * .6, slowPower * .7);
+            resetArm();
             moveFoundation(red);
-            runTo(-5, allPower, slowPower);
             strafeLeft(30, allPower, slowPower);
-            runTo(-110, allPower * 1.2, slowPower);
+            raiseAndRun(0, -50, allPower * 1.2, slowPower);
+            runTo(-60, allPower, slowPower);
             resetArm();
             turnLeft(80, allPower, slowPower);
             turnTo(0, allPower, slowPower);
@@ -63,12 +61,14 @@ public class AutoEverythingRed extends GodFatherOfAllAutonomous {
             runTo(-3, allPower, slowPower);
             turnRight(80, allPower, slowPower);
             turnTo(-90, allPower, slowPower);
-            runTo(80, allPower, slowPower);
+            runTo(70, allPower, slowPower);
+            raiseAndRun(2, 50, allPower, slowPower);
             dropBlock();
-            runTo(-30, allPower, slowPower);
+            raiseAndRun(0, -30, allPower, slowPower);
         }
         else if (blockNumber == 1) {
-            runTo(45 + 8 * (blockNumber), allPower, slowPower);
+            runTo(23, allPower, slowPower);
+            raiseAndRun(1, 30, allPower, slowPower);
             turnLeft(60, allPower, slowPower);
             turnTo(0, allPower, slowPower);
             resetArm();
@@ -79,7 +79,8 @@ public class AutoEverythingRed extends GodFatherOfAllAutonomous {
 
             runTo(-5, allPower, slowPower);
             strafeLeft(10, allPower, slowPower);
-            runTo(-84 - 8 * (blockNumber), allPower * 1.2, slowPower);
+            raiseAndRun(0, -53, allPower * 1.2, slowPower);
+            runTo(-39, allPower, slowPower);
             turnLeft(80, allPower, slowPower);
             turnTo(0, allPower, slowPower);
             resetArm();
@@ -88,12 +89,14 @@ public class AutoEverythingRed extends GodFatherOfAllAutonomous {
             runTo(-3, allPower, slowPower);
             turnRight(80, allPower, slowPower);
             turnTo(-90, allPower, slowPower);
-            runTo(80 + 8 * (blockNumber), allPower, slowPower);
+            runTo(40, allPower, slowPower);
+            raiseAndRun(2, 48, allPower, slowPower);
             dropBlock();
-            runTo(-30, allPower, slowPower);
+            raiseAndRun(0, -30, allPower, slowPower);
         }
         else {
-            runTo(45 + 8 * (blockNumber), allPower, slowPower);
+            runTo(31, allPower, slowPower);
+            raiseAndRun(1, 30, allPower, slowPower);
             turnLeft(60, allPower, slowPower);
             turnTo(0, allPower, slowPower);
             resetArm();
@@ -104,7 +107,8 @@ public class AutoEverythingRed extends GodFatherOfAllAutonomous {
 
             runTo(-5, allPower, slowPower);
             strafeLeft(10, allPower, slowPower);
-            runTo(-84 - 8 * (blockNumber), allPower * 1.2, slowPower);
+            raiseAndRun(0, -61, allPower, slowPower);
+            runTo(-39, allPower * 1.2, slowPower);
             turnLeft(80, allPower, slowPower);
             turnTo(0, allPower, slowPower);
             resetArm();

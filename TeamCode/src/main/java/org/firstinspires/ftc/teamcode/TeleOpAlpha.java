@@ -16,6 +16,7 @@ public class TeleOpAlpha extends LinearOpMode {
     //What's the time
     private ElapsedTime cooldown = new ElapsedTime();
     private ElapsedTime armCooldown = new ElapsedTime();
+    private ElapsedTime parkCooldown = new ElapsedTime();
 
     //Motors and Servos
     private DcMotor leftMotorFront = null;
@@ -44,6 +45,7 @@ public class TeleOpAlpha extends LinearOpMode {
     private boolean down;
     private boolean pickUpSequence;
     private boolean extended = false;
+    private boolean lowerVertical = false;
 
     @Override
     public void runOpMode() {
@@ -66,6 +68,8 @@ public class TeleOpAlpha extends LinearOpMode {
         rightMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
         spinnyBoy1.setDirection(Servo.Direction.REVERSE);
+        vertical2.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -81,6 +85,7 @@ public class TeleOpAlpha extends LinearOpMode {
         else {
             down = false;
         }
+        armCooldown.reset();
 
         waitForStart();
 
@@ -93,6 +98,7 @@ public class TeleOpAlpha extends LinearOpMode {
             telemetry.addData("Right Back: ", rightMotorBack.getCurrentPosition());
             telemetry.addData("Vertical1: ", vertical1.getCurrentPosition());
             telemetry.addData("Vertical2: ", vertical2.getCurrentPosition());
+            telemetry.addData("Down: ", down);
             telemetry.update();
 
             armPosition = armServo.getPosition();
@@ -159,54 +165,68 @@ public class TeleOpAlpha extends LinearOpMode {
                 spinnyBoy2.setPosition(.29);
             }
             if (gamepad1.dpad_up || gamepad2.dpad_up) {
-                vertical1.setPower(-.5);
+                vertical1.setPower(.5);
                 vertical2.setPower(.5);
             }
-            else if (gamepad1.dpad_down || gamepad2.dpad_down) {
-                vertical1.setPower(.5);
-                vertical2.setPower(-.5);
-            } else if (pickUpSequence == true && vertical1.getCurrentPosition() > -100 && vertical2.getCurrentPosition() < 100){
+            else if (gamepad1.dpad_down || gamepad2.dpad_down || lowerVertical) {
                 vertical1.setPower(-.5);
-                vertical2.setPower(.5);
+                vertical2.setPower(-.5);
+            }
+            else if (pickUpSequence && vertical1.getCurrentPosition() < 40 && vertical2.getCurrentPosition() < 40){
+                if (armCooldown.milliseconds() > 500) {
+                    vertical1.setPower(.5);
+                    vertical2.setPower(.5);
+                }
             }
             else {
                 vertical1.setPower(0);
                 vertical2.setPower(0);
                 pickUpSequence = false;
             }
+            if (lowerVertical && vertical1.getCurrentPosition() > 10 && vertical2.getCurrentPosition() > 10) {
+                vertical1.setPower(0);
+                vertical2.setPower(0);
+                armServo.setPosition(.2);
+                armCooldown.reset();
+                down = true;
+                pickUpSequence =  true;
+                lowerVertical = false;
+            }
+
             //extend-y arm for parking
-            if (gamepad1.left_bumper || gamepad2.left_bumper){
+            if ((gamepad1.left_bumper || gamepad2.left_bumper) && parkCooldown.milliseconds() > 500){
                 if (extended == true){
-                    parkServo.setPosition(.4);
+                    parkServo.setPosition(0);
                     extended = false;
                 }
                 else {
-                    parkServo.setPosition(.5);
+                    parkServo.setPosition(1);
                     extended = true;
                 }
+                parkCooldown.reset();
             }
             /*if (gamepad1.left_bumper || gamepad2.left_bumper) {
                 armServo.setPosition(.4);
                 down = true;
             }*/
 
-            if ((gamepad1.right_bumper || gamepad2.right_bumper) && armCooldown.milliseconds() > 500) {
+            if ((gamepad1.right_bumper || gamepad2.right_bumper) && armCooldown.milliseconds() > 500 && !lowerVertical && !pickUpSequence) {
                 if (down) {
                     armServo.setPosition(1);
                     down = false;
+                    armCooldown.reset();
                 }
                 else {
-                    if (vertical1.getCurrentPosition() >= -110 && vertical2.getCurrentPosition() <= 110){
-                        while (vertical1.getCurrentPosition() <= -10 && vertical2.getCurrentPosition() >= 10){
-                            vertical1.setPower(.5);
-                            vertical2.setPower(-.5);
-                        }
+                    if (vertical1.getCurrentPosition() > 10 && vertical2.getCurrentPosition() > 10){
+                        lowerVertical = true;
                     }
-                    armServo.setPosition(.2);
-                    down = true;
-                    pickUpSequence =  true;
+                    else {
+                        armServo.setPosition(.2);
+                        armCooldown.reset();
+                        down = true;
+                        pickUpSequence =  true;
+                    }
                 }
-                armCooldown.reset();
             }
             if (gamepad1.b || gamepad2.b) {
                 leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
