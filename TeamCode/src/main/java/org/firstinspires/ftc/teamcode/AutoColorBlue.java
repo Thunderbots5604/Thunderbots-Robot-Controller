@@ -32,7 +32,7 @@ import java.util.List;
 @Autonomous(name="AutoColorBlue", group="Block side")
 public class AutoColorBlue extends GodFatherOfAllAutonomous {
     private String color = null;
-    private int blockNumber = 6;
+    private boolean red = false;
     @Override
     public void runOpMode() {
 
