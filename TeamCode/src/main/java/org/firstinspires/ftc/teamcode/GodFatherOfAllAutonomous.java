@@ -104,7 +104,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public final double TICKS_PER_STRAFE_RLB = -30.32;
     public final double TICKS_PER_STRAFE_RRF = -34;
     public final double TICKS_PER_STRAFE_RRB = 33.7;
-    public final float TICKS_MULTIPLIER = 20F / 22F;
+    public final float TICKS_MULTIPLIER = 20F / 22.1F;
     public double strafePower_LLF = Math.abs(50 / TICKS_PER_STRAFE_LLF);
     public double strafePower_LLB = Math.abs(50 / TICKS_PER_STRAFE_LLB);
     public double strafePower_LRF = Math.abs(48 / TICKS_PER_STRAFE_LRF);
@@ -177,6 +177,8 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         leftMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        vertical1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        vertical2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -1033,13 +1035,13 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             verticalTargetPosition = 0;
         }
         else if (height == 1){
-            verticalTargetPosition = 200;
+            verticalTargetPosition = 100;
         }
         else if (height == 2){
-            verticalTargetPosition = 400;
+            verticalTargetPosition = 200;
         }
         else {
-            verticalTargetPosition = 600;
+            verticalTargetPosition = 230;
         }
         if (vertical2.getCurrentPosition() < verticalTargetPosition){
             if (inches < 0){
@@ -1054,7 +1056,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                 if (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition){
                     vertical2.setPower(0);
                     vertical1.setPower(0);
-                    if (leftMotorBack.getCurrentPosition() > driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() > driveTargetPosition * .6){
+                    /*if (leftMotorBack.getCurrentPosition() > driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() > driveTargetPosition * .6){
                         while (leftMotorBack.getCurrentPosition() > driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() > driveTargetPosition * .6){
                             leftMotorBack.setPower(-power);
                             leftMotorFront.setPower(-power);
@@ -1067,14 +1069,38 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                             rightMotorBack.setPower(-slowerPower);
                             rightMotorFront.setPower(-slowerPower);
                         }
-                    }
-                    else {
+                    }*/
+                    remainingTicks = (driveTargetPosition + leftMotorBack.getCurrentPosition()) / 4 + (driveTargetPosition + leftMotorFront.getCurrentPosition()) / 4 + (driveTargetPosition + rightMotorBack.getCurrentPosition()) / 4 + (driveTargetPosition + rightMotorFront.getCurrentPosition()) / 4;
+                    remainingInches = (remainingTicks)/(TICKS_PER_INCH * TICKS_MULTIPLIER);
+                    runTo(remainingInches, power, slowerPower);
+                }
+                    /*else {
                         while(leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition){
                             leftMotorBack.setPower(-slowerPower);
                             leftMotorFront.setPower(-slowerPower);
                             rightMotorBack.setPower(-slowerPower);
                             rightMotorFront.setPower(-slowerPower);
                         }
+                    }*/
+                    /*leftMotorFront.setPower(0);
+                    leftMotorBack.setPower(0);
+                    rightMotorFront.setPower(0);
+                    rightMotorBack.setPower(0);
+                    leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);*/
+                return;
+            }
+            else if (leftMotorBack.getCurrentPosition() <= driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() <= driveTargetPosition * .6){
+                if (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition){
+                    vertical2.setPower(0);
+                    vertical1.setPower(0);
+                    while (leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition) {
+                        leftMotorFront.setPower(-slowerPower);
+                        leftMotorBack.setPower(-slowerPower);
+                        rightMotorBack.setPower(-slowerPower);
+                        rightMotorFront.setPower(-slowerPower);
                     }
                     leftMotorFront.setPower(0);
                     leftMotorBack.setPower(0);
@@ -1084,10 +1110,17 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                     leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    return;
                 }
-                else if (leftMotorBack.getCurrentPosition() <= driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() <= driveTargetPosition * .6){
-                    if (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition){
+                else {
+                    while ((leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition) && (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition)) {
+                        leftMotorFront.setPower(-slowerPower);
+                        leftMotorBack.setPower(-slowerPower);
+                        rightMotorBack.setPower(-slowerPower);
+                        rightMotorFront.setPower(-slowerPower);
+                        vertical1.setPower(-.5);
+                        vertical2.setPower(.5);
+                    }
+                    if (vertical2.getCurrentPosition() < verticalTargetPosition || vertical1.getCurrentPosition() < -verticalTargetPosition) {
                         vertical2.setPower(0);
                         vertical1.setPower(0);
                         while (leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition) {
@@ -1096,6 +1129,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                             rightMotorBack.setPower(-slowerPower);
                             rightMotorFront.setPower(-slowerPower);
                         }
+                    } else if (leftMotorBack.getCurrentPosition() <= driveTargetPosition && rightMotorBack.getCurrentPosition() <= driveTargetPosition) {
                         leftMotorFront.setPower(0);
                         leftMotorBack.setPower(0);
                         rightMotorFront.setPower(0);
@@ -1104,244 +1138,30 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                         rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                         rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    }
-                    else {
-                        while ((leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition) && (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition)) {
-                            leftMotorFront.setPower(-slowerPower);
-                            leftMotorBack.setPower(-slowerPower);
-                            rightMotorBack.setPower(-slowerPower);
-                            rightMotorFront.setPower(-slowerPower);
+                        while (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition) {
                             vertical1.setPower(-.5);
                             vertical2.setPower(.5);
                         }
-                        if (vertical2.getCurrentPosition() < verticalTargetPosition || vertical1.getCurrentPosition() < -verticalTargetPosition) {
-                            vertical2.setPower(0);
-                            vertical1.setPower(0);
-                            while (leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition) {
-                                leftMotorFront.setPower(-slowerPower);
-                                leftMotorBack.setPower(-slowerPower);
-                                rightMotorBack.setPower(-slowerPower);
-                                rightMotorFront.setPower(-slowerPower);
-                            }
-                        } else if (leftMotorBack.getCurrentPosition() <= driveTargetPosition && rightMotorBack.getCurrentPosition() <= driveTargetPosition) {
-                            leftMotorFront.setPower(0);
-                            leftMotorBack.setPower(0);
-                            rightMotorFront.setPower(0);
-                            rightMotorBack.setPower(0);
-                            leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                            leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                            rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                            rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                            while (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition) {
-                                vertical1.setPower(-.5);
-                                vertical2.setPower(.5);
-                            }
-                            vertical2.setPower(0);
-                            vertical1.setPower(0);
-                        }
-                        return;
-                    }
-                }
-            }
-            else if (inches >= 0){
-                while ((vertical2.getCurrentPosition() < verticalTargetPosition && vertical1.getCurrentPosition() > -verticalTargetPosition) && (leftMotorBack.getCurrentPosition() < driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() < driveTargetPosition * .6)){
-                    vertical2.setPower(.5);
-                    vertical1.setPower(-.5);
-                    leftMotorBack.setPower(power);
-                    leftMotorFront.setPower(power);
-                    rightMotorBack.setPower(power);
-                    rightMotorFront.setPower(power);
-                }
-                if (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition){
-                    vertical2.setPower(0);
-                    vertical1.setPower(0);
-                    if (leftMotorBack.getCurrentPosition() < driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() < driveTargetPosition * .6){
-                        while (leftMotorBack.getCurrentPosition() < driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() < driveTargetPosition * .6){
-                            leftMotorBack.setPower(power);
-                            leftMotorFront.setPower(power);
-                            rightMotorBack.setPower(power);
-                            rightMotorFront.setPower(power);
-                        }
-                        while(leftMotorBack.getCurrentPosition() < driveTargetPosition && rightMotorBack.getCurrentPosition() < driveTargetPosition){
-                            leftMotorBack.setPower(slowerPower);
-                            leftMotorFront.setPower(slowerPower);
-                            rightMotorBack.setPower(slowerPower);
-                            rightMotorFront.setPower(slowerPower);
-                        }
-                        leftMotorFront.setPower(0);
-                        leftMotorBack.setPower(0);
-                        rightMotorFront.setPower(0);
-                        rightMotorBack.setPower(0);
-                        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    }
-                    else {
-                        while(leftMotorBack.getCurrentPosition() < driveTargetPosition && rightMotorBack.getCurrentPosition() < driveTargetPosition){
-                            leftMotorBack.setPower(slowerPower);
-                            leftMotorFront.setPower(slowerPower);
-                            rightMotorBack.setPower(slowerPower);
-                            rightMotorFront.setPower(slowerPower);
-                        }
-                        leftMotorFront.setPower(0);
-                        leftMotorBack.setPower(0);
-                        rightMotorFront.setPower(0);
-                        rightMotorBack.setPower(0);
-                        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    }
-                    return;
-                }
-                else if (leftMotorBack.getCurrentPosition() >= driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() >= driveTargetPosition * .6){
-                    if (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition){
                         vertical2.setPower(0);
                         vertical1.setPower(0);
-                        while (leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition) {
-                            leftMotorFront.setPower(slowerPower);
-                            leftMotorBack.setPower(slowerPower);
-                            rightMotorBack.setPower(slowerPower);
-                            rightMotorFront.setPower(slowerPower);
-                        }
-                        leftMotorFront.setPower(0);
-                        leftMotorBack.setPower(0);
-                        rightMotorFront.setPower(0);
-                        rightMotorBack.setPower(0);
-                        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     }
-                    else {
-                        while ((leftMotorBack.getCurrentPosition() < driveTargetPosition && rightMotorBack.getCurrentPosition() < driveTargetPosition) && (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition)) {
-                            leftMotorFront.setPower(slowerPower);
-                            leftMotorBack.setPower(slowerPower);
-                            rightMotorBack.setPower(slowerPower);
-                            rightMotorFront.setPower(slowerPower);
-                            vertical1.setPower(-.5);
-                            vertical2.setPower(.5);
-                        }
-                        if (vertical2.getCurrentPosition() < verticalTargetPosition || vertical1.getCurrentPosition() > -verticalTargetPosition) {
-                            vertical2.setPower(0);
-                            vertical1.setPower(0);
-                            while (leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition) {
-                                leftMotorFront.setPower(slowerPower);
-                                leftMotorBack.setPower(slowerPower);
-                                rightMotorBack.setPower(slowerPower);
-                                rightMotorFront.setPower(slowerPower);
-                            }
-                            leftMotorFront.setPower(0);
-                            leftMotorBack.setPower(0);
-                            rightMotorFront.setPower(0);
-                            rightMotorBack.setPower(0);
-                            leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                            leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                            rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                            rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                        } else if (leftMotorBack.getCurrentPosition() >= driveTargetPosition && rightMotorBack.getCurrentPosition() >= driveTargetPosition) {
-                            leftMotorFront.setPower(0);
-                            leftMotorBack.setPower(0);
-                            rightMotorFront.setPower(0);
-                            rightMotorBack.setPower(0);
-                            leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                            leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                            rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                            rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                            while (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition) {
-                                vertical1.setPower(-.5);
-                                vertical2.setPower(.5);
-                            }
-                            vertical2.setPower(0);
-                            vertical1.setPower(0);
-                        }
-                        return;
-                    }
+                    return;
                 }
             }
         }
-        else {
-            if (inches < 0){
-                while ((vertical2.getCurrentPosition() >= verticalTargetPosition && vertical1.getCurrentPosition() <= -verticalTargetPosition) && (leftMotorBack.getCurrentPosition() > driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() > driveTargetPosition * .6)){
-                    vertical2.setPower(-.5);
-                    vertical1.setPower(.5);
-                    leftMotorBack.setPower(-power);
-                    leftMotorFront.setPower(-power);
-                    rightMotorBack.setPower(-power);
-                    rightMotorFront.setPower(-power);
-                }
-                if (vertical2.getCurrentPosition() < verticalTargetPosition || vertical1.getCurrentPosition() > -verticalTargetPosition){
-                    if (leftMotorBack.getCurrentPosition() > driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() > driveTargetPosition * .6){
-                        while (leftMotorBack.getCurrentPosition() > driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() > driveTargetPosition * .6){
-                            leftMotorBack.setPower(-power);
-                            leftMotorFront.setPower(-power);
-                            rightMotorBack.setPower(-power);
-                            rightMotorFront.setPower(-power);
-                        }
-                        while(leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition){
-                            leftMotorBack.setPower(-slowerPower);
-                            leftMotorFront.setPower(-slowerPower);
-                            rightMotorBack.setPower(-slowerPower);
-                            rightMotorFront.setPower(-slowerPower);
-                        }
-                    }
-                    else {
-                        while(leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition){
-                            leftMotorBack.setPower(-slowerPower);
-                            leftMotorFront.setPower(-slowerPower);
-                            rightMotorBack.setPower(-slowerPower);
-                            rightMotorFront.setPower(-slowerPower);
-                        }
-                    }
-                    return;
-                }
-                else if (leftMotorBack.getCurrentPosition() <= driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() <= driveTargetPosition * .6){
-                    if (vertical2.getCurrentPosition() <= verticalTargetPosition || vertical1.getCurrentPosition() >= -verticalTargetPosition){
-                        while (leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition) {
-                            leftMotorFront.setPower(-slowerPower);
-                            leftMotorBack.setPower(-slowerPower);
-                            rightMotorBack.setPower(-slowerPower);
-                            rightMotorFront.setPower(-slowerPower);
-                        }
-                    }
-                    else {
-                        while ((leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition) && (vertical2.getCurrentPosition() <= verticalTargetPosition || vertical1.getCurrentPosition() >= -verticalTargetPosition)) {
-                            leftMotorFront.setPower(-slowerPower);
-                            leftMotorBack.setPower(-slowerPower);
-                            rightMotorBack.setPower(-slowerPower);
-                            rightMotorFront.setPower(-slowerPower);
-                            vertical1.setPower(.5);
-                            vertical2.setPower(-.5);
-                        }
-                        if (vertical2.getCurrentPosition() < verticalTargetPosition || vertical1.getCurrentPosition() < -verticalTargetPosition) {
-                            while (leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition) {
-                                leftMotorFront.setPower(-slowerPower);
-                                leftMotorBack.setPower(-slowerPower);
-                                rightMotorBack.setPower(-slowerPower);
-                                rightMotorFront.setPower(-slowerPower);
-                            }
-                        } else if (leftMotorBack.getCurrentPosition() <= driveTargetPosition && rightMotorBack.getCurrentPosition() <= driveTargetPosition) {
-                            while (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition) {
-                                vertical1.setPower(.5);
-                                vertical2.setPower(-.5);
-                            }
-                        }
-                        return;
-                    }
-                }
+        else if (inches >= 0){
+            while ((vertical2.getCurrentPosition() < verticalTargetPosition && vertical1.getCurrentPosition() > -verticalTargetPosition) && (leftMotorBack.getCurrentPosition() < driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() < driveTargetPosition * .6)){
+                vertical2.setPower(.5);
+                vertical1.setPower(-.5);
+                leftMotorBack.setPower(power);
+                leftMotorFront.setPower(power);
+                rightMotorBack.setPower(power);
+                rightMotorFront.setPower(power);
             }
-            else if (inches >= 0){
-                while ((vertical2.getCurrentPosition() > verticalTargetPosition && vertical1.getCurrentPosition() < -verticalTargetPosition) && (leftMotorBack.getCurrentPosition() < driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() < driveTargetPosition * .6)){
-                    vertical2.setPower(-.5);
-                    vertical1.setPower(.5);
-                    leftMotorBack.setPower(power);
-                    leftMotorFront.setPower(power);
-                    rightMotorBack.setPower(power);
-                    rightMotorFront.setPower(power);
-                }
-                if (vertical2.getCurrentPosition() <= verticalTargetPosition || vertical1.getCurrentPosition() >= -verticalTargetPosition){
-                    if (leftMotorBack.getCurrentPosition() < driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() < driveTargetPosition * .6){
+            if (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition){
+                vertical2.setPower(0);
+                vertical1.setPower(0);
+                    /*if (leftMotorBack.getCurrentPosition() < driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() < driveTargetPosition * .6){
                         while (leftMotorBack.getCurrentPosition() < driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() < driveTargetPosition * .6){
                             leftMotorBack.setPower(power);
                             leftMotorFront.setPower(power);
@@ -1354,6 +1174,14 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                             rightMotorBack.setPower(slowerPower);
                             rightMotorFront.setPower(slowerPower);
                         }
+                        leftMotorFront.setPower(0);
+                        leftMotorBack.setPower(0);
+                        rightMotorFront.setPower(0);
+                        rightMotorBack.setPower(0);
+                        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     }
                     else {
                         while(leftMotorBack.getCurrentPosition() < driveTargetPosition && rightMotorBack.getCurrentPosition() < driveTargetPosition){
@@ -1362,42 +1190,222 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                             rightMotorBack.setPower(slowerPower);
                             rightMotorFront.setPower(slowerPower);
                         }
+                        leftMotorFront.setPower(0);
+                        leftMotorBack.setPower(0);
+                        rightMotorFront.setPower(0);
+                        rightMotorBack.setPower(0);
+                        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    }*/
+                remainingTicks = (driveTargetPosition + leftMotorBack.getCurrentPosition()) / 4 + (driveTargetPosition + leftMotorFront.getCurrentPosition()) / 4 + (driveTargetPosition + rightMotorBack.getCurrentPosition()) / 4 + (driveTargetPosition + rightMotorFront.getCurrentPosition()) / 4;
+                remainingInches = (remainingTicks)/(TICKS_PER_INCH * TICKS_MULTIPLIER);
+                runTo(remainingInches, power, slowerPower);
+                return;
+            }
+            else if (leftMotorBack.getCurrentPosition() >= driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() >= driveTargetPosition * .6){
+                if (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition){
+                    vertical2.setPower(0);
+                    vertical1.setPower(0);
+                    while (leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition) {
+                        leftMotorFront.setPower(slowerPower);
+                        leftMotorBack.setPower(slowerPower);
+                        rightMotorBack.setPower(slowerPower);
+                        rightMotorFront.setPower(slowerPower);
                     }
-                    return;
+                    leftMotorFront.setPower(0);
+                    leftMotorBack.setPower(0);
+                    rightMotorFront.setPower(0);
+                    rightMotorBack.setPower(0);
+                    leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 }
-                else if (leftMotorBack.getCurrentPosition() >= driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() >= driveTargetPosition * .6){
-                    if (vertical2.getCurrentPosition() <= verticalTargetPosition || vertical1.getCurrentPosition() >= -verticalTargetPosition){
+                else {
+                    while ((leftMotorBack.getCurrentPosition() < driveTargetPosition && rightMotorBack.getCurrentPosition() < driveTargetPosition) && (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition)) {
+                        leftMotorFront.setPower(slowerPower);
+                        leftMotorBack.setPower(slowerPower);
+                        rightMotorBack.setPower(slowerPower);
+                        rightMotorFront.setPower(slowerPower);
+                        vertical1.setPower(-.5);
+                        vertical2.setPower(.5);
+                    }
+                    if (vertical2.getCurrentPosition() < verticalTargetPosition || vertical1.getCurrentPosition() > -verticalTargetPosition) {
+                        vertical2.setPower(0);
+                        vertical1.setPower(0);
                         while (leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition) {
                             leftMotorFront.setPower(slowerPower);
                             leftMotorBack.setPower(slowerPower);
                             rightMotorBack.setPower(slowerPower);
                             rightMotorFront.setPower(slowerPower);
                         }
+                        leftMotorFront.setPower(0);
+                        leftMotorBack.setPower(0);
+                        rightMotorFront.setPower(0);
+                        rightMotorBack.setPower(0);
+                        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    } else if (leftMotorBack.getCurrentPosition() >= driveTargetPosition && rightMotorBack.getCurrentPosition() >= driveTargetPosition) {
+                        leftMotorFront.setPower(0);
+                        leftMotorBack.setPower(0);
+                        rightMotorFront.setPower(0);
+                        rightMotorBack.setPower(0);
+                        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        while (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition) {
+                            vertical1.setPower(-.5);
+                            vertical2.setPower(.5);
+                        }
+                        vertical2.setPower(0);
+                        vertical1.setPower(0);
                     }
-                    else {
-                        while ((leftMotorBack.getCurrentPosition() < driveTargetPosition && rightMotorBack.getCurrentPosition() < driveTargetPosition) && (vertical2.getCurrentPosition() <= verticalTargetPosition || vertical1.getCurrentPosition() >= -verticalTargetPosition)) {
+                    return;
+                }
+            }
+        }
+    }
+        else {
+        if (inches < 0) {
+            while ((vertical2.getCurrentPosition() >= verticalTargetPosition && vertical1.getCurrentPosition() <= -verticalTargetPosition) && (leftMotorBack.getCurrentPosition() > driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() > driveTargetPosition * .6)){
+                vertical2.setPower(-.5);
+                vertical1.setPower(.5);
+                leftMotorBack.setPower(-power);
+                leftMotorFront.setPower(-power);
+                rightMotorBack.setPower(-power);
+                rightMotorFront.setPower(-power);
+            }
+            if (vertical2.getCurrentPosition() < verticalTargetPosition || vertical1.getCurrentPosition() > -verticalTargetPosition){
+                if (leftMotorBack.getCurrentPosition() > driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() > driveTargetPosition * .6){
+                    while (leftMotorBack.getCurrentPosition() > driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() > driveTargetPosition * .6){
+                        leftMotorBack.setPower(-power);
+                        leftMotorFront.setPower(-power);
+                        rightMotorBack.setPower(-power);
+                        rightMotorFront.setPower(-power);
+                    }
+                    while(leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition){
+                        leftMotorBack.setPower(-slowerPower);
+                        leftMotorFront.setPower(-slowerPower);
+                        rightMotorBack.setPower(-slowerPower);
+                        rightMotorFront.setPower(-slowerPower);
+                    }
+                }
+                else {
+                    while(leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition){
+                        leftMotorBack.setPower(-slowerPower);
+                        leftMotorFront.setPower(-slowerPower);
+                        rightMotorBack.setPower(-slowerPower);
+                        rightMotorFront.setPower(-slowerPower);
+                    }
+                }
+                return;
+            }
+            else if (leftMotorBack.getCurrentPosition() <= driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() <= driveTargetPosition * .6){
+                if (vertical2.getCurrentPosition() <= verticalTargetPosition || vertical1.getCurrentPosition() >= -verticalTargetPosition){
+                    while (leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition) {
+                        leftMotorFront.setPower(-slowerPower);
+                        leftMotorBack.setPower(-slowerPower);
+                        rightMotorBack.setPower(-slowerPower);
+                        rightMotorFront.setPower(-slowerPower);
+                    }
+                }
+                else {
+                    while ((leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition) && (vertical2.getCurrentPosition() <= verticalTargetPosition || vertical1.getCurrentPosition() >= -verticalTargetPosition)) {
+                        leftMotorFront.setPower(-slowerPower);
+                        leftMotorBack.setPower(-slowerPower);
+                        rightMotorBack.setPower(-slowerPower);
+                        rightMotorFront.setPower(-slowerPower);
+                        vertical1.setPower(.5);
+                        vertical2.setPower(-.5);
+                    }
+                    if (vertical2.getCurrentPosition() < verticalTargetPosition || vertical1.getCurrentPosition() < -verticalTargetPosition) {
+                        while (leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition) {
+                            leftMotorFront.setPower(-slowerPower);
+                            leftMotorBack.setPower(-slowerPower);
+                            rightMotorBack.setPower(-slowerPower);
+                            rightMotorFront.setPower(-slowerPower);
+                        }
+                    } else if (leftMotorBack.getCurrentPosition() <= driveTargetPosition && rightMotorBack.getCurrentPosition() <= driveTargetPosition) {
+                        while (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition) {
+                            vertical1.setPower(.5);
+                            vertical2.setPower(-.5);
+                        }
+                    }
+                    return;
+                }
+            }
+        }
+        else if (inches >= 0){
+            while ((vertical2.getCurrentPosition() > verticalTargetPosition && vertical1.getCurrentPosition() < -verticalTargetPosition) && (leftMotorBack.getCurrentPosition() < driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() < driveTargetPosition * .6)){
+                vertical2.setPower(-.5);
+                vertical1.setPower(.5);
+                leftMotorBack.setPower(power);
+                leftMotorFront.setPower(power);
+                rightMotorBack.setPower(power);
+                rightMotorFront.setPower(power);
+            }
+            if (vertical2.getCurrentPosition() <= verticalTargetPosition || vertical1.getCurrentPosition() >= -verticalTargetPosition){
+                if (leftMotorBack.getCurrentPosition() < driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() < driveTargetPosition * .6){
+                    while (leftMotorBack.getCurrentPosition() < driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() < driveTargetPosition * .6){
+                        leftMotorBack.setPower(power);
+                        leftMotorFront.setPower(power);
+                        rightMotorBack.setPower(power);
+                        rightMotorFront.setPower(power);
+                    }
+                    while(leftMotorBack.getCurrentPosition() < driveTargetPosition && rightMotorBack.getCurrentPosition() < driveTargetPosition){
+                        leftMotorBack.setPower(slowerPower);
+                        leftMotorFront.setPower(slowerPower);
+                        rightMotorBack.setPower(slowerPower);
+                        rightMotorFront.setPower(slowerPower);
+                    }
+                }
+                else {
+                    while(leftMotorBack.getCurrentPosition() < driveTargetPosition && rightMotorBack.getCurrentPosition() < driveTargetPosition){
+                        leftMotorBack.setPower(slowerPower);
+                        leftMotorFront.setPower(slowerPower);
+                        rightMotorBack.setPower(slowerPower);
+                        rightMotorFront.setPower(slowerPower);
+                    }
+                }
+                return;
+            }
+            else if (leftMotorBack.getCurrentPosition() >= driveTargetPosition * .6 && rightMotorBack.getCurrentPosition() >= driveTargetPosition * .6){
+                if (vertical2.getCurrentPosition() <= verticalTargetPosition || vertical1.getCurrentPosition() >= -verticalTargetPosition){
+                    while (leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition) {
+                        leftMotorFront.setPower(slowerPower);
+                        leftMotorBack.setPower(slowerPower);
+                        rightMotorBack.setPower(slowerPower);
+                        rightMotorFront.setPower(slowerPower);
+                    }
+                }
+                else {
+                    while ((leftMotorBack.getCurrentPosition() < driveTargetPosition && rightMotorBack.getCurrentPosition() < driveTargetPosition) && (vertical2.getCurrentPosition() <= verticalTargetPosition || vertical1.getCurrentPosition() >= -verticalTargetPosition)) {
+                        leftMotorFront.setPower(slowerPower);
+                        leftMotorBack.setPower(slowerPower);
+                        rightMotorBack.setPower(slowerPower);
+                        rightMotorFront.setPower(slowerPower);
+                        vertical1.setPower(.5);
+                        vertical2.setPower(-.5);
+                    }
+                    if (vertical2.getCurrentPosition() < verticalTargetPosition || vertical1.getCurrentPosition() < -verticalTargetPosition) {
+                        while (leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition) {
                             leftMotorFront.setPower(slowerPower);
                             leftMotorBack.setPower(slowerPower);
                             rightMotorBack.setPower(slowerPower);
                             rightMotorFront.setPower(slowerPower);
+                        }
+                    } else if (leftMotorBack.getCurrentPosition() >= driveTargetPosition && rightMotorBack.getCurrentPosition() >= driveTargetPosition) {
+                        while (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition) {
                             vertical1.setPower(.5);
                             vertical2.setPower(-.5);
                         }
-                        if (vertical2.getCurrentPosition() < verticalTargetPosition || vertical1.getCurrentPosition() < -verticalTargetPosition) {
-                            while (leftMotorBack.getCurrentPosition() > driveTargetPosition && rightMotorBack.getCurrentPosition() > driveTargetPosition) {
-                                leftMotorFront.setPower(slowerPower);
-                                leftMotorBack.setPower(slowerPower);
-                                rightMotorBack.setPower(slowerPower);
-                                rightMotorFront.setPower(slowerPower);
-                            }
-                        } else if (leftMotorBack.getCurrentPosition() >= driveTargetPosition && rightMotorBack.getCurrentPosition() >= driveTargetPosition) {
-                            while (vertical2.getCurrentPosition() >= verticalTargetPosition || vertical1.getCurrentPosition() <= -verticalTargetPosition) {
-                                vertical1.setPower(.5);
-                                vertical2.setPower(-.5);
-                            }
-                        }
-                        return;
                     }
+                    return;
                 }
             }
         }

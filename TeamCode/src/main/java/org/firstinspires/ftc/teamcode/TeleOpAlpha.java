@@ -46,6 +46,8 @@ public class TeleOpAlpha extends LinearOpMode {
     private boolean pickUpSequence;
     private boolean extended = false;
     private boolean lowerVertical = false;
+    private double verticalPower = .8;
+    private boolean allowVerticalDown;
 
     @Override
     public void runOpMode() {
@@ -69,6 +71,9 @@ public class TeleOpAlpha extends LinearOpMode {
         rightMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
         spinnyBoy1.setDirection(Servo.Direction.REVERSE);
         vertical2.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        vertical1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        vertical2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
         telemetry.addData("Status", "Initialized");
@@ -111,10 +116,10 @@ public class TeleOpAlpha extends LinearOpMode {
             if((/*gamepad1.x || */gamepad2.x) && cooldown.seconds() > .5) {
                 halfSpeed = !halfSpeed;
                 if (halfSpeed) {
-                    multiplier *= .25;
+                    multiplier *= .5;
                 }
                 else {
-                    multiplier *= 4;
+                    multiplier *= 2;
                 }
                 cooldown.reset();
             }
@@ -165,17 +170,17 @@ public class TeleOpAlpha extends LinearOpMode {
                 spinnyBoy2.setPosition(.29);
             }
             if (gamepad1.dpad_up || gamepad2.dpad_up) {
-                vertical1.setPower(.5);
-                vertical2.setPower(.5);
+                vertical1.setPower(verticalPower);
+                vertical2.setPower(verticalPower);
             }
-            else if (gamepad1.dpad_down || gamepad2.dpad_down || lowerVertical) {
-                vertical1.setPower(-.5);
-                vertical2.setPower(-.5);
+            else if ((gamepad1.dpad_down || gamepad2.dpad_down || lowerVertical) && (vertical1.getCurrentPosition() > 20 || allowVerticalDown)) {
+                vertical1.setPower(-verticalPower);
+                vertical2.setPower(-verticalPower);
             }
-            else if (pickUpSequence && vertical1.getCurrentPosition() < 40 && vertical2.getCurrentPosition() < 40){
-                if (armCooldown.milliseconds() > 500) {
-                    vertical1.setPower(.5);
-                    vertical2.setPower(.5);
+            else if (pickUpSequence && vertical1.getCurrentPosition() < 30 && vertical2.getCurrentPosition() < 30){
+                if (armServo.getPosition() < .3 && armCooldown.milliseconds() > 500) {
+                    vertical1.setPower(verticalPower);
+                    vertical2.setPower(verticalPower);
                 }
             }
             else {
@@ -183,7 +188,7 @@ public class TeleOpAlpha extends LinearOpMode {
                 vertical2.setPower(0);
                 pickUpSequence = false;
             }
-            if (lowerVertical && vertical1.getCurrentPosition() > 10 && vertical2.getCurrentPosition() > 10) {
+            if (lowerVertical && vertical1.getCurrentPosition() < 20 && vertical2.getCurrentPosition() < 20) {
                 vertical1.setPower(0);
                 vertical2.setPower(0);
                 armServo.setPosition(.2);
@@ -238,11 +243,23 @@ public class TeleOpAlpha extends LinearOpMode {
                 rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             }
+            if (gamepad2.left_trigger > .4) {
+                vertical1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                vertical2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                vertical1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                vertical2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            }
+            else if (gamepad2.right_trigger > .4) {
+                allowVerticalDown = true;
+            }
+            else {
+                allowVerticalDown = false;
+            }
+            //If opMode is turned off, instantly power off motors
+            leftMotorFront.setPower(0);
+            leftMotorBack.setPower(0);
+            rightMotorFront.setPower(0);
+            rightMotorBack.setPower(0);
         }
-        //If opMode is turned off, instantly power off motors
-        leftMotorFront.setPower(0);
-        leftMotorBack.setPower(0);
-        rightMotorFront.setPower(0);
-        rightMotorBack.setPower(0);
     }
 }
