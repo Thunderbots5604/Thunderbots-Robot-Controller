@@ -43,83 +43,79 @@ public class AutoEverythingRed extends GodFatherOfAllAutonomous {
         startBlock(red);
         //Branch off based on blockNumber
         if (blockNumber == 0) {
-            runTo(15, allPower, slowPower);
+            runTo(32 + 8 * (blockNumber), allPower, slowPower);
             raiseAndRun(1, 30, allPower, slowPower);
-            turnLeft(60, allPower, slowPower);
+            turnLeft(90, allPower, slowPower);
             turnTo(0, allPower, slowPower);
-            runTo(20, allPower * .6, slowPower * .7);
-            resetArm();
+            dropBlock();
+            runTo(12, allPower * .6, slowPower * .7);
             moveFoundation(red);
-            strafeLeft(30, allPower, slowPower);
+
+            strafeLeft(10, allPower, slowPower);
             raiseAndRun(0, -50, allPower * 1.2, slowPower);
-            runTo(-60, allPower, slowPower);
+            runTo(-50 - 8 * (blockNumber), allPower, slowPower);
             resetArm();
-            turnLeft(80, allPower, slowPower);
+            turnLeft(90, allPower, slowPower);
             turnTo(0, allPower, slowPower);
             runUntil(1.5, allPower);
             pickUpBlock();
             runTo(-3, allPower, slowPower);
-            turnRight(80, allPower, slowPower);
+            turnRight(90, allPower, slowPower);
             turnTo(-90, allPower, slowPower);
-            runTo(70, allPower, slowPower);
+            runTo(70 + 8 * (blockNumber), allPower, slowPower);
             raiseAndRun(2, 50, allPower, slowPower);
             dropBlock();
             raiseAndRun(0, -30, allPower, slowPower);
         }
         else if (blockNumber == 1) {
-            runTo(23, allPower, slowPower);
+            runTo(32 + 8 * (blockNumber), allPower, slowPower);
             raiseAndRun(1, 30, allPower, slowPower);
-            turnLeft(60, allPower, slowPower);
+            turnLeft(90, allPower, slowPower);
             turnTo(0, allPower, slowPower);
-            resetArm();
-            strafeRight(30, allPower, slowPower);
             dropBlock();
-            runTo(5, allPower * .6, slowPower * .7);
+            runTo(12, allPower * .6, slowPower * .7);
             moveFoundation(red);
 
-            runTo(-5, allPower, slowPower);
             strafeLeft(10, allPower, slowPower);
-            raiseAndRun(0, -53, allPower * 1.2, slowPower);
-            runTo(-39, allPower, slowPower);
-            turnLeft(80, allPower, slowPower);
-            turnTo(0, allPower, slowPower);
+            raiseAndRun(0, -50, allPower * 1.2, slowPower);
+            runTo(-50 - 8 * (blockNumber), allPower, slowPower);
             resetArm();
+            turnLeft(90, allPower, slowPower);
+            turnTo(0, allPower, slowPower);
             runUntil(1.5, allPower);
             pickUpBlock();
             runTo(-3, allPower, slowPower);
-            turnRight(80, allPower, slowPower);
+            turnRight(90, allPower, slowPower);
             turnTo(-90, allPower, slowPower);
-            runTo(40, allPower, slowPower);
-            raiseAndRun(2, 48, allPower, slowPower);
+            runTo(70 + 8 * (blockNumber), allPower, slowPower);
+            raiseAndRun(2, 50, allPower, slowPower);
             dropBlock();
             raiseAndRun(0, -30, allPower, slowPower);
         }
         else {
-            runTo(31, allPower, slowPower);
+            runTo(32 + 8 * (blockNumber), allPower, slowPower);
             raiseAndRun(1, 30, allPower, slowPower);
             turnLeft(60, allPower, slowPower);
             turnTo(0, allPower, slowPower);
-            resetArm();
-            strafeRight(30, allPower, slowPower);
             dropBlock();
-            runTo(5, allPower * .6, slowPower * .7);
+            runTo(12, allPower * .6, slowPower * .7);
             moveFoundation(red);
 
-            runTo(-5, allPower, slowPower);
             strafeLeft(10, allPower, slowPower);
-            raiseAndRun(0, -61, allPower, slowPower);
-            runTo(-39, allPower * 1.2, slowPower);
+            raiseAndRun(0, -50, allPower * 1.2, slowPower);
+            runTo(-50 - 8 * (blockNumber), allPower, slowPower);
+            resetArm();
             turnLeft(80, allPower, slowPower);
             turnTo(0, allPower, slowPower);
-            resetArm();
             runUntil(1.5, allPower);
             pickUpBlock();
             runTo(-3, allPower, slowPower);
             turnRight(80, allPower, slowPower);
             turnTo(-90, allPower, slowPower);
-            runTo(80 + 8 * (blockNumber), allPower, slowPower);
+            runTo(70 + 8 * (blockNumber), allPower, slowPower);
+            raiseAndRun(2, 50, allPower, slowPower);
             dropBlock();
-            runTo(-30, allPower, slowPower);
+            raiseAndRun(0, -30, allPower, slowPower);
         }
     }
 }
