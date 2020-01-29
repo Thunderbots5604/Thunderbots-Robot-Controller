@@ -39,7 +39,98 @@ public class AutoColorBlue extends GodFatherOfAllAutonomous {
         initialization();
 
         waitForStart();
+        
+        autoTime.reset();
 
-
+        //Get first block and point towards foundation side
+        startBlock(red);
+        //Move to foundation and drop block at stack level 1
+        strafeLeft(4, allPower, slowPower);
+        runTo(35 + 10 * (blockNumber), .9, slowPower * 1.2);
+        
+        raiseAndRun(1, 35, allPower, slowPower);
+        turnTo(90, allPower, slowPower);
+        runUntil(150, allPower);
+        runTo(5, allPower * .9, allPower * .9);
+        dropBlock();
+        //Move back under bridge to get other blocks
+        runTo(-4, allPower, slowPower);
+        turnTo(90, allPower * .8, slowPower);
+        raiseAndRun(0, -45, allPower, slowPower);
+        runTo(-8 * (blockNumber), allPower, slowPower);
+        turnTo(90, allPower, slowPower);
+        if (blockNumber == 0) {
+            runTo(-88, .9, slowPower);
+            turnTo(0, allPower, slowPower);
+            mmAway = getDistance();
+            if (mmAway > 800) {
+                runTo(12, allPower, slowPower);
+            }
+            runUntil(80, slowPower);
+            runTo(4, slowPower * .7, slowPower * .6);
+            pickUpBlock();
+            runTo(-4, allPower, slowPower);
+            turnLeft(80, allPower, slowPower);
+            turnTo(90, allPower, slowPower);
+            runTo(8 * (blockNumber), allPower, slowPower);
+            runTo(50, .9, slowPower);
+            raiseAndRun(2, 10, allPower, slowPower);
+            turnTo(90, allPower, slowPower);
+            runUntil(150, slowPower);
+            runTo(5, allPower * .9, allPower * .9);
+            dropBlock();
+            runTo(-2, allPower, slowPower);
+            raiseAndRun(0, -11, allPower, slowPower);
+            runTo(-11, allPower, slowPower);
+        }
+        if (blockNumber == 1) {
+            runTo(-98, .9, slowPower);
+            turnTo(0, allPower, slowPower);
+            mmAway = getDistance();
+            if (mmAway > 800) {
+                runTo(12, allPower, slowPower);
+            }
+            runUntil(80, slowPower);
+            runTo(4, slowPower * .7, slowPower * .6);
+            pickUpBlock();
+            runTo(-4, allPower, slowPower);
+            turnLeft(80, allPower, slowPower);
+            turnTo(90, allPower, slowPower);
+            runTo(8 * (blockNumber), allPower, slowPower);
+            runTo(50, .9, slowPower);
+            raiseAndRun(2, 10, allPower, slowPower);
+            turnTo(90, allPower, slowPower);
+            runUntil(150, slowPower);
+            runTo(5, allPower * .9, allPower * .9);
+            dropBlock();
+            runTo(-2, allPower, slowPower);
+            raiseAndRun(0, -11, allPower, slowPower);
+            runTo(-11, allPower, slowPower);
+        }
+        else {
+            runTo(-85, .9, slowPower);
+            turnRight(80, allPower, slowPower);
+            turnTo(-20, allPower, slowPower);
+            mmAway = getDistance();
+            if (mmAway > 800) {
+                runTo(12, allPower, slowPower);
+            }
+            runUntil(80, slowPower);
+            runTo(4, slowPower * .7, slowPower * .6);
+            pickUpBlock();
+            runTo(-4, allPower, slowPower);
+            turnLeft(30, allPower, slowPower);
+            turnTo(0, allPower, slowPower);
+            turnLeft(70, allPower, slowPower);
+            turnTo(90, allPower, slowPower);
+            runTo(50, allPower, slowPower);
+            runTo(8 * (blockNumber), allPower, slowPower);
+            raiseAndRun(2, 10, allPower, slowPower);
+            dropBlock();
+            turnTo(90, allPower, slowPower);
+            runTo(-2, allPower, slowPower);
+            raiseAndRun(0, -11, allPower, slowPower);
+            runTo(-11, allPower, slowPower);
+        }
     }
 }

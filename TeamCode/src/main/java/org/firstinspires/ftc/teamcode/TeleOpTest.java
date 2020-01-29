@@ -16,6 +16,8 @@ public class TeleOpTest extends LinearOpMode {
     //What's the time
     private ElapsedTime cooldown = new ElapsedTime();
     private ElapsedTime armCooldown = new ElapsedTime();
+    private ElapsedTime spinnerCooldown = new ElapsedTime();
+    private ElapsedTime parkCooldown = new ElapsedTime();
 
     //Motors and Servos
     private DcMotor leftMotorFront = null;
@@ -40,10 +42,18 @@ public class TeleOpTest extends LinearOpMode {
     private boolean halfSpeed = false;
     private double multiplier = -1;
 
+    //Powers
+    private double powerFRBL;
+    private double powerFLBR;
+
     //Toggles
     private boolean down;
     private boolean pickUpSequence;
     private boolean extended = false;
+    private boolean lowerVertical = false;
+    private double verticalPower = .8;
+    private boolean allowVerticalDown;
+    private boolean parked = false;
 
     @Override
     public void runOpMode() {
@@ -66,7 +76,8 @@ public class TeleOpTest extends LinearOpMode {
         rightMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
         spinnyBoy1.setDirection(Servo.Direction.REVERSE);
-
+        vertical2.setDirection(DcMotorSimple.Direction.REVERSE);
+        
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
@@ -74,12 +85,20 @@ public class TeleOpTest extends LinearOpMode {
         vertical2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         vertical1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         vertical2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
+        vertical1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        vertical2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        
         if (armServo.getPosition() < .6) {
             down = true;
         }
         else {
             down = false;
+        }
+        if (spinnyBoy1.getPosition() < .4) {
+            extended = true;
+        }
+        else {
+            extended = false;
         }
 
         waitForStart();
@@ -91,18 +110,18 @@ public class TeleOpTest extends LinearOpMode {
             telemetry.addData("Left Back: ", leftMotorBack.getCurrentPosition());
             telemetry.addData("Right Front: ", rightMotorFront.getCurrentPosition());
             telemetry.addData("Right Back: ", rightMotorBack.getCurrentPosition());
-            telemetry.addData("Vertical1: ", vertical1.getCurrentPosition());
-            telemetry.addData("Vertical2: ", vertical2.getCurrentPosition());
+            telemetry.addData("Vertical1 ", vertical1.getCurrentPosition());
+            telemetry.addData("Vertical2 ", vertical2.getCurrentPosition());
             telemetry.update();
 
             armPosition = armServo.getPosition();
 
-            if((/*gamepad1.y || */gamepad2.y) && cooldown.seconds() > .5) {
+            if((gamepad1.y || gamepad2.y) && cooldown.seconds() > .5) {
                 reversed = !reversed;
                 multiplier *= -1;
                 cooldown.reset();
             }
-            if((/*gamepad1.x || */gamepad2.x) && cooldown.seconds() > .5) {
+            if((gamepad1.x || gamepad2.x) && cooldown.seconds() > .5) {
                 halfSpeed = !halfSpeed;
                 if (halfSpeed) {
                     multiplier *= .25;
@@ -113,24 +132,18 @@ public class TeleOpTest extends LinearOpMode {
                 cooldown.reset();
             }
 
-            if (Math.abs(gamepad1.left_stick_y) > .1) {
-                leftMotorFront.setPower(gamepad1.left_stick_y * multiplier);
-                leftMotorBack.setPower(gamepad1.left_stick_y * multiplier);
-                rightMotorFront.setPower(gamepad1.left_stick_y * multiplier);
-                rightMotorBack.setPower(gamepad1.left_stick_y * multiplier);
+            //Movement, in one if statement hopefully
+            if (gamepad1.left_stick_y != 0 || gamepad1.left_stick_x != 0) {
+                //FR BL pair
+                powerFRBL = (gamepad1.left_stick_x + gamepad1.left_stick_y) / Math.sqrt(2);
+                leftMotorBack.setPower(multiplier * powerFRBL);
+                rightMotorFront.setPower(multiplier * powerFRBL);
+                //FL BR pair
+                powerFLBR = (gamepad1.left_stick_y - gamepad1.left_stick_x) / Math.sqrt(2);
+                leftMotorFront.setPower(multiplier * powerFLBR);
+                rightMotorBack.setPower(multiplier * powerFLBR);
             }
-            else if (gamepad1.left_stick_x > .1) {
-                leftMotorFront.setPower(gamepad1.left_stick_x * Math.abs(multiplier));
-                leftMotorBack.setPower(-gamepad1.left_stick_x * Math.abs(multiplier));
-                rightMotorFront.setPower(-gamepad1.left_stick_x * Math.abs(multiplier));
-                rightMotorBack.setPower(gamepad1.left_stick_x * Math.abs(multiplier));
-            }
-            else if (gamepad1.left_stick_x < -.1) {
-                leftMotorFront.setPower(gamepad1.left_stick_x * Math.abs(multiplier));
-                leftMotorBack.setPower(-gamepad1.left_stick_x * Math.abs(multiplier));
-                rightMotorFront.setPower(-gamepad1.left_stick_x * Math.abs(multiplier));
-                rightMotorBack.setPower(gamepad1.left_stick_x * Math.abs(multiplier));
-            }
+
             //Point Turn
             //If right stick is moving on the x axis
             else if ((gamepad1.left_stick_y == 0 && gamepad1.right_stick_x != 0) || (gamepad2.left_stick_y == 0 && gamepad2.right_stick_x != 0)) {
@@ -147,8 +160,88 @@ public class TeleOpTest extends LinearOpMode {
                 rightMotorFront.setPower(0);
                 rightMotorBack.setPower(0);
             }
-            if (gamepad1.right_bumper) {
-                armServo.setPosition(1);
+            //Spinner down
+            //#1 = left side
+            if ((gamepad1.left_bumper || gamepad2.left_bumper) && spinnerCooldown.milliseconds() > 500) {
+                if (extended) {
+                    extended = false;
+                    spinnyBoy1.setPosition(.7);
+                    spinnyBoy2.setPosition(.7);
+                }
+                else {
+                    extended = true;
+                    spinnyBoy1.setPosition(.2);
+                    spinnyBoy2.setPosition(.2);
+                }
+                spinnerCooldown.reset();
+            }
+            if (gamepad1.dpad_up || gamepad2.dpad_up) {
+                vertical1.setPower(verticalPower);
+                vertical2.setPower(verticalPower);
+            }
+            else if (((gamepad1.dpad_down || gamepad2.dpad_down) && (vertical1.getCurrentPosition() > 30 || allowVerticalDown)) || lowerVertical) {
+                vertical1.setPower(-verticalPower * .8);
+                vertical2.setPower(-verticalPower * .8);
+            }
+            else if (pickUpSequence && vertical1.getCurrentPosition() < 30){
+                if (armServo.getPosition() < .25 && armCooldown.milliseconds() > 1000) {
+                    vertical1.setPower(verticalPower);
+                    vertical2.setPower(verticalPower);
+                }
+            }
+            else {
+                vertical1.setPower(0);
+                vertical2.setPower(0);
+                pickUpSequence = false;
+            }
+            if (lowerVertical && vertical1.getCurrentPosition() < 15 && vertical2.getCurrentPosition() < 15) {
+                vertical1.setPower(0);
+                vertical2.setPower(0);
+                armServo.setPosition(.2);
+                armCooldown.reset();
+                down = true;
+                pickUpSequence =  true;
+                lowerVertical = false;
+            }
+
+            //extend-y arm for parking
+            if (((gamepad1.right_trigger > .8 && gamepad1.left_trigger > .8) || (gamepad2.right_trigger > .8 && gamepad2.left_trigger > .8)) && parkCooldown.milliseconds() > 1000){
+                if (parked) {
+                    parkServo.setPosition(0);
+                    parked = false;
+                }
+                else {
+                    parkServo.setPosition(1);
+                    parked = true;
+                }
+                parkCooldown.reset();
+            }
+            if ((gamepad1.right_stick_button && gamepad1.left_stick_button) || (gamepad2.right_stick_button && gamepad2.left_stick_button)) {
+                parkServo.setPosition(.6);
+            }
+            
+            /*if (gamepad1.left_bumper || gamepad2.left_bumper) {
+                armServo.setPosition(.4);
+                down = true;
+            }*/
+
+            if ((gamepad1.right_bumper || gamepad2.right_bumper) && armCooldown.milliseconds() > 500 && !lowerVertical && !pickUpSequence) {
+                if (down) {
+                    armServo.setPosition(.5);
+                    down = false;
+                    armCooldown.reset();
+                }
+                else {
+                    if (vertical1.getCurrentPosition() > 10 && vertical2.getCurrentPosition() > 10){
+                        lowerVertical = true;
+                    }
+                    else {
+                        armServo.setPosition(.2);
+                        armCooldown.reset();
+                        down = true;
+                        pickUpSequence =  true;
+                    }
+                }
             }
             if (gamepad1.b || gamepad2.b) {
                 leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -159,6 +252,18 @@ public class TeleOpTest extends LinearOpMode {
                 leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            }
+            if (gamepad2.left_trigger > .4) {
+                vertical1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                vertical2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                vertical1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                vertical2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            }
+            else if (gamepad2.right_trigger > .4) {
+                allowVerticalDown = true;
+            }
+            else {
+                allowVerticalDown = false;
             }
         }
         //If opMode is turned off, instantly power off motors

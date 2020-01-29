@@ -42,29 +42,34 @@ public class EncodersTest extends GodFatherOfAllAutonomous {
         rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        leftMotorFront.setPower(allPower);
-        leftMotorBack.setPower(allPower);
-        rightMotorFront.setPower(-allPower);
-        rightMotorBack.setPower(-allPower);
-        while (angle > -40) {
+        leftMotorFront.setPower(-allPower);
+        leftMotorBack.setPower(-allPower);
+        rightMotorFront.setPower(allPower);
+        rightMotorBack.setPower(allPower);
+        while (angle < 36) {
             angle = getAngle();
         }
-        leftMotorFront.setPower(slowPower * .8);
-        leftMotorBack.setPower(slowPower * .8);
-        rightMotorFront.setPower(-slowPower * .8);
-        rightMotorBack.setPower(-slowPower * .8);
-        while (angle > -80) {
+        leftMotorFront.setPower(-slowPower * .8);
+        leftMotorBack.setPower(-slowPower * .8);
+        rightMotorFront.setPower(slowPower * .8);
+        rightMotorBack.setPower(slowPower * .8);
+        while (angle < 60) {
             angle = getAngle();
         }
         leftMotorFront.setPower(0);
         leftMotorBack.setPower(0);
         rightMotorFront.setPower(0);
         rightMotorBack.setPower(0);
-        telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
-        telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
-        telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
-        telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
+        
         telemetry.update();
-        while(opModeIsActive()) {}
+        while(opModeIsActive()) {
+            color = senseColor();
+            telemetry.addData("Color: ", color);
+            telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
+            telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
+            telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
+            telemetry.addData("Right Motor Back Position", rightMotorBack.getCurrentPosition());
+            telemetry.update();
+        }
     }
 }

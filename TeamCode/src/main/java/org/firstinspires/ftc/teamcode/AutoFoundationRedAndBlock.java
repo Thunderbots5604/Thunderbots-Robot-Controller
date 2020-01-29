@@ -32,11 +32,44 @@ public class AutoFoundationRedAndBlock extends GodFatherOfAllAutonomous {
 
     @Override
     public void runOpMode() {
-        foundation = true;
         initialization();
-
+        
         waitForStart();
+        
+        verticalUp();
+        resetArm();
+        spinnyBoyUp();
 
-        runtime.reset();
+        
+        strafeRight(8, allPower, slowPower);
+        runTo(16, allPower, slowPower);
+        runUntil(70, allPower * .7);
+        runTo(3, allPower * .6, slowPower * .9);
+        moveFoundation(red);
+        runTo(10, allPower, slowPower);
+        runTo(-10, allPower, slowPower);
+        strafeRight(7, allPower, slowPower);
+        verticalDown();
+        turnTo(-90, allPower, slowPower);
+        runTo(-110, allPower, slowPower * .8);
+        turnLeft(90, allPower, slowPower);
+        turnTo(20, allPower, slowPower);
+        mmAway = getDistance();
+        if (mmAway > 400) {
+            turnTo(0, allPower, slowPower);
+        }
+        runTo(8, allPower, slowPower);
+        runUntil(100, slowPower * .9);
+        runTo(3, allPower * .6, slowPower * .8);
+        pickUpBlock();
+        runTo(-3, allPower, slowPower);
+        if (mmAway > 400) {
+            strafeLeft(9, allPower, slowPower);
+        }
+        runTo(-26, allPower, slowPower);
+        turnTo(-90, allPower, slowPower);
+        runTo(90, allPower, slowPower);
+        dropBlock();
+        runTo(-30, allPower, slowPower);
     }
 }

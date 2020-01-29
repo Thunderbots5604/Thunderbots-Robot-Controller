@@ -40,14 +40,14 @@ public class EncoderValuesbyJack extends GodFatherOfAllAutonomous {
         waitForStart();
         //Runs for what it thinks is 20 inches using the non changed tick multiplier. This is also
         //where the 20 in the TICKS_MULTIPLIER comes from.
-        runTo(20, allPower, slowPower);
+        runTo(30, 1, slowPower);
         //make sure everything is stopped, just in case
         leftMotorFront.setPower(0);
         leftMotorBack.setPower(0);
         rightMotorFront.setPower(0);
         rightMotorBack.setPower(0);
 
-        telemetry.addData("Ran Supposedly 20 inches. Measure.", "Change encoder multiplier in GodFather for");
+        telemetry.addData("Ran Supposedly 30 inches. Measure.", "Change encoder multiplier in GodFather for");
         telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
         telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
         telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());

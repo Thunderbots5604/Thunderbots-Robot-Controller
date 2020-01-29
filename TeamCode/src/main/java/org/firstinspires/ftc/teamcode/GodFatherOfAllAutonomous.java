@@ -45,6 +45,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public ElapsedTime runtime = new ElapsedTime();
     public ElapsedTime adjustTime = new ElapsedTime();
     public ElapsedTime armCooldown = new ElapsedTime();
+    public ElapsedTime autoTime = new ElapsedTime();
 
     //Motors / Servos
     public DcMotor leftMotorFront = null;
@@ -63,7 +64,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public Servo parkServo = null;
 
     //All Power for autonomous running
-    public double allPower = .6;
+    public double allPower = .7;
     public double slowPower = .4;
 
     //Color Sensor
@@ -78,7 +79,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public double mmAway;
     public double mmTraveling;
     public double totalDistance;
-    public double blockDistance = 50;
+    public double blockDistance = 70;
     public boolean blockPickedUp = false;
 
     //Ticks
@@ -105,15 +106,15 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     public final double TICKS_PER_STRAFE_RLB = -38.473;
     public final double TICKS_PER_STRAFE_RRF = -48.33;
     public final double TICKS_PER_STRAFE_RRB = 40.291;
-    public final float TICKS_MULTIPLIER = 30F / 26F;
-    public double strafePower_LLF = Math.abs(50 / TICKS_PER_STRAFE_LLF);
-    public double strafePower_LLB = Math.abs(50 / TICKS_PER_STRAFE_LLB);
-    public double strafePower_LRF = Math.abs(48 / TICKS_PER_STRAFE_LRF);
-    public double strafePower_LRB = Math.abs(50 / TICKS_PER_STRAFE_LRB);
-    public double strafePower_RLF = Math.abs(48 / TICKS_PER_STRAFE_RLF);
-    public double strafePower_RLB = Math.abs(48 / TICKS_PER_STRAFE_RLB);
-    public double strafePower_RRF = Math.abs(48 / TICKS_PER_STRAFE_RRF);
-    public double strafePower_RRB = Math.abs(48 / TICKS_PER_STRAFE_RRB);
+    public final float TICKS_MULTIPLIER = 30F / 30F;
+    public double strafePower_LLF = TICKS_PER_STRAFE_LLF;
+    public double strafePower_LLB = TICKS_PER_STRAFE_LLB;
+    public double strafePower_LRF = TICKS_PER_STRAFE_LRF;
+    public double strafePower_LRB = TICKS_PER_STRAFE_LRB;
+    public double strafePower_RLF = TICKS_PER_STRAFE_RLF;
+    public double strafePower_RLB = TICKS_PER_STRAFE_RLB;
+    public double strafePower_RRF = TICKS_PER_STRAFE_RRF;
+    public double strafePower_RRB = TICKS_PER_STRAFE_RRB;
     public double tickPowers[];
     //Ticks for Vertical
     public double blockTick= 20;
@@ -158,14 +159,14 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
     int absTarget;
     int absLeftPosition;
     int absRightPosition;
-    private double verticalPower = .9;
+    public double verticalPower = .9;
 
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
     }
-    //Does all the stuff when init is pressed on phone
+//Does all the stuff when init is pressed on phone
     public void initialization() {
         leftMotorFront = hardwareMap.get(DcMotor.class, "left_motor_front");
         leftMotorBack = hardwareMap.get(DcMotor.class, "left_motor_back");
@@ -210,17 +211,10 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
 
         colorSensor.enableLed(false);
 
-        spinnyBoyUp();
-
         vertical1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         vertical2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         vertical1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         vertical2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        //there's nothing that talks about foundation anywhere else. fix later
-        /*if (foundation == false) {
-            dropBlock();
-        }*/
 
         double maxLeft = 0;
         double maxRight = 0;
@@ -246,11 +240,538 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         strafePower_RRF = Math.abs(TICKS_PER_STRAFE_RRF / maxRight);
         strafePower_RRB = Math.abs(TICKS_PER_STRAFE_RRB / maxRight);
     }
+    
+    //Method to find angle, don't use. Just use getAngle
+    public double formatAngle(AngleUnit angleUnit, double angle) {
+        return AngleUnit.DEGREES.fromUnit(angleUnit, angle);
+    }
+    //Returns if it's yellow or not. if it is, it returns "Yellow"
+    public String senseColor() {
+        color = "Yellow";
+        green = 0;
+        while (green == 0 && runtime.milliseconds() < 1000) {
+            green = colorSensor.green();
+        }
+        //Wait for a better Read
+        sleep(500);
+        red = colorSensor.red();
+        blue = colorSensor.blue();
+        green = colorSensor.green();
+        if (green < 25) {
+            if (Math.abs(red - green) > 2) {
+                color = "Black";
+            }
+        }
+        else {
+            if ((green >= red) && (green > blue)) {
+                color = "Black";
+            }
+        }
+        //Go Back to original position
+        return color;
+    }
+    //Uses distance sensor, but we don't have one yet, on the robot
+    public double getDistance() {
+        mmAway = 0;
+        runtime.reset();
+        while (mmAway == 0 && runtime.milliseconds() < 1500) {
+            mmAway = distance.getDistance(DistanceUnit.MM);
+        }
+        return mmAway;
+    }
+    //Method that returns current angle relative to start
+    //(left goes 0-180, right goes -180 to 0)
+    public double getAngle() {
+        heading = 0;
+        runtime.reset();
+        while (runtime.milliseconds() < 1500 && heading == 0) {
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            heading = formatAngle(angles.angleUnit, angles.firstAngle);
+        }
+        return heading;
+    }
+    public void runUntil(double mm, double power) {
+        runtime.reset();
+        mmAway = getDistance();
+        power = Math.abs(power);
+        if (mmAway < mm || mmAway > 600) {
+            return;
+        }
+        mmTraveling = mmAway - mm;
+        totalDistance = mmTraveling;
+        while (mmTraveling > (mm + 100) && runtime.milliseconds() < 3000 && totalDistance * 1.4 >= mmTraveling) {
+            runTo(3, power, power);
+            mmAway = getDistance();
+            mmTraveling = mmAway - mm;
+        }
+        sleep(200);
+        mmAway = getDistance();
+        mmTraveling = mmAway - mm;
+        if (mmAway < mm || totalDistance < mmTraveling) {
+            return;
+        }
+        runTo((mmTraveling / 22), power * .8, power * .5);
+        return;
+    }
+    public void resetArm() {
+        armServo.setPosition(1);
+    }
+    public void pickUpBlock() {
+        if (firstPick) {
+            armServo.setPosition(.5);
+            sleep(500);
+            firstPick = false;
+            armServo.setPosition(.2);
+            sleep(300);
+        }
+        else {
+            armServo.setPosition(.2);
+            sleep(300);
+        }
+        armServo.setPosition(.2);
+        sleep(600);
+        blockPickedUp = blockIsGrabbed();
+        if (!blockPickedUp && blockFails < 3 && !failAttempted) {
+            armServo.setPosition(1);
+            while (armServo.getPosition() < .9){}
+            runUntil(100, slowPower);
+            runTo(4, slowPower * .7, slowPower * .5);
+            blockFails += 1;
+            failAttempted = true;
+            pickUpBlock();
+        }
+        if (failAttempted) {
+            runTo(-4.5, allPower, slowPower);
+        }
+        failAttempted = false;
+    }
+    public void dropBlock() {
+        armServo.setPosition(.5);
+    }
+    public void spinnyBoyDown() {
+        spinnyBoy1.setPosition(.2);
+        spinnyBoy2.setPosition(.2);
+        sleep(500);
+    }
+    public void spinnyBoyUp() {
+        spinnyBoy1.setPosition(.7);
+        spinnyBoy2.setPosition(.7);
+        sleep(500);
+    }
+    //Returns minimum difference between 2 angles. Mainly current and target Angle
+    public double getAngleDifference(double angle1, double angle2) {
+        double tempAngle = angle1;
+        double angleCheck;
+        //Set angle1 as smaller
+        if (angle1 > angle2) {
+            angle1 = angle2;
+            angle2 = tempAngle;
+        }
+        angleCheck = angle2 - angle1;
+        if (angleCheck > 180) {
+            angleCheck = 360 - angleCheck;
+        }
+        angleCheck = Math.abs(angleCheck);
+        return angleCheck;
+    }
+    //Returns side that would be closer to turn towards
+    public String closerSide (double currentAngle, double targetAngle) {
+        side = 1;
+        if (currentAngle > targetAngle) {
+            side = 2;
+        }
+        if (side == 1) {
+            if (targetAngle - currentAngle < 180) {
+                return "Left";
+            }
+            else {
+                return "Right";
+            }
+        }
+        else {
+            if (currentAngle - targetAngle < 180) {
+                return "Right";
+            }
+            else {
+                return "Left";
+            }
+        }
+    }
+
+    public void startBlock(boolean red) {
+        runTo(19, allPower * 1.1, slowPower);
+        runUntil(100, slowPower * .9);
+        turnTo(0, allPower, slowPower);
+        if (red) {
+            while (blockNumber < 2){
+                color = senseColor();
+                if (color == "Yellow") {
+                    blockNumber += 1;
+                    strafeLeft(8.5, allPower, slowPower);
+                    turnTo(0, allPower, slowPower);
+                }
+                else {
+                    break;
+                }
+            }
+            runTo(2.5, slowPower * .7, slowPower * .7);
+            pickUpBlock();
+            runTo(-4, allPower, slowPower);
+            turnRight(80, allPower * 1.1, slowPower);
+            turnTo(-90, allPower, slowPower);
+        }
+        else {
+            while (blockNumber < 2){
+                color = senseColor();
+                if (color == "Yellow") {
+                    blockNumber += 1;
+                    strafeRight(8.5, allPower, slowPower);
+                }
+                else {
+                    break;
+                }
+            }
+            runTo(3, slowPower * .7, slowPower * .7);
+            pickUpBlock();
+            runTo(-4, allPower, slowPower);
+            turnLeft(80, allPower, slowPower);
+            turnTo(90, allPower * .8, slowPower);
+            turnLeft(5, allPower, slowPower);
+        }
+    }
+    public void moveFoundation(boolean red) {
+        spinnyBoyDown();
+        //Bring block to corner
+        
+        if (red) {
+            runTo(-35, allPower * 1.1, slowPower * 1.4);
+            turnRight(80, 1, .9);
+            turnTo(-90, allPower * 1.1, slowPower * 1.4);
+        }
+        else {
+            runTo(-35, allPower * 1.1, slowPower * 1.4);
+            turnLeft(80, 1, .9);
+            turnTo(90, allPower * 1.1, slowPower * 1.4);
+        }
+        spinnyBoyUp();
+    }
+    //Superior accurate turn. Faster but haven't been tested
+    public void turnTo(double targetAngle, double allPower, double slowerPower) {
+        runtime.reset();
+        angle = getAngle();
+        angleDifference = getAngleDifference(targetAngle, angle);
+        turnTowards = closerSide(angle, targetAngle);
+        double angleDifferenceInitial = angleDifference;
+        double angleInitial = getAngle();
+        double changeInTurn = getAngleDifference(angle, angleInitial);
+        if (angleDifference < 5 || angleDifference > 60) {
+            angleDifference = Math.abs(angleDifference);
+            if (turnTowards == "Left") {
+                turnLeft(angleDifference, allPower, slowerPower);
+                angle = getAngle();
+                angleDifference = getAngleDifference(targetAngle, angle);
+            }
+            else {
+                turnRight(angleDifference, allPower, slowerPower);
+                angle = getAngle();
+                angleDifference = getAngleDifference(targetAngle, angle);
+            }
+            if (angleDifference < 5) {
+                return;
+            }
+        }
+        if (turnTowards == "Left") {
+            while (angleDifference > 15 && runtime.milliseconds() < 3000) {
+                turnLeft(20, allPower, slowerPower);
+                angle = getAngle();
+                angleDifference = getAngleDifference(targetAngle, angle);
+                turnTowards = closerSide(angle, targetAngle);
+                changeInTurn = getAngleDifference(angle, angleInitial);
+                if (changeInTurn > angleDifferenceInitial || turnTowards == "Right") {
+                    break;
+                }
+                
+                telemetry.addData("Turning", " Left, 20 degrees");
+                telemetry.update();
+            }
+        }
+        else {
+            while (angleDifference > 15 && runtime.milliseconds() < 3000) {
+                turnRight(20, allPower, slowerPower);
+                angle = getAngle();
+                angleDifference = getAngleDifference(targetAngle, angle);
+                turnTowards = closerSide(angle, targetAngle);
+                changeInTurn = getAngleDifference(angle, angleInitial);
+                if (changeInTurn > angleDifferenceInitial || turnTowards == "Left") {
+                    break;
+                }
+                
+                telemetry.addData("Turning", " Right, 20 degrees");
+                telemetry.update();
+            }
+        }
+        sleep(200);
+        angle = getAngle();
+        angleDifference = Math.abs(getAngleDifference(angle, targetAngle));
+        turnTowards = closerSide(angle, targetAngle);
+        if (angleDifference > 130) {
+            return;
+        }
+        if (turnTowards == "Left") {
+            turnLeft(angleDifference, allPower, slowerPower);
+        }
+        else {
+            turnRight(angleDifference, allPower, slowerPower);
+        }
+        return;
+    }
+    //parkServo methods. Adjust the values for the positions later
+    public void parkArmOut(){
+        parkServo.setPosition(.5);
+    }
+    public void parkArmIn(){
+        parkServo.setPosition(.4);
+    }
+    public boolean blockIsGrabbed() {
+        mmAway = getDistance();
+        if (mmAway < blockDistance) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    public void verticalUp() {
+        while (vertical1.getCurrentPosition() < 30 && vertical2.getCurrentPosition() < 30){
+            vertical1.setPower(verticalPower);
+            vertical2.setPower(verticalPower);
+        }
+        vertical1.setPower(0);
+        vertical2.setPower(0);
+    }
+    public void verticalDown() {
+        while (vertical1.getCurrentPosition() > 0 && vertical2.getCurrentPosition() > 0){
+            vertical1.setPower(-verticalPower);
+            vertical2.setPower(-verticalPower);
+        }
+        
+        vertical1.setPower(0);
+        vertical2.setPower(0);
+    }
+    public void raiseAndRun(int height, double inches, double power, double slowerPower) {
+        while (opModeIsActive()) {
+            runtime.reset();
+            leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+            driveTargetPosition = (int)(inches * TICKS_PER_INCH * TICKS_MULTIPLIER);
+            absTarget = Math.abs(driveTargetPosition);
+            absLeftPosition = Math.abs(leftMotorBack.getCurrentPosition());
+            absRightPosition = Math.abs(rightMotorBack.getCurrentPosition());
+            verticalMultiplier = 1;
+            runMultiplier = 1;
+
+            if (height == 0) {
+                verticalTargetPosition = -10;
+            }
+            else if (height == 1) {
+                verticalTargetPosition = 100;
+            }
+            else if (height == 2) {
+                verticalTargetPosition = 180;
+            }
+            else {
+                verticalTargetPosition = 210;
+            }
+            if (inches < 0) {
+                runMultiplier *= -1;
+            }
+            if (verticalTargetPosition < vertical1.getCurrentPosition()) {
+                verticalMultiplier = -.8;
+                telemetry.addData("Vertical Down: ", "Yes");
+                telemetry.update();
+            }
+            if (verticalMultiplier > 0) {
+                while (runtime.milliseconds() < 4000 && absLeftPosition < absTarget * .6 && absRightPosition < absTarget * .6 && verticalTargetPosition > vertical1.getCurrentPosition()) {
+                    telemetry.addData("Left Back: ", absLeftPosition);
+                    telemetry.addData("Right Back: ", absRightPosition);
+                    telemetry.addData("Vertical1 ", vertical1.getCurrentPosition());
+                    telemetry.addData("Vertical2 ", vertical2.getCurrentPosition());
+                    telemetry.addData("Target Position", absTarget);
+                    telemetry.update();
+
+                    absTarget =  (Math.abs(driveTargetPosition) * 5) / 2;
+                    absLeftPosition = Math.abs(leftMotorBack.getCurrentPosition());
+                    absRightPosition = Math.abs(rightMotorBack.getCurrentPosition());
+
+                    vertical1.setPower(verticalPower * verticalMultiplier);
+                    vertical2.setPower(verticalPower * verticalMultiplier);
+                    leftMotorBack.setPower(power * runMultiplier);
+                    leftMotorFront.setPower(power * runMultiplier);
+                    rightMotorBack.setPower(power * runMultiplier);
+                    rightMotorFront.setPower(power * runMultiplier);
+                }
+                if (verticalTargetPosition <= vertical1.getCurrentPosition()) {
+                    vertical1.setPower(0);
+                    vertical2.setPower(0);
+                    remainingTicks = Math.abs(Math.abs(driveTargetPosition) - Math.abs(((leftMotorBack.getCurrentPosition() + leftMotorFront.getCurrentPosition() + rightMotorBack.getCurrentPosition() + rightMotorFront.getCurrentPosition()) / 4)));
+                    remainingInches = (remainingTicks)/(TICKS_PER_INCH * TICKS_MULTIPLIER);
+                    runTo(remainingInches * runMultiplier, power, slowerPower);
+                    return;
+                }
+                if (runtime.milliseconds() > 4000) {
+                    return;
+                }
+                else if (absLeftPosition < absTarget * .6 && absRightPosition < absTarget * .6){
+                    runtime.reset();
+                    while (runtime.milliseconds() < 4000 && absLeftPosition < absTarget && absRightPosition < absTarget && verticalTargetPosition > vertical1.getCurrentPosition()) {
+                        telemetry.addData("Left Back: ", absLeftPosition);
+                        telemetry.addData("Right Back: ", absRightPosition);
+                        telemetry.addData("Vertical1 ", vertical1.getCurrentPosition());
+                        telemetry.addData("Vertical2 ", vertical2.getCurrentPosition());
+                        telemetry.addData("Target Position", absTarget);
+                        telemetry.update();
+
+                        absTarget = Math.abs(driveTargetPosition);
+                        absLeftPosition = Math.abs(leftMotorBack.getCurrentPosition());
+                        absRightPosition = Math.abs(rightMotorBack.getCurrentPosition());
+
+                        leftMotorFront.setPower(slowerPower * runMultiplier);
+                        leftMotorBack.setPower(slowerPower * runMultiplier);
+                        rightMotorBack.setPower(slowerPower * runMultiplier);
+                        rightMotorFront.setPower(slowerPower * runMultiplier);
+                    }
+                    if (verticalTargetPosition <= vertical1.getCurrentPosition()) {
+                        vertical1.setPower(0);
+                        vertical2.setPower(0);
+                        remainingTicks = Math.abs(Math.abs(driveTargetPosition) - Math.abs(((leftMotorBack.getCurrentPosition() + leftMotorFront.getCurrentPosition() + rightMotorBack.getCurrentPosition() + rightMotorFront.getCurrentPosition()) / 4)));
+                        remainingInches = (remainingTicks)/(TICKS_PER_INCH * TICKS_MULTIPLIER);
+                        runTo(remainingInches * runMultiplier, slowerPower, slowerPower * .9);
+                        return;
+                    }
+                    else {
+                        leftMotorBack.setPower(0);
+                        leftMotorFront.setPower(0);
+                        rightMotorBack.setPower(0);
+                        rightMotorFront.setPower(0);
+                        while (verticalTargetPosition > vertical1.getCurrentPosition()) {
+                            telemetry.addData("Vertical1 ", vertical1.getCurrentPosition());
+                            telemetry.addData("Vertical2 ", vertical2.getCurrentPosition());
+                            telemetry.update();
+                            vertical1.setPower(verticalPower * verticalMultiplier * .8);
+                            vertical2.setPower(verticalPower * verticalMultiplier * .8);
+                        }
+                        vertical1.setPower(0);
+                        vertical2.setPower(0);
+                    }
+                }
+            }
+            else {
+                while (runtime.milliseconds() < 4000 && autoTime.milliseconds() < 29500 && absLeftPosition < absTarget * .6 && absRightPosition < absTarget * .6 && verticalTargetPosition < vertical1.getCurrentPosition()) {
+                    telemetry.addData("Left Back: ", absLeftPosition);
+                    telemetry.addData("Right Back: ", absRightPosition);
+                    telemetry.addData("Vertical1 ", vertical1.getCurrentPosition());
+                    telemetry.addData("Vertical2 ", vertical2.getCurrentPosition());
+                    telemetry.addData("Target Position", absTarget);
+                    telemetry.update();
+
+                    absTarget =  (Math.abs(driveTargetPosition) * 5) / 2;
+                    absLeftPosition = Math.abs(leftMotorBack.getCurrentPosition());
+                    absRightPosition = Math.abs(rightMotorBack.getCurrentPosition());
+
+                    vertical1.setPower(verticalPower * verticalMultiplier);
+                    vertical2.setPower(verticalPower * verticalMultiplier);
+                    leftMotorBack.setPower(power * runMultiplier);
+                    leftMotorFront.setPower(power * runMultiplier);
+                    rightMotorBack.setPower(power * runMultiplier);
+                    rightMotorFront.setPower(power * runMultiplier);
+                }
+                if (verticalTargetPosition <= vertical1.getCurrentPosition()) {
+                    vertical1.setPower(0);
+                    vertical2.setPower(0);
+                    remainingTicks = Math.abs(Math.abs(driveTargetPosition) - Math.abs(((leftMotorBack.getCurrentPosition() + leftMotorFront.getCurrentPosition() + rightMotorBack.getCurrentPosition() + rightMotorFront.getCurrentPosition()) / 4)));
+                    remainingInches = (remainingTicks)/(TICKS_PER_INCH * TICKS_MULTIPLIER);
+                    runTo(remainingInches * runMultiplier, power, slowerPower);
+                    return;
+                }
+                if (runtime.milliseconds() > 4000) {
+                    return;
+                }
+                else if (absLeftPosition < absTarget * .6 && absRightPosition < absTarget * .6){
+                    runtime.reset();
+                    while (runtime.milliseconds() < 4000 && autoTime.milliseconds() < 29500 && absLeftPosition < absTarget && absRightPosition < absTarget && verticalTargetPosition < vertical1.getCurrentPosition()) {
+                        telemetry.addData("Left Back: ", absLeftPosition);
+                        telemetry.addData("Right Back: ", absRightPosition);
+                        telemetry.addData("Vertical1 ", vertical1.getCurrentPosition());
+                        telemetry.addData("Vertical2 ", vertical2.getCurrentPosition());
+                        telemetry.addData("Target Position", absTarget);
+                        telemetry.update();
+
+                        absTarget = Math.abs(driveTargetPosition);
+                        absLeftPosition = Math.abs(leftMotorBack.getCurrentPosition());
+                        absRightPosition = Math.abs(rightMotorBack.getCurrentPosition());
+
+                        leftMotorFront.setPower(slowerPower * runMultiplier);
+                        leftMotorBack.setPower(slowerPower * runMultiplier);
+                        rightMotorBack.setPower(slowerPower * runMultiplier);
+                        rightMotorFront.setPower(slowerPower * runMultiplier);
+                    }
+                    if (verticalTargetPosition >= vertical1.getCurrentPosition()) {
+                        vertical1.setPower(0);
+                        vertical2.setPower(0);
+                        remainingTicks = Math.abs(Math.abs(driveTargetPosition) - Math.abs(((leftMotorBack.getCurrentPosition() + leftMotorFront.getCurrentPosition() + rightMotorBack.getCurrentPosition() + rightMotorFront.getCurrentPosition()) / 4)));
+                        runTo(remainingInches * runMultiplier, slowerPower, slowerPower * .9);
+                        return;
+                    }
+                    else {
+                        leftMotorBack.setPower(0);
+                        leftMotorFront.setPower(0);
+                        rightMotorBack.setPower(0);
+                        rightMotorFront.setPower(0);
+                        while (verticalTargetPosition < vertical1.getCurrentPosition()) {
+                            telemetry.addData("Vertical1 ", vertical1.getCurrentPosition());
+                            telemetry.addData("Vertical2 ", vertical2.getCurrentPosition());
+                            telemetry.update();
+                            vertical1.setPower(verticalPower * verticalMultiplier * .8);
+                            vertical2.setPower(verticalPower * verticalMultiplier * .8);
+                        }
+                        vertical1.setPower(0);
+                        vertical2.setPower(0);
+                    }
+                }
+            }
+            leftMotorBack.setPower(0);
+            leftMotorFront.setPower(0);
+            rightMotorBack.setPower(0);
+            rightMotorFront.setPower(0);
+            vertical1.setPower(0);
+            vertical2.setPower(0);
+        }
+        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        vertical1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        vertical2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotorBack.setPower(0);
+        leftMotorFront.setPower(0);
+        rightMotorBack.setPower(0);
+        rightMotorFront.setPower(0);
+        vertical1.setPower(0);
+        vertical2.setPower(0);
+    }
     //Use encoders to move robot a certain number of inches. For power, use allPower
     public void runTo(double inches, double power, double slowerPower) {
         while (opModeIsActive()) {
             initialAngle = getAngle();
             runtime.reset();
+            adjustTime.reset();
             leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -262,7 +783,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             int targetPosition = (int)(inches * TICKS_PER_INCH * TICKS_MULTIPLIER);
 
             if (inches > 0) {
-                while ((leftMotorBack.getCurrentPosition() < targetPosition * .6) && (rightMotorBack.getCurrentPosition() > -targetPosition * .6) && opModeIsActive() && runtime.milliseconds() < 4000) {
+                while ((leftMotorBack.getCurrentPosition() < targetPosition * .6) && (rightMotorBack.getCurrentPosition() > -targetPosition * .6) && opModeIsActive() && runtime.milliseconds() < 4000 && autoTime.milliseconds() < 29500) {
                     telemetry.addData("Target Position", targetPosition);
                     telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
                     telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
@@ -283,7 +804,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                     currentAngle = getAngle();
                     angleDifference = getAngleDifference(currentAngle, initialAngle);
                     turnTowards = closerSide(currentAngle, initialAngle);
-                    if (angleDifference > 5 && adjustTime.milliseconds() > 500) {
+                    if (angleDifference > 4 && adjustTime.milliseconds() > 1000) {
                         targetPosition = targetPosition - (leftMotorBack.getCurrentPosition() / 2);
                         targetPosition = targetPosition - (rightMotorBack.getCurrentPosition() / 2);
 
@@ -309,7 +830,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                 leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                while ((leftMotorBack.getCurrentPosition() < targetPosition) && (rightMotorBack.getCurrentPosition() > -targetPosition) && opModeIsActive() && runtime.milliseconds() < 4000) {
+                while ((leftMotorBack.getCurrentPosition() < targetPosition) && (rightMotorBack.getCurrentPosition() > -targetPosition) && opModeIsActive() && autoTime.milliseconds() < 29500 && runtime.milliseconds() < 4000) {
                     telemetry.addData("Target Position", targetPosition);
                     telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
                     telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
@@ -330,7 +851,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                     currentAngle = getAngle();
                     angleDifference = getAngleDifference(currentAngle, initialAngle);
                     turnTowards = closerSide(currentAngle, initialAngle);
-                    if (angleDifference > 5 && adjustTime.milliseconds() > 500) {
+                    if (angleDifference > 4 && adjustTime.milliseconds() > 300) {
                         targetPosition = targetPosition - (leftMotorBack.getCurrentPosition() / 2);
                         targetPosition = targetPosition - (rightMotorBack.getCurrentPosition() / 2);
 
@@ -354,7 +875,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                 }
             }
             else {
-                while ((leftMotorBack.getCurrentPosition() > targetPosition * .6) && (rightMotorBack.getCurrentPosition() < -targetPosition * .6) && opModeIsActive() && runtime.milliseconds() < 4000) {
+                while ((leftMotorBack.getCurrentPosition() > targetPosition * .6) && (rightMotorBack.getCurrentPosition() < -targetPosition * .6) && opModeIsActive() && autoTime.milliseconds() < 29500 && runtime.milliseconds() < 4000) {
                     telemetry.addData("Target Position", targetPosition);
                     telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
                     telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
@@ -400,7 +921,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                 leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                while ((leftMotorBack.getCurrentPosition() > targetPosition) && (rightMotorBack.getCurrentPosition() < -targetPosition) && opModeIsActive() && runtime.milliseconds() < 4000) {
+                while ((leftMotorBack.getCurrentPosition() > targetPosition) && (rightMotorBack.getCurrentPosition() < -targetPosition) && opModeIsActive() && autoTime.milliseconds() < 29500 && runtime.milliseconds() < 4000) {
                     telemetry.addData("Target Position", targetPosition);
                     telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
                     telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
@@ -484,7 +1005,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             int targetTurn_LRF = (int)(degrees * TICKS_PER_DEGREE_LRF * TICKS_MULTIPLIER);
             int targetTurn_LRB = (int)(degrees * TICKS_PER_DEGREE_LRB * TICKS_MULTIPLIER);
 
-            while ((leftMotorFront.getCurrentPosition() > targetTurn_LLF * .6) && (rightMotorBack.getCurrentPosition() < targetTurn_LRB * .6) && (leftMotorBack.getCurrentPosition() > targetTurn_LLB * .6) && (rightMotorFront.getCurrentPosition() < targetTurn_LRF * .6) && opModeIsActive() && runtime.milliseconds() < 4000) {
+            while ((leftMotorFront.getCurrentPosition() > targetTurn_LLF * .6) && (rightMotorBack.getCurrentPosition() < targetTurn_LRB * .6) && (leftMotorBack.getCurrentPosition() > targetTurn_LLB * .6) && (rightMotorFront.getCurrentPosition() < targetTurn_LRF * .6) && opModeIsActive() && autoTime.milliseconds() < 29500 && runtime.milliseconds() < 4000) {
                 telemetry.addData("Target Position", targetTurn_LLF);
                 telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
                 telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
@@ -497,7 +1018,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                 rightMotorFront.setPower(power);
                 rightMotorBack.setPower(power);
             }
-            while ((leftMotorFront.getCurrentPosition() > targetTurn_LLF) && (rightMotorBack.getCurrentPosition() < targetTurn_LRB) && (leftMotorBack.getCurrentPosition() > targetTurn_LLB) && (rightMotorFront.getCurrentPosition() < targetTurn_LRF) && opModeIsActive() && runtime.milliseconds() < 4000) {
+            while ((leftMotorFront.getCurrentPosition() > targetTurn_LLF) && (rightMotorBack.getCurrentPosition() < targetTurn_LRB) && (leftMotorBack.getCurrentPosition() > targetTurn_LLB) && (rightMotorFront.getCurrentPosition() < targetTurn_LRF) && opModeIsActive() && autoTime.milliseconds() < 29500 && runtime.milliseconds() < 4000) {
                 telemetry.addData("Target Position", targetTurn_LLF);
                 telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
                 telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
@@ -543,8 +1064,9 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             int targetTurn_RRF = (int)(degrees * TICKS_PER_DEGREE_RRF * TICKS_MULTIPLIER);
             int targetTurn_RRB = (int)(degrees * TICKS_PER_DEGREE_RRB * TICKS_MULTIPLIER);
 
-            while ((leftMotorFront.getCurrentPosition() < targetTurn_RLF * .6) && (rightMotorBack.getCurrentPosition() > targetTurn_RRB * .6) && (leftMotorBack.getCurrentPosition() < targetTurn_RLB * .6) && (rightMotorFront.getCurrentPosition() > targetTurn_RRF * .6) && opModeIsActive() && runtime.milliseconds() < 4000) {
-                telemetry.addData("Target Position", targetTurn_RLF);
+            while ((leftMotorFront.getCurrentPosition() < targetTurn_RLF * .6) && (rightMotorBack.getCurrentPosition() > targetTurn_RRB * .6) && (leftMotorBack.getCurrentPosition() < targetTurn_RLB * .6) && (rightMotorFront.getCurrentPosition() > targetTurn_RRF * .6) && opModeIsActive() && autoTime.milliseconds() < 29500 && runtime.milliseconds() < 4000) {
+                telemetry.addData("Target Position Left", targetTurn_RLF);
+                telemetry.addData("Target Position Right", targetTurn_RRF);
                 telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
                 telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
                 telemetry.addData("Right Motor Front Position", rightMotorFront.getCurrentPosition());
@@ -556,7 +1078,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                 rightMotorFront.setPower(-power);
                 rightMotorBack.setPower(-power);
             }
-            while ((leftMotorFront.getCurrentPosition() > targetTurn_RLF) && (rightMotorBack.getCurrentPosition() < targetTurn_RRB) && (leftMotorBack.getCurrentPosition() > targetTurn_RLB) && (rightMotorFront.getCurrentPosition() < targetTurn_RRF) && opModeIsActive() && runtime.milliseconds() < 4000) {
+            while ((leftMotorFront.getCurrentPosition() < targetTurn_RLF) && (rightMotorBack.getCurrentPosition() > targetTurn_RRB) && (leftMotorBack.getCurrentPosition() < targetTurn_RLB) && (rightMotorFront.getCurrentPosition() > targetTurn_RRF) && opModeIsActive() && autoTime.milliseconds() < 29500 && runtime.milliseconds() < 4000) {
                 telemetry.addData("Target Position", targetTurn_RLF);
                 telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
                 telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
@@ -602,7 +1124,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
             int targetStrafe_LRF = (int)(inches * TICKS_PER_STRAFE_LRF * TICKS_MULTIPLIER);
             int targetStrafe_LRB = (int)(inches * TICKS_PER_STRAFE_LRB * TICKS_MULTIPLIER);
 
-            while ((leftMotorFront.getCurrentPosition() > targetStrafe_LLF * .6) && (rightMotorBack.getCurrentPosition() > targetStrafe_LRB * .6) && (leftMotorBack.getCurrentPosition() < targetStrafe_LLB * .6) && (rightMotorFront.getCurrentPosition() < targetStrafe_LRF * .6) && opModeIsActive() && runtime.milliseconds() < 4000) {
+            while ((leftMotorFront.getCurrentPosition() > targetStrafe_LLF * .6) && (rightMotorBack.getCurrentPosition() > targetStrafe_LRB * .6) && (leftMotorBack.getCurrentPosition() < targetStrafe_LLB * .6) && (rightMotorFront.getCurrentPosition() < targetStrafe_LRF * .6) && opModeIsActive() && autoTime.milliseconds() < 29500 && runtime.milliseconds() < 4000) {
                 telemetry.addData("Target Position", targetStrafe_LLF);
                 telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
                 telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
@@ -643,7 +1165,7 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
                 }
                 //End of the new code
             }
-            while ((leftMotorFront.getCurrentPosition() > targetStrafe_LLF) && (rightMotorBack.getCurrentPosition() > targetStrafe_LRB) && (leftMotorBack.getCurrentPosition() < targetStrafe_LLB) && (rightMotorFront.getCurrentPosition() < targetStrafe_LRF) && opModeIsActive() && runtime.milliseconds() < 4000) {
+            while ((leftMotorFront.getCurrentPosition() > targetStrafe_LLF) && (rightMotorBack.getCurrentPosition() > targetStrafe_LRB) && (leftMotorBack.getCurrentPosition() < targetStrafe_LLB) && (rightMotorFront.getCurrentPosition() < targetStrafe_LRF) && opModeIsActive() && autoTime.milliseconds() < 29500 && runtime.milliseconds() < 4000) {
                 telemetry.addData("Target Position", targetStrafe_LLF);
                 telemetry.addData("Left Motor Front Position", leftMotorFront.getCurrentPosition());
                 telemetry.addData("Left Motor Back Position", leftMotorBack.getCurrentPosition());
@@ -813,497 +1335,5 @@ public class GodFatherOfAllAutonomous extends LinearOpMode {
         leftMotorBack.setPower(0);
         rightMotorFront.setPower(0);
         rightMotorBack.setPower(0);
-    }
-
-    //Method to find angle, don't use. Just use getAngle
-    public double formatAngle(AngleUnit angleUnit, double angle) {
-        return AngleUnit.DEGREES.fromUnit(angleUnit, angle);
-    }
-    //Returns if it's yellow or not. if it is, it returns "Yellow"
-    public String senseColor() {
-        color = "Yellow";
-        green = 0;
-        while (green == 0 && runtime.milliseconds() < 1000) {
-            green = colorSensor.green();
-        }
-        //Wait for a better Read
-        sleep(500);
-        red = colorSensor.red();
-        blue = colorSensor.blue();
-        green = colorSensor.green();
-        if (green < 25) {
-            if (Math.abs(red - green) > 2) {
-                color = "Black";
-            }
-        }
-        else {
-            if ((green >= red) && (green > blue)) {
-                color = "Black";
-            }
-        }
-        //Go Back to original position
-        return color;
-    }
-    //Uses distance sensor, but we don't have one yet, on the robot
-    public double getDistance() {
-        mmAway = 0;
-        runtime.reset();
-        while (mmAway == 0 && runtime.milliseconds() < 1500) {
-            mmAway = distance.getDistance(DistanceUnit.MM);
-        }
-        return mmAway;
-    }
-    //Method that returns current angle relative to start
-    //(left goes 0-180, right goes -180 to 0)
-    public double getAngle() {
-        heading = 0;
-        runtime.reset();
-        while (runtime.milliseconds() < 1500 && heading == 0) {
-            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            heading = formatAngle(angles.angleUnit, angles.firstAngle);
-        }
-        return heading;
-    }
-    public void runUntil(double mm, double power) {
-        leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        runtime.reset();
-        mmAway = getDistance();
-        power = Math.abs(power);
-        if (mmAway < mm || mmAway > 800) {
-            return;
-        }
-        mmTraveling = mmAway - mm;
-        totalDistance = mmTraveling;
-        while (mmTraveling > 300 && runtime.milliseconds() < 3000 && totalDistance * 1.4 >= mmTraveling) {
-            mmAway = getDistance();
-            mmTraveling = mmAway - mm;
-            leftMotorFront.setPower(power);
-            leftMotorBack.setPower(power);
-            rightMotorFront.setPower(power);
-            rightMotorBack.setPower(power);
-        }
-        leftMotorFront.setPower(0);
-        leftMotorBack.setPower(0);
-        rightMotorFront.setPower(0);
-        rightMotorBack.setPower(0);
-        mmAway = getDistance();
-        if (mmAway < mm || totalDistance < mmAway) {
-            return;
-        }
-        mmTraveling = mmAway - mm;
-        runTo(((mmTraveling * .9) / 25.4), power * .8, power * .5);
-    }
-    public void resetArm() {
-        armServo.setPosition(1);
-    }
-    public void pickUpBlock() {
-        armServo.setPosition(.2);
-        if (firstPick) {
-            sleep(500);
-            armServo.setPosition(.2);
-            firstPick = false;
-        }
-        sleep(600);
-        blockPickedUp = blockIsGrabbed();
-        if (!blockPickedUp && blockFails < 3 && !failAttempted) {
-            armServo.setPosition(1);
-            while (armServo.getPosition() < .9){}
-            runUntil(80, slowPower);
-            runTo(3, slowPower * .7, slowPower * .5);
-            blockFails += 1;
-            failAttempted = true;
-            pickUpBlock();
-        }
-        if (failAttempted) {
-            runTo(-4.5, allPower, slowPower);
-        }
-        failAttempted = false;
-    }
-    public void dropBlock() {
-        armServo.setPosition(.5);
-    }
-    public void spinnyBoyDown() {
-        spinnyBoy1.setPosition(.29);
-        spinnyBoy2.setPosition(.29);
-        sleep(500);
-    }
-    public void spinnyBoyUp() {
-        spinnyBoy1.setPosition(.7);
-        spinnyBoy2.setPosition(.7);
-        sleep(500);
-    }
-    //Returns minimum difference between 2 angles. Mainly current and target Angle
-    public double getAngleDifference(double angle1, double angle2) {
-        double tempAngle = angle1;
-        double angleCheck;
-        //Set angle1 as smaller
-        if (angle1 > angle2) {
-            angle1 = angle2;
-            angle2 = tempAngle;
-        }
-        angleCheck = angle2 - angle1;
-        if (angleCheck > 180) {
-            angleCheck = 360 - angleCheck;
-        }
-        angleCheck = Math.abs(angleCheck);
-        return angleCheck;
-    }
-    //Returns side that would be closer to turn towards
-    public String closerSide (double currentAngle, double targetAngle) {
-        side = 1;
-        if (currentAngle > targetAngle) {
-            side = 2;
-        }
-        if (side == 1) {
-            if (targetAngle - currentAngle < 180) {
-                return "Left";
-            }
-            else {
-                return "Right";
-            }
-        }
-        else {
-            if (currentAngle - targetAngle < 180) {
-                return "Right";
-            }
-            else {
-                return "Left";
-            }
-        }
-    }
-
-    public void startBlock(boolean red) {
-        runTo(20, allPower, slowPower);
-        runUntil(200, slowPower * .9);
-        runTo(5.9, allPower * .7, slowPower);
-        turnTo(0, allPower, slowPower);
-        if (red) {
-            while (blockNumber < 2){
-                color = senseColor();
-                if (color == "Yellow") {
-                    blockNumber += 1;
-                    strafeLeft(8.5, allPower, slowPower);
-                    turnTo(0, allPower, slowPower);
-                }
-                else {
-                    break;
-                }
-            }
-            runTo(3, slowPower * .7, slowPower * .7);
-            pickUpBlock();
-            runTo(-5, allPower, slowPower);
-            turnRight(80, allPower, slowPower);
-            turnTo(-90, allPower * .8, slowPower);
-        }
-        else {
-            while (blockNumber < 2){
-                color = senseColor();
-                if (color == "Yellow") {
-                    blockNumber += 1;
-                    strafeRight(8.5, allPower, slowPower);
-                }
-                else {
-                    break;
-                }
-            }
-            runTo(3, slowPower * .7, slowPower * .7);
-            pickUpBlock();
-            runTo(-5, allPower, slowPower);
-            turnLeft(80, allPower, slowPower);
-            turnTo(90, allPower * .8, slowPower);
-            turnLeft(5, allPower, slowPower);
-        }
-    }
-    public void moveFoundation(boolean red) {
-        spinnyBoyDown();
-        //Bring block to corner
-        runTo(-45, allPower * 1.1, slowPower * 1.4);
-        if (red) {
-            turnRight(80, 1, .9);
-            turnTo(-100, .9, .8);
-        }
-        else {
-            turnLeft(80, 1, .9);
-            turnTo(100, .9, .8);
-        }
-        spinnyBoyUp();
-    }
-    //Superior accurate turn. Faster but haven't been tested
-    public void turnTo(double targetAngle, double allPower, double slowerPower) {
-        runtime.reset();
-        sleep(200);
-        angle = getAngle();
-        angleDifference = getAngleDifference(targetAngle, angle);
-        turnTowards = closerSide(angle, targetAngle);
-        double angleDifferenceInitial = angleDifference;
-        double angleInitial = getAngle();
-        double changeInTurn = getAngleDifference(angle, angleInitial);
-        if (angleDifference < 5) {
-            return;
-        }
-        if (turnTowards == "Left") {
-            while (angleDifference > 15 && angleDifference < 130 && runtime.milliseconds() < 3000) {
-                turnLeft(20, allPower, slowerPower);
-                sleep(200);
-                angle = getAngle();
-                angleDifference = getAngleDifference(targetAngle, angle);
-                turnTowards = closerSide(angle, targetAngle);
-                changeInTurn = getAngleDifference(angle, angleInitial);
-                if ((changeInTurn > angleDifferenceInitial && angleDifferenceInitial > 10) || turnTowards == "Right") {
-                    break;
-                }
-            }
-        }
-        else {
-            while (angleDifference > 15 && angleDifference < 130 && runtime.milliseconds() < 3000) {
-                turnRight(20, allPower, slowerPower);
-                angle = getAngle();
-                angleDifference = getAngleDifference(targetAngle, angle);
-                turnTowards = closerSide(angle, targetAngle);
-                changeInTurn = getAngleDifference(angle, angleInitial);
-                if ((changeInTurn > angleDifferenceInitial && angleDifferenceInitial > 10) || turnTowards == "Left") {
-                    break;
-                }
-            }
-        }
-        angle = getAngle();
-        angleDifference = getAngleDifference(angle, targetAngle);
-        turnTowards = closerSide(angle, targetAngle);
-        if (angleDifference > 130) {
-            return;
-        }
-        if (turnTowards == "Left") {
-            turnLeft(angleDifference, allPower, slowerPower);
-        }
-        else {
-            turnRight(angleDifference, allPower, slowerPower);
-        }
-        return;
-    }
-    //parkServo methods. Adjust the values for the positions later
-    public void parkArmOut(){
-        parkServo.setPosition(.5);
-    }
-    public void parkArmIn(){
-        parkServo.setPosition(.4);
-    }
-    public boolean blockIsGrabbed() {
-        mmAway = getDistance();
-        if (mmAway < blockDistance) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-    public void raiseAndRun(int height, double inches, double power, double slowerPower) {
-        while (opModeIsActive()) {
-            runtime.reset();
-            leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-            driveTargetPosition = (int)(inches * TICKS_PER_INCH * TICKS_MULTIPLIER);
-            absTarget = Math.abs(driveTargetPosition);
-            absLeftPosition = Math.abs(leftMotorBack.getCurrentPosition());
-            absRightPosition = Math.abs(rightMotorBack.getCurrentPosition());
-            verticalMultiplier = 1;
-            runMultiplier = 1;
-
-            if (height == 0) {
-                verticalTargetPosition = -10;
-            }
-            else if (height == 1) {
-                verticalTargetPosition = 100;
-            }
-            else if (height == 2) {
-                verticalTargetPosition = 180;
-            }
-            else {
-                verticalTargetPosition = 210;
-            }
-            if (inches < 0) {
-                runMultiplier *= -1;
-            }
-            if (verticalTargetPosition < vertical1.getCurrentPosition()) {
-                verticalMultiplier = -.8;
-                telemetry.addData("Vertical Down: ", "Yes");
-                telemetry.update();
-            }
-            if (verticalMultiplier > 0) {
-                while (runtime.milliseconds() < 4000 && absLeftPosition < absTarget * .6 && absRightPosition < absTarget * .6 && verticalTargetPosition > vertical1.getCurrentPosition()) {
-                    telemetry.addData("Left Back: ", absLeftPosition);
-                    telemetry.addData("Right Back: ", absRightPosition);
-                    telemetry.addData("Vertical1 ", vertical1.getCurrentPosition());
-                    telemetry.addData("Vertical2 ", vertical2.getCurrentPosition());
-                    telemetry.addData("Target Position", absTarget);
-                    telemetry.update();
-
-                    absTarget =  (Math.abs(driveTargetPosition) * 5) / 2;
-                    absLeftPosition = Math.abs(leftMotorBack.getCurrentPosition());
-                    absRightPosition = Math.abs(rightMotorBack.getCurrentPosition());
-
-                    vertical1.setPower(verticalPower * verticalMultiplier);
-                    vertical2.setPower(verticalPower * verticalMultiplier);
-                    leftMotorBack.setPower(power * runMultiplier);
-                    leftMotorFront.setPower(power * runMultiplier);
-                    rightMotorBack.setPower(power * runMultiplier);
-                    rightMotorFront.setPower(power * runMultiplier);
-                }
-                if (verticalTargetPosition <= vertical1.getCurrentPosition()) {
-                    vertical1.setPower(0);
-                    vertical2.setPower(0);
-                    remainingTicks = Math.abs(Math.abs(driveTargetPosition) - Math.abs(((leftMotorBack.getCurrentPosition() + leftMotorFront.getCurrentPosition() + rightMotorBack.getCurrentPosition() + rightMotorFront.getCurrentPosition()) / 4)));
-                    remainingInches = (remainingTicks)/(TICKS_PER_INCH * TICKS_MULTIPLIER);
-                    runTo(remainingInches * runMultiplier, power, slowerPower);
-                    return;
-                }
-                if (runtime.milliseconds() > 4000) {
-                    return;
-                }
-                else if (absLeftPosition < absTarget * .6 && absRightPosition < absTarget * .6){
-                    runtime.reset();
-                    while (runtime.milliseconds() < 4000 && absLeftPosition < absTarget && absRightPosition < absTarget && verticalTargetPosition > vertical1.getCurrentPosition()) {
-                        telemetry.addData("Left Back: ", absLeftPosition);
-                        telemetry.addData("Right Back: ", absRightPosition);
-                        telemetry.addData("Vertical1 ", vertical1.getCurrentPosition());
-                        telemetry.addData("Vertical2 ", vertical2.getCurrentPosition());
-                        telemetry.addData("Target Position", absTarget);
-                        telemetry.update();
-
-                        absTarget = Math.abs(driveTargetPosition);
-                        absLeftPosition = Math.abs(leftMotorBack.getCurrentPosition());
-                        absRightPosition = Math.abs(rightMotorBack.getCurrentPosition());
-
-                        leftMotorFront.setPower(slowerPower * runMultiplier);
-                        leftMotorBack.setPower(slowerPower * runMultiplier);
-                        rightMotorBack.setPower(slowerPower * runMultiplier);
-                        rightMotorFront.setPower(slowerPower * runMultiplier);
-                    }
-                    if (verticalTargetPosition <= vertical1.getCurrentPosition()) {
-                        vertical1.setPower(0);
-                        vertical2.setPower(0);
-                        remainingTicks = Math.abs(Math.abs(driveTargetPosition) - Math.abs(((leftMotorBack.getCurrentPosition() + leftMotorFront.getCurrentPosition() + rightMotorBack.getCurrentPosition() + rightMotorFront.getCurrentPosition()) / 4)));
-                        runTo(remainingInches * runMultiplier, slowerPower, slowerPower * .9);
-                        return;
-                    }
-                    else {
-                        leftMotorBack.setPower(0);
-                        leftMotorFront.setPower(0);
-                        rightMotorBack.setPower(0);
-                        rightMotorFront.setPower(0);
-                        while (verticalTargetPosition > vertical1.getCurrentPosition()) {
-                            telemetry.addData("Vertical1 ", vertical1.getCurrentPosition());
-                            telemetry.addData("Vertical2 ", vertical2.getCurrentPosition());
-                            telemetry.update();
-                            vertical1.setPower(verticalPower * verticalMultiplier * .8);
-                            vertical2.setPower(verticalPower * verticalMultiplier * .8);
-                        }
-                        vertical1.setPower(0);
-                        vertical2.setPower(0);
-                    }
-                }
-            }
-            else {
-                while (runtime.milliseconds() < 4000 && absLeftPosition < absTarget * .6 && absRightPosition < absTarget * .6 && verticalTargetPosition < vertical1.getCurrentPosition()) {
-                    telemetry.addData("Left Back: ", absLeftPosition);
-                    telemetry.addData("Right Back: ", absRightPosition);
-                    telemetry.addData("Vertical1 ", vertical1.getCurrentPosition());
-                    telemetry.addData("Vertical2 ", vertical2.getCurrentPosition());
-                    telemetry.addData("Target Position", absTarget);
-                    telemetry.update();
-
-                    absTarget =  (Math.abs(driveTargetPosition) * 5) / 2;
-                    absLeftPosition = Math.abs(leftMotorBack.getCurrentPosition());
-                    absRightPosition = Math.abs(rightMotorBack.getCurrentPosition());
-
-                    vertical1.setPower(verticalPower * verticalMultiplier);
-                    vertical2.setPower(verticalPower * verticalMultiplier);
-                    leftMotorBack.setPower(power * runMultiplier);
-                    leftMotorFront.setPower(power * runMultiplier);
-                    rightMotorBack.setPower(power * runMultiplier);
-                    rightMotorFront.setPower(power * runMultiplier);
-                }
-                if (verticalTargetPosition <= vertical1.getCurrentPosition()) {
-                    vertical1.setPower(0);
-                    vertical2.setPower(0);
-                    remainingTicks = Math.abs(Math.abs(driveTargetPosition) - Math.abs(((leftMotorBack.getCurrentPosition() + leftMotorFront.getCurrentPosition() + rightMotorBack.getCurrentPosition() + rightMotorFront.getCurrentPosition()) / 4)));
-                    remainingInches = (remainingTicks)/(TICKS_PER_INCH * TICKS_MULTIPLIER);
-                    runTo(remainingInches * runMultiplier, power, slowerPower);
-                    return;
-                }
-                if (runtime.milliseconds() > 4000) {
-                    return;
-                }
-                else if (absLeftPosition < absTarget * .6 && absRightPosition < absTarget * .6){
-                    runtime.reset();
-                    while (runtime.milliseconds() < 4000 && absLeftPosition < absTarget && absRightPosition < absTarget && verticalTargetPosition < vertical1.getCurrentPosition()) {
-                        telemetry.addData("Left Back: ", absLeftPosition);
-                        telemetry.addData("Right Back: ", absRightPosition);
-                        telemetry.addData("Vertical1 ", vertical1.getCurrentPosition());
-                        telemetry.addData("Vertical2 ", vertical2.getCurrentPosition());
-                        telemetry.addData("Target Position", absTarget);
-                        telemetry.update();
-
-                        absTarget = Math.abs(driveTargetPosition);
-                        absLeftPosition = Math.abs(leftMotorBack.getCurrentPosition());
-                        absRightPosition = Math.abs(rightMotorBack.getCurrentPosition());
-
-                        leftMotorFront.setPower(slowerPower * runMultiplier);
-                        leftMotorBack.setPower(slowerPower * runMultiplier);
-                        rightMotorBack.setPower(slowerPower * runMultiplier);
-                        rightMotorFront.setPower(slowerPower * runMultiplier);
-                    }
-                    if (verticalTargetPosition >= vertical1.getCurrentPosition()) {
-                        vertical1.setPower(0);
-                        vertical2.setPower(0);
-                        remainingTicks = Math.abs(Math.abs(driveTargetPosition) - Math.abs(((leftMotorBack.getCurrentPosition() + leftMotorFront.getCurrentPosition() + rightMotorBack.getCurrentPosition() + rightMotorFront.getCurrentPosition()) / 4)));
-                        runTo(remainingInches * runMultiplier, slowerPower, slowerPower * .9);
-                        return;
-                    }
-                    else {
-                        leftMotorBack.setPower(0);
-                        leftMotorFront.setPower(0);
-                        rightMotorBack.setPower(0);
-                        rightMotorFront.setPower(0);
-                        while (verticalTargetPosition < vertical1.getCurrentPosition()) {
-                            telemetry.addData("Vertical1 ", vertical1.getCurrentPosition());
-                            telemetry.addData("Vertical2 ", vertical2.getCurrentPosition());
-                            telemetry.update();
-                            vertical1.setPower(verticalPower * verticalMultiplier * .8);
-                            vertical2.setPower(verticalPower * verticalMultiplier * .8);
-                        }
-                        vertical1.setPower(0);
-                        vertical2.setPower(0);
-                    }
-                }
-            }
-            leftMotorBack.setPower(0);
-            leftMotorFront.setPower(0);
-            rightMotorBack.setPower(0);
-            rightMotorFront.setPower(0);
-            vertical1.setPower(0);
-            vertical2.setPower(0);
-        }
-        leftMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        vertical1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        vertical2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotorBack.setPower(0);
-        leftMotorFront.setPower(0);
-        rightMotorBack.setPower(0);
-        rightMotorFront.setPower(0);
-        vertical1.setPower(0);
-        vertical2.setPower(0);
     }
 }

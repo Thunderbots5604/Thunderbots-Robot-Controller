@@ -1,0 +1,43 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+@Disabled
+@TeleOp(name "No Use", group="TeleOp Competition")
+public class GodFatherOfAllTeleOp extends LinearOpMode {
+    //converts cartesian coordinates to polar coordinates
+    public double[] toPolar(double x, double y){
+        double[] polarCoordinates = new double[2];
+        //radius
+        polarCoordinates[0] = Math.sqrt((x * x) + (y * y));
+        //angle
+        polarCoordinates[1] = Math.atan2(y, x);
+        return polarCoordinates;
+    }
+    //check if two values are close enough to be considered equal (using radians isn't perfectly accurate in java)
+    public boolean closeEnough(double a, double b){
+        if ((a <= b - 0.000000000009) && (a >= b + 0.000000000009)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    //given polar coordinates, calculate mecanum drive power
+    public double[] mecanumDrivePower(double radius, double theta){
+        //convert theta to make it easier
+        //move 0 to forward on the joystick
+        double convertedTheta = theta - (Math.PI / 2);
+        //if we moved too far, go to the right 360 degrees
+        if (closeEnough((convertedTheta, (-Math.PI))) || convertedTheta < (-Math.PI)) {
+            convertedTheta -= (2 * Math.PI);
+        }
+
+    }
+}

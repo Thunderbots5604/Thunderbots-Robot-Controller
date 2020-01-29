@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -24,34 +25,44 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
-@Autonomous(name="Autonomous_Foundation Blue_Wall", group="Foundation")
-public class AutoFoundationBlueWall extends GodFatherOfAllAutonomous {
 
+//Basically Pseudo code at this point. We need to have the robot arm methods and make some other stuff before something like this will work
+
+
+@Autonomous(name="AutoColorBlueOneBlock", group="Block side")
+public class AutoColorBlueOneBlock extends GodFatherOfAllAutonomous {
+    private String color = null;
     private boolean red = false;
-
     @Override
     public void runOpMode() {
+
         initialization();
 
         waitForStart();
-        
-        autoTime.reset();
 
-        verticalUp();
-        spinnyBoyUp();
+        //Get first block and point towards foundation side
+        startBlock(red);
+        turnLeft(10, allPower, slowPower);
+        strafeLeft(3, allPower, slowPower);
+        //Move to foundation and drop block at stack level 1
+        runTo(10 * (blockNumber), allPower, slowPower);
+        runTo(32, .9, slowPower * 1.2);
 
-        strafeLeft(8, allPower, slowPower);
-        runTo(15, allPower, slowPower);
-        runUntil(70, allPower * .7);
-        runTo(3, allPower * .6, slowPower * .9);
-        moveFoundation(red);
-        runTo(10, allPower, slowPower);
+        raiseAndRun(1, 20, allPower, slowPower);
+        turnTo(90, allPower, slowPower);
+        runTo(5, allPower * .9, allPower * .9);
+        dropBlock();
+        raiseAndRun(0, -20, allPower, slowPower);
+        //Move back under bridge to get other blocks
         runTo(-10, allPower, slowPower);
+        turnTo(90, allPower, slowPower);
+        if (blockNumber == 0) {
+            strafeLeft(3, allPower, slowPower);
+        }
+        else if (blockNumber == 2) {
+            strafeRight(7, allPower, slowPower);
+        }
         
-        verticalDown();
-        //15 inches Left for far, 12 inches Right for wall (Red side)
-        strafeLeft(12, allPower, slowPower);
-        
-        runTo(-35, allPower, slowPower);
+        runTo(-11, allPower, slowPower);
     }
 }

@@ -31,12 +31,7 @@ public class AutoTest extends GodFatherOfAllAutonomous {
         initialization();
 
         waitForStart();
-
-        raiseAndRun(1, 30, allPower, slowPower);
-        telemetry.addData("vertical 1 Position", vertical1.getCurrentPosition());
-        telemetry.addData("vertical 2 Position", vertical2.getCurrentPosition());
-        telemetry.update();
-        while (opModeIsActive()){
-        }
+        
+        runTo(40, slowPower * .9, slowPower * .8);
     }
 }

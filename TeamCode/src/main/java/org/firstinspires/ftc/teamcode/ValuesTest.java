@@ -40,23 +40,11 @@ public class ValuesTest extends GodFatherOfAllAutonomous {
 
 
         while(opModeIsActive()) {
-            color = senseColor();
             distance = getDistance();
-            telemetry.addData("Angle 1", heading1);
-            telemetry.addData("Angle 2", heading2);
-            telemetry.addData("Angle 3", heading3);
-            telemetry.addData("Color: ", color);
+            color = senseColor();
+            telemetry.addData("Color", color);
             telemetry.addData("Distance: ", distance);
             telemetry.update();
-            heading1 = 0; heading2 = 0; heading3 = 0;
-
-            runtime.reset();
-            while (runtime.milliseconds() < 1000 && heading1 == 0 && heading2 == 0 && heading3 == 0) {
-                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                heading1 = formatAngle(angles.angleUnit, angles.firstAngle);
-                heading2 = formatAngle(angles.angleUnit, angles.secondAngle);
-                heading3 = formatAngle(angles.angleUnit, angles.thirdAngle);
-            }
 
         }
     }

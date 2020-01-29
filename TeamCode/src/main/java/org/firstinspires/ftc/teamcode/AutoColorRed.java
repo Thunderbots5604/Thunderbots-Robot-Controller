@@ -39,15 +39,19 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
         initialization();
 
         waitForStart();
+        
+        autoTime.reset();
+        
         //Get first block and point towards foundation side
         startBlock(red);
         //Move to foundation and drop block at stack level 1
         runTo(10 * (blockNumber), allPower, slowPower);
-        runTo(32, allPower, slowPower);
+        runTo(32, .9, slowPower * 1.2);
+        
+        raiseAndRun(1, 35, allPower, slowPower);
         turnTo(-90, allPower, slowPower);
-        raiseAndRun(1, 35, allPower * .6, slowPower * .8);
-        runUntil(50, slowPower);
-        runTo(2, allPower * .9, allPower * .9);
+        runUntil(150, slowPower);
+        runTo(5, allPower * .9, allPower * .9);
         dropBlock();
         //Move back under bridge to get other blocks
         runTo(-4, allPower, slowPower);
@@ -55,9 +59,13 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
         raiseAndRun(0, -45, allPower, slowPower);
         runTo(-8 * (blockNumber), allPower, slowPower);
         turnTo(-90, allPower, slowPower);
-        if (blockNumber == 0){
-            runTo(-40, allPower, slowPower);
+        if (blockNumber == 0) {
+            runTo(-88, .9, slowPower);
             turnTo(0, allPower, slowPower);
+            mmAway = getDistance();
+            if (mmAway > 800) {
+                runTo(12, allPower, slowPower);
+            }
             runUntil(80, slowPower);
             runTo(4, slowPower * .7, slowPower * .6);
             pickUpBlock();
@@ -65,18 +73,23 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
             turnRight(80, allPower, slowPower);
             turnTo(-90, allPower, slowPower);
             runTo(8 * (blockNumber), allPower, slowPower);
-            runTo(50, allPower, slowPower);
-            raiseAndRun(2, 30, allPower, slowPower);
-            dropBlock();
+            runTo(50, .9, slowPower);
+            raiseAndRun(2, 10, allPower, slowPower);
             turnTo(-90, allPower, slowPower);
-            strafeRight(3, allPower, slowPower);
+            runUntil(150, slowPower);
+            runTo(5, allPower * .9, allPower * .9);
+            dropBlock();
             runTo(-2, allPower, slowPower);
             raiseAndRun(0, -11, allPower, slowPower);
             runTo(-11, allPower, slowPower);
         }
-        if (blockNumber == 1){
-            runTo(-40, allPower, slowPower);
+        if (blockNumber == 1) {
+            runTo(-98, .9, slowPower);
             turnTo(0, allPower, slowPower);
+            mmAway = getDistance();
+            if (mmAway > 800) {
+                runTo(12, allPower, slowPower);
+            }
             runUntil(80, slowPower);
             runTo(4, slowPower * .7, slowPower * .6);
             pickUpBlock();
@@ -84,19 +97,24 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
             turnRight(80, allPower, slowPower);
             turnTo(-90, allPower, slowPower);
             runTo(8 * (blockNumber), allPower, slowPower);
-            runTo(50, allPower, slowPower);
-            raiseAndRun(2, 30, allPower, slowPower);
-            dropBlock();
+            runTo(50, .9, slowPower);
+            raiseAndRun(2, 10, allPower, slowPower);
             turnTo(-90, allPower, slowPower);
-            strafeRight(3, allPower, slowPower);
+            runUntil(150, slowPower);
+            runTo(5, allPower * .9, allPower * .9);
+            dropBlock();
             runTo(-2, allPower, slowPower);
             raiseAndRun(0, -11, allPower, slowPower);
             runTo(-11, allPower, slowPower);
         }
-        else{
-            runTo(-80, allPower, slowPower);
+        else {
+            runTo(-85, .9, slowPower);
             turnLeft(80, allPower, slowPower);
             turnTo(20, allPower, slowPower);
+            mmAway = getDistance();
+            if (mmAway > 800) {
+                runTo(12, allPower, slowPower);
+            }
             runUntil(80, slowPower);
             runTo(4, slowPower * .7, slowPower * .6);
             pickUpBlock();
@@ -107,10 +125,9 @@ public class AutoColorRed extends GodFatherOfAllAutonomous {
             turnTo(-90, allPower, slowPower);
             runTo(50, allPower, slowPower);
             runTo(8 * (blockNumber), allPower, slowPower);
-            raiseAndRun(2, 30, allPower, slowPower);
+            raiseAndRun(2, 10, allPower, slowPower);
             dropBlock();
             turnTo(-90, allPower, slowPower);
-            strafeRight(3, allPower, slowPower);
             runTo(-2, allPower, slowPower);
             raiseAndRun(0, -11, allPower, slowPower);
             runTo(-11, allPower, slowPower);

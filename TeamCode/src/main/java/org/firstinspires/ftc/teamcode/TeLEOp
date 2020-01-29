@@ -1,0 +1,159 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+
+@TeleOp(name="TeLEOp", group="Linear Opmode")
+public class TeLEOp extends LinearOpMode {
+    //Motors and Servos
+    private DcMotor leftMotorFront = null;
+    private DcMotor leftMotorBack = null;
+    private DcMotor rightMotorFront = null;
+    private DcMotor rightMotorBack = null;
+
+    public DcMotor vertical1 = null;
+    public DcMotor vertical2 = null;
+
+    public Servo spinnyBoy1 = null;
+    public Servo spinnyBoy2 = null;
+
+    public Servo armServo = null;
+
+    public Servo parkServo = null;
+
+    @Override
+    public void runOpMode() {
+
+        leftMotorFront = hardwareMap.get(DcMotor.class, "left_motor_front");
+        leftMotorBack = hardwareMap.get(DcMotor.class, "left_motor_back");
+        rightMotorFront = hardwareMap.get(DcMotor.class, "right_motor_front");
+        rightMotorBack = hardwareMap.get(DcMotor.class, "right_motor_back");
+
+        vertical1 = hardwareMap.get(DcMotor.class, "vertical1");
+        vertical2 = hardwareMap.get(DcMotor.class, "vertical2");
+
+        spinnyBoy1 = hardwareMap.get(Servo.class, "spin1");
+        spinnyBoy2 = hardwareMap.get(Servo.class, "spin2");
+
+        armServo = hardwareMap.get(Servo.class, "armServo");
+
+        parkServo = hardwareMap.get(Servo.class, "parkServo");
+
+        rightMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        spinnyBoy1.setDirection(Servo.Direction.REVERSE);
+        vertical2.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        vertical1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        vertical2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
+
+        vertical1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        vertical2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        vertical1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        vertical2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        gamepad1.setJoystickDeadzone(0.05f);
+
+        waitForStart();
+
+        //polar coordinates babe-y
+        public double g1LeftRadius = 0;
+        public double g1LeftTheta = 0;
+        public double g1LeftConvertedTheta = 0;
+
+        //drive powers and multipliers
+        public double powerFRBL = 0;
+        public double powerFLBR = 0;
+        public double mecanumDriveMultiplier = 0;
+        public double rotateDriveMultiplier = 0;
+        public double powerFRBR = 0;
+        public double powerFLBL = 0;
+
+        while opModeIsActive() {
+            //send telemetry any data we want to send it
+            telemetry.addData("Left Front: ", leftMotorFront.getCurrentPosition());
+            telemetry.addData("Left Back: ", leftMotorBack.getCurrentPosition());
+            telemetry.addData("Right Front: ", rightMotorFront.getCurrentPosition());
+            telemetry.addData("Right Back: ", rightMotorBack.getCurrentPosition());
+            telemetry.addData("Vertical1: ", vertical1.getCurrentPosition());
+            telemetry.addData("Vertical2: ", vertical2.getCurrentPosition());
+            telemetry.update();
+            //MOVEMENT
+            //convert joystick input to polar
+            g1LeftRadius = Math.sqrt((gamepad1.left_stick_x * gamepad1.left_stick_x) + (gamepad1.left_stick_y * gamepad1.left_stick_y));
+            g1LeftTheta = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x);
+            //rotate 90 degrees counterclockwise (0 is now straight)
+            g1LeftConvertedTheta = g1LeftTheta - (Math.PI / 2);
+            //if the new theta is less than negative pi (outside our preferred range) then we should rotate it a full 360 and make it positive but less than positive pi
+            if (g1LeftConvertedTheta <= -Math.PI){
+                g1LeftConvertedTheta += (2 * Math.PI);
+            }
+            //translate pi / 4 to the left
+            g1LeftConvertedTheta -= Math.PI / 4;
+            //mecanum drive powers
+            if (g1LeftConvertedTheta >= 0 && g1LeftConvertedTheta < Math.PI /2){
+                powerFRBL = g1LeftRadius;
+                powerFLBR = g1LeftRadius * Math.tan(g1LeftConvertedTheta);
+            }
+            else if (g1LeftConvertedTheta >= Math.PI / 2) {
+                powerFLBR = -g1LeftRadius;
+                if (g1LeftConvertedTheta == Math.PI){
+                    powerFRBL = -g1LeftRadius;
+                }
+                else {
+                    powerFRBL = g1LeftRadius * Math.cot(g1LeftConvertedTheta);
+                }
+            }
+            else if (g1LeftConvertedTheta < 0 && g1LeftConvertedTheta >= (-Math.PI / 2)) {
+                powerFLBR = g1LeftRadius;
+                powerFRBL = g1LeftRadius * Math.cot(g1LeftConvertedTheta);
+            }
+            else if (g1LeftConvertedTheta < (-Math.PI / 2)) {
+                powerFRBL = -g1LeftRadius;
+                powerFLBR = g1LeftRadius * Math.tan(g1LeftConvertedTheta);
+            }
+            //turn drive powers
+            if (gamepad1.right_stick_x != 0){
+                powerFLBL = gamepad1.right_stick_x;
+                powerFRBR = -gamepad1.right_stick_x;
+            }
+            //set multipliers to use both strafe and mecanum at the same time
+            if ((gamepad1.left_stick_y != 0 || gamepad1.left_stick_x != 0) && gamepad1.right_stick_x != 0){
+                mecanumDriveMultiplier = .5;
+                rotateDriveMultiplier = .5;
+            }
+            else if (gamepad1.left_stick_y != 0 || gamepad1.left_stick_x != 0){
+                mecanumDriveMultiplier = 1;
+                rotateDriveMultiplier = 0;
+            }
+            else if (gamepad1.right_stick_x != 0){
+                rotateDriveMultiplier = 1;
+                mecanumDriveMultiplier = 0;
+            }
+            else{
+                mecanumDriveMultiplier = 0;
+                rotateDriveMultiplier = 0;
+            }
+            //actually set the powers
+            powerFRBL *= mecanumDriveMultiplier;
+            powerFLBR *= mecanumDriveMultiplier;
+            powerFRBR *= rotateDriveMultiplier;
+            powerFLBL *= rotateDriveMultiplier;
+            leftMotorFront.setPower((powerFLBR + powerFLBL));
+            leftMotorBack.setPower((powerFRBL + powerFLBL));
+            rightMotorFront.setPower((powerFRBL + powerFRBR));
+            rightMotorBack.setPower((powerFLBR + powerFRBR));
+            //END OF MOVEMENT
+        }
+    }
+}

@@ -39,98 +39,71 @@ public class AutoEverythingBlue extends GodFatherOfAllAutonomous {
         initialization();
 
         waitForStart();
+        
+        autoTime.reset();
 
+        spinnyBoyUp();
+        resetArm();
+        
         startBlock(red);
-        //Branch off based off blockNumber
+        runTo(32 + 8 * (blockNumber), .9, allPower * .8);
+        raiseAndRun(1, 50, allPower * 1.1, slowPower);
+        turnRight(80, allPower, slowPower);
+        turnTo(0, allPower, slowPower);
+        runUntil(80, allPower);
+        runTo(3, allPower * .8, slowPower * .9);
+        dropBlock();
+        moveFoundation(red);
+        
+        strafeRight(11, allPower, slowPower);
+        raiseAndRun(0, -40, allPower * 1.2, slowPower);
+        turnTo(-90, allPower, slowPower);
+        runTo(-50 - 8 * (blockNumber), .9, allPower * .8);
+        resetArm();
+        turnRight(80, allPower, slowPower);
+        turnTo(0, allPower, slowPower);
+        runTo(-3, allPower, slowPower);
+        //Branch off based on blockNumber
         if (blockNumber == 0) {
-            runTo(45, allPower, slowPower);
-            turnLeft(60, allPower, slowPower);
+            strafeRight(10, allPower, slowPower);
+            runUntil(80, slowPower * .9);
+            runTo(2, allPower * .7, slowPower);
             turnTo(0, allPower, slowPower);
-            resetArm();
-            strafeRight(30, allPower, slowPower);
-            dropBlock();
-            runTo(5, allPower * .6, slowPower * .7);
-            moveFoundation(red);
-
-            runTo(-5, allPower, slowPower);
-            strafeLeft(10, allPower, slowPower);
-            runTo(-84, allPower * 1.2, slowPower);
-            resetArm();
-            turnLeft(80, allPower, slowPower);
-            turnTo(0, allPower, slowPower);
-            runUntil(1.5, allPower);
             pickUpBlock();
             runTo(-3, allPower, slowPower);
-            turnRight(80, allPower, slowPower);
-            turnTo(-90, allPower, slowPower);
-            runTo(80, allPower, slowPower);
+            turnLeft(80, allPower * 1.1, slowPower);
+            turnTo(90, allPower, slowPower);
+            runTo(70 + 8 * (blockNumber), .9, allPower * .8);
+            raiseAndRun(2, 50, allPower, slowPower);
             dropBlock();
-            runTo(-30, allPower, slowPower);
+            raiseAndRun(0, -30, allPower, slowPower);
         }
         else if (blockNumber == 1) {
-            runTo(45 + 8 * (blockNumber), allPower, slowPower);
-            turnLeft(60, allPower, slowPower);
+            strafeRight(10, allPower, slowPower);
+            runUntil(80, slowPower * .9);
+            runTo(2, allPower * .7, slowPower);
             turnTo(0, allPower, slowPower);
-            resetArm();
-            strafeRight(30, allPower, slowPower);
-            dropBlock();
-            runTo(5, allPower * .6, slowPower * .7);
-            spinnyBoyDown();
-
-            //Bring block to corner
-            runTo(-24, allPower * 1.1, slowPower * 1.4);
-            turnRight(90, allPower * 1.1, slowPower * 1.4);
-            runTo(5, allPower * 1.1, slowPower * 1.4);
-            spinnyBoyUp();
-
-            runTo(-5, allPower, slowPower);
-            strafeLeft(10, allPower, slowPower);
-            runTo(-84 - 8 * (blockNumber), allPower * 1.2, slowPower);
-            turnLeft(80, allPower, slowPower);
-            turnTo(0, allPower, slowPower);
-            resetArm();
-            runUntil(1.5, allPower);
             pickUpBlock();
             runTo(-3, allPower, slowPower);
-            turnRight(80, allPower, slowPower);
-            turnTo(-90, allPower, slowPower);
-            runTo(80 + 8 * (blockNumber), allPower, slowPower);
+            turnLeft(80, allPower * 1.1, slowPower);
+            turnTo(90, allPower, slowPower);
+            runTo(70 + 8 * (blockNumber), .9, allPower * .8);
+            raiseAndRun(2, 50, allPower, slowPower);
             dropBlock();
-            runTo(-30, allPower, slowPower);
+            raiseAndRun(0, -30, allPower, slowPower);
         }
         else {
-            runTo(45 + 8 * (blockNumber), allPower, slowPower);
-            turnLeft(60, allPower, slowPower);
-            turnTo(0, allPower, slowPower);
-            resetArm();
-            strafeRight(30, allPower, slowPower);
-            dropBlock();
-            runTo(5, allPower * .6, slowPower * .7);
-            spinnyBoyDown();
-
-            //Bring block to corner
-            runTo(-24, allPower * 1.1, slowPower * 1.4);
-            turnRight(90, allPower * 1.1, slowPower * 1.4);
-            runTo(5, allPower * 1.1, slowPower * 1.4);
-            spinnyBoyUp();
-
-            runTo(-5, allPower, slowPower);
-            strafeLeft(10, allPower, slowPower);
-            runTo(-84 - 8 * (blockNumber), allPower * 1.2, slowPower);
-            turnLeft(80, allPower, slowPower);
-            turnTo(0, allPower, slowPower);
-            resetArm();
-            runUntil(1.5, allPower);
+            turnTo(20, allPower, slowPower);
+            runUntil(80, slowPower * .9);
+            runTo(2, allPower * .7, slowPower);
             pickUpBlock();
             runTo(-3, allPower, slowPower);
-            turnRight(80, allPower, slowPower);
-            turnTo(-90, allPower, slowPower);
-            runTo(80 + 8 * (blockNumber), allPower, slowPower);
+            turnLeft(80, allPower * 1.1, slowPower);
+            turnTo(90, allPower, slowPower);
+            runTo(70 + 8 * (blockNumber), .9, allPower * .8);
+            raiseAndRun(2, 50, allPower, slowPower);
             dropBlock();
-            runTo(-30, allPower, slowPower);
+            raiseAndRun(0, -30, allPower, slowPower);
         }
     }
 }
-
-
-

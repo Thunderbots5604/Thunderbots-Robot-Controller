@@ -32,20 +32,30 @@ public class AutoFoundationRedWall extends GodFatherOfAllAutonomous {
 
     @Override
     public void runOpMode() {
-        foundation = true;
-        red = true;
+        
         initialization();
+        
 
         waitForStart();
+        
+        autoTime.reset();
+        
+        verticalUp();
+        spinnyBoyUp();
 
-        runTo(30, allPower, slowPower);
-        runTo(15, allPower * .6, slowPower * .9);
+        strafeRight(8, allPower, slowPower);
+        raiseAndRun(1, 15, allPower, slowPower);
+        runUntil(70, allPower * .7);
+        runTo(3, allPower * .6, slowPower * .9);
         moveFoundation(red);
         runTo(10, allPower, slowPower);
         runTo(-10, allPower, slowPower);
-        turnLeft(90, allPower, slowPower);
-        turnTo(0, allPower, slowPower);
-        runTo(20, allPower, slowPower);
-        strafeLeft(30, allPower, slowPower);
+        verticalDown();
+        
+        //15 inches Left for far, 12 inches Right for wall (Red)
+        strafeRight(12, allPower, slowPower);
+        
+        runTo(-50, allPower, slowPower);
+        turnTo(-90, allPower, slowPower);
     }
 }
