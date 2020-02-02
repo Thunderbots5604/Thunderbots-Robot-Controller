@@ -11,16 +11,16 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Disabled
 @TeleOp(name "No Use", group="TeleOp Competition")
 public class GodFatherOfAllTeleOp extends LinearOpMode {
-    //converts cartesian coordinates to polar coordinates
+    // converts cartesian coordinates to polar coordinates
     public double[] toPolar(double x, double y){
         double[] polarCoordinates = new double[2];
-        //radius
+        // radius
         polarCoordinates[0] = Math.sqrt((x * x) + (y * y));
-        //angle
+        // angle
         polarCoordinates[1] = Math.atan2(y, x);
         return polarCoordinates;
     }
-    //check if two values are close enough to be considered equal (using radians isn't perfectly accurate in java)
+    // check if two values are close enough to be considered equal (using radians isn't perfectly accurate in java)
     public boolean closeEnough(double a, double b){
         if ((a <= b - 0.000000000009) && (a >= b + 0.000000000009)) {
             return true;
@@ -29,15 +29,76 @@ public class GodFatherOfAllTeleOp extends LinearOpMode {
             return false;
         }
     }
-    //given polar coordinates, calculate mecanum drive power
+    // given polar coordinates, calculate mecanum drive power
     public double[] mecanumDrivePower(double radius, double theta){
-        //convert theta to make it easier
-        //move 0 to forward on the joystick
+        // convert theta to make it easier
+        // move 0 to forward on the joystick
         double convertedTheta = theta - (Math.PI / 2);
-        //if we moved too far, go to the right 360 degrees
+        // if we moved too far, rotate to the right 360 degrees
         if (closeEnough((convertedTheta, (-Math.PI))) || convertedTheta < (-Math.PI)) {
             convertedTheta -= (2 * Math.PI);
         }
-
+        // translate by pi / 4 to make the math work out
+        convertedTheta -= Math.PI / 4;
+        // actually caluculate the values based on that
+        // declar our array like [powerFRBL, powerFLBR]
+        double[] mecanumPowers = new double[2];
+        // forward and left
+        if (convertedTheta >= 0 && convertedTheta < Math.PI /2){
+            mecanumPowers[0] = radius;
+            mecanumPowers[1] = radius * Math.tan(convertedTheta);
+        }
+        // backwards and left
+        else if (convertedTheta >= Math.PI / 2) {
+            mecanumPowers[1] = -radius;
+            mecanumPowers[0] = radius * Math.cot(convertedTheta);
+        }
+        // forwards and right
+        else if (convertedTheta < 0 && convertedTheta >= (-Math.PI / 2)) {
+            mecanumPowers[1] = radius;
+            mecanumPowers[0] = radius * Math.cot(convertedTheta);
+        }
+        // backwards and right
+        else if (convertedTheta < (-Math.PI / 2)) {
+            mecanumPowers[0] = -radius;
+            mecanumPowers[1] = radius * Math.tan(convertedTheta);
+        }
+        return mecanumPowers;
+    }
+    // power for turns given x-coordinate of right stick
+    public double[] turnDrivePower (double xTurn){
+        //declare array for powers like [FLBL, FRBR]
+        double[] turnDrivePowers = new double[2];
+        turnDrivePowers[0] = xTurn;
+        turnDrivePowers[1] = -xTurn;
+        return turnDrivePowers;
+    }
+    // multipliers for turnDrive and mecanumDrive powers given joystick positions
+    public double[] driveMultiplier (double x1, double y, double x2) {
+        // set up an array for output like [mecanum, rotate]
+        double[] driveMultipliers = new double[2];
+        if ((x1 != 0 || y1 != 0) && x2 != 0){
+            driveMultipliers[0] = .5;
+            driveMultipliers[1] = .5;
+        }
+        else if (x1 != 0 || y != 0){
+            driveMultipliers[0] = 1;
+            driveMultipliers[1] = 0;
+        }
+        else if (gamepad1.right_stick_x != 0){
+            driveMultipliers[0] = 0;
+            driveMultipliers[1] = 1;
+        }
+        else{
+            driveMultipliers[0] = 0;
+            driveMultipliers[1] = 0;
+        }
+        return driveMultipliers;
+    }
+    public double[] movementPower (double x1, double y, double x2) {
+        double[] polarCoords = toPolar(x1, y);
+        double[] mecanumPowers = mecanumDrivePower(polarCoords[0], polarCoords[1]);
+        double[] turnPowers = turnDrivePower(x2);
+        double[] powerMultipliers = driveMultiplier(this.x1, this.y, this.x2);
     }
 }

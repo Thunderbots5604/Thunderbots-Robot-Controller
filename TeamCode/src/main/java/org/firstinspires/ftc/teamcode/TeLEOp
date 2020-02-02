@@ -107,12 +107,7 @@ public class TeLEOp extends LinearOpMode {
             }
             else if (g1LeftConvertedTheta >= Math.PI / 2) {
                 powerFLBR = -g1LeftRadius;
-                if (g1LeftConvertedTheta == Math.PI){
-                    powerFRBL = -g1LeftRadius;
-                }
-                else {
-                    powerFRBL = g1LeftRadius * Math.cot(g1LeftConvertedTheta);
-                }
+                powerFRBL = g1LeftRadius * Math.cot(g1LeftConvertedTheta);
             }
             else if (g1LeftConvertedTheta < 0 && g1LeftConvertedTheta >= (-Math.PI / 2)) {
                 powerFLBR = g1LeftRadius;
