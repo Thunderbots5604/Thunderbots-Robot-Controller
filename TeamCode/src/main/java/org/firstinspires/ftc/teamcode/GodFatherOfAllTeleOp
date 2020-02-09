@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import java.util.Arrays;
+
 @Disabled
 @TeleOp(name "No Use", group="TeleOp Competition")
 public class GodFatherOfAllTeleOp extends LinearOpMode {
@@ -28,5 +30,14 @@ public class GodFatherOfAllTeleOp extends LinearOpMode {
         else {
             return false;
         }
+    }
+    public double maxValue(double[] array){
+        double max = array[0];
+        for(int i = 1; i < array.length; i++){
+            if (array[i] > max) {
+                max = array[i];
+            }
+        }
+        return max;
     }
 }
