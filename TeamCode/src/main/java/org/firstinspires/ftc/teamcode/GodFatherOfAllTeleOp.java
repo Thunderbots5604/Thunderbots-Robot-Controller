@@ -9,20 +9,20 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.Arrays;
 
-@Disabled
-@TeleOp(name "No Use", group="TeleOp Competition")
-public class GodFatherOfAllTeleOp extends LinearOpMode {
+
+public abstract class GodFatherOfAllTeleOp extends LinearOpMode {
     //some angle measuring stuff
     public BNO055IMU imu;
     public ElapsedTime angleRuntime = new ElapsedTime();
-    public double heading = null;
-    public double angles = null;
-    public double angleAdjust = null;
+    public double heading = 0;
+    public Orientation angles = null;
+    public double angleAdjust = 0;
 
     public void telinitialization() {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -40,12 +40,15 @@ public class GodFatherOfAllTeleOp extends LinearOpMode {
 
     }
     //getAngle
+    public double formatAngle(AngleUnit angleUnit, double angle) {
+        return AngleUnit.DEGREES.fromUnit(angleUnit, angle);
+    }
     public double getAngle() {
         heading = 0;
         angleRuntime.reset();
         while (angleRuntime.milliseconds() < 1500 && heading == 0) {
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            heading = formatAngle(angles.angleUnit, angles.firstAngle);
+            heading = this.formatAngle(angles.angleUnit, angles.firstAngle);
         }
         return heading - angleAdjust;
     }

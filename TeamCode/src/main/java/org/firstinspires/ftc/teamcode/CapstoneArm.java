@@ -8,23 +8,22 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Disabled
-@TeleOp(name "No Use", group="TeleOp Competition")
-public class SpinnyBoys extends GodFatherOfAllTeleOp {
+
+public class CapstoneArm extends GodFatherOfAllTeleOp {
 
     // servo
-    private Servo capstoneServo
+    private Servo capstoneServo;
 
     // toggle
-    private boolean armOut = null;
+    private boolean armOut = false;
 
     //positions
-    private double out = null;
-    private double in = null;
+    private double out = 0;
+    private double in = 0;
 
     //previous and current right bumper values
-    private boolean rightBumperPrevious = null;
-    private boolean rightBumperCurrent = null;
+    private boolean rightBumperPrevious = false;
+    private boolean rightBumperCurrent = false;
 
     // constructor sets everything to what it should be by default and takes servo names
     public CapstoneArm(String servoName, double outPosition, double inPosition){
@@ -36,12 +35,12 @@ public class SpinnyBoys extends GodFatherOfAllTeleOp {
         //set previous to false
         rightBumperPrevious = false;
         //set current
-        rightBumperCurrent = true;
+        rightBumperCurrent = gamepad1.right_bumper || gamepad2.right_bumper;
         //set staring value for armOut
         armOut = false;
     }
     public CapstoneArm(String servoName) {
-        this.CapstoneArm(servoName, 1, 0);
+        this(servoName, 1, 0);
     }
     public void moveArmOut() {
         this.capstoneServo.setPosition(this.out);
@@ -72,7 +71,8 @@ public class SpinnyBoys extends GodFatherOfAllTeleOp {
         }
         this.updatePreviousValues();
     }
-    public void isOut() {
+    public boolean isOut() {
         return this.armOut;
     }
+    public void runOpMode() {}
 }

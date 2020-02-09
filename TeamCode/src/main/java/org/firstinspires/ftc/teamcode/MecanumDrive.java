@@ -8,8 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Disabled
-@TeleOp(name "No Use", group="TeleOp Competition")
+
 public class MecanumDrive extends GodFatherOfAllTeleOp {
     // motors
     private DcMotor leftMotorFront;
@@ -152,7 +151,7 @@ public class MecanumDrive extends GodFatherOfAllTeleOp {
     // multipliers for turnDrive and mecanumDrive powers given joystick positions
     public void calculateDriveMultiplier (double leftX, double leftY, double rightX) {
         // if both are being used
-        if ((leftX != 0 || leftY != 0) && x2 != 0){
+        if ((leftX != 0 || leftY != 0) && rightX != 0){
             this.driveMultipliers[0] = .5;
             this.driveMultipliers[1] = .5;
         }
@@ -243,7 +242,7 @@ public class MecanumDrive extends GodFatherOfAllTeleOp {
         if (this.directionTurn == 0) {
             this.p1RightStickXCurrent = gamepad1.right_stick_x;
         }
-        else (this.directionTurn == 1) {
+        else {
             this.p1RightStickXCurrent = -gamepad1.right_stick_x;
         }
         this.rightStickButtonCurrent = gamepad1.right_stick_button || gamepad2.right_stick_button;
@@ -284,7 +283,7 @@ public class MecanumDrive extends GodFatherOfAllTeleOp {
         this.checkRunDrive();
         this.updatePreviousValues();
     }
-    public void stop() {
+    public void Stop() {
         this.leftMotorFront.setPower(0);
         this.leftMotorBack.setPower(0);
         this.rightMotorFront.setPower(0);
@@ -324,4 +323,5 @@ public class MecanumDrive extends GodFatherOfAllTeleOp {
     public double getRightBackPower() {
         return this.motorPowers[3];
     }
+    public void runOpMode() {}
 }

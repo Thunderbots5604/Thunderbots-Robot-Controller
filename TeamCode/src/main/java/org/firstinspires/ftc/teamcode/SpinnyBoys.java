@@ -8,8 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Disabled
-@TeleOp(name "No Use", group="TeleOp Competition")
+
 public class SpinnyBoys extends GodFatherOfAllTeleOp {
 
     // servos
@@ -17,17 +16,17 @@ public class SpinnyBoys extends GodFatherOfAllTeleOp {
     private Servo spinnyBoy2 = null;
 
     // toggle
-    private boolean spinnyBoysDown = null;
+    private boolean spinnyBoysDown = false;
 
     //positions
-    private double upSpinny1 = null;
-    private double upSpinny2 = null;
-    private double downSpinny1 = null;
-    private double downSpinny2 = null;
+    private double upSpinny1 = 0;
+    private double upSpinny2 = 0;
+    private double downSpinny1 = 0;
+    private double downSpinny2 = 0;
 
     //previous and current left bumper values
-    private boolean leftBumperPrevious = null;
-    private boolean leftBumperCurrent = null;
+    private boolean leftBumperPrevious = false;
+    private boolean leftBumperCurrent = false;
 
     // constructor sets everything to what it should be by default and takes servo names
     public SpinnyBoys(String spinnyBoy1, String spinnyBoy2, double up1, double up2, double down1, double down2){
@@ -45,10 +44,10 @@ public class SpinnyBoys extends GodFatherOfAllTeleOp {
         this.spinnyBoy1.setDirection(Servo.Direction.REVERSE);
     }
     public SpinnyBoys(String spinnyBoy1, String spinnyBoy2, double up, double down){
-        this.SpinnyBoys(spinnyBoy1, spinnyBoy2, up, up, down, down);
+        this(spinnyBoy1, spinnyBoy2, up, up, down, down);
     }
     public SpinnyBoys(String spinnyBoy1, String spinnyBoy2) {
-        this.SpinnyBoys(spinnyBoy1, spinnyBoy2, .7, 1, .2, .2);
+        this(spinnyBoy1, spinnyBoy2, .7, 1, .2, .2);
     }
     public void spinnyBoysUp() {
         this.spinnyBoy1.setPosition(this.upSpinny1);
@@ -84,4 +83,5 @@ public class SpinnyBoys extends GodFatherOfAllTeleOp {
         }
         this.updatePreviousValues();
     }
+    public void runOpMode() {}
 }

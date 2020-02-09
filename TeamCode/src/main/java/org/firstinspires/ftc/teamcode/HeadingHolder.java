@@ -1,13 +1,18 @@
 //literally just stores a single variable, what the last heading was during teleop
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
 @Disabled
-public class HeadingHolder extends LinearOpMode {
+public abstract class HeadingHolder extends LinearOpMode {
     //set a static heading variable
     private static double lastHeading = 0;
     //set method
-    public static void setLastHeading(int heading) {
-        this.lastHeading = heading;
+    public void setLastHeading(int heading) {
+        lastHeading = heading;
     }
-    public static int getLastHeading() {
-        return this.lastHeading;
+    public double getLastHeading() {
+        return lastHeading;
     }
 }
