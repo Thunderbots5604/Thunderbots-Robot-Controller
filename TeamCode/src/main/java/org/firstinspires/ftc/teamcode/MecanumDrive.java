@@ -18,10 +18,14 @@ public class MecanumDrive extends GodFatherOfAllTeleOp {
     private DcMotor rightMotorBack;
 
     // maneuverability stuff
-    private int direction;
+    private int directionMecanum;
+    private int directionTurn;
     private boolean halfSpeed;
     private boolean reverse;
     private double maneuverMultiplier;
+
+    //angle for direction
+    private double angle;
 
     // powers and multipliers
     // mecanumPowers is [FRBL, FLBR]
@@ -36,11 +40,13 @@ public class MecanumDrive extends GodFatherOfAllTeleOp {
     // previous and current values
     private boolean xButtonPrevious;
     private boolean yButtonPrevious;
+    private boolean rightStickButtonPrevious;
     private double p1LeftStickXPrevious;
     private double p1LeftStickYPrevious;
     private double p1RightStickXPrevious;
     private boolean xButtonCurrent;
     private boolean yButtonCurrent;
+    private boolean rightStickButtonCurrent;
     private double p1LeftStickXCurrent;
     private double p1LeftStickYCurrent;
     private double p1RightStickXCurrent;
@@ -58,6 +64,8 @@ public class MecanumDrive extends GodFatherOfAllTeleOp {
         this.driveMultipliers = new double[2];
         this.motorPowers = new double[4];
         this.maneuverMultiplier = 1;
+        this.directionMecanum = 0;
+        this.directionTurn = 0;
         //putting this in for now because I think it's necessary
         this.rightMotorFront.setDirection(DcMotorSimple.Direction.REVERSE);
         this.rightMotorBack.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -65,6 +73,7 @@ public class MecanumDrive extends GodFatherOfAllTeleOp {
         //make previous values be false and 0 because weird stuff will happen if you hold them on start otherwise
         xButtonPrevious = false;
         yButtonPrevious = false;
+        rightStickButtonPrevious = false;
         p1LeftStickXPrevious = 0;
         p1LeftStickYPrevious = 0;
         p1RightStickXPrevious = 0;
@@ -74,6 +83,7 @@ public class MecanumDrive extends GodFatherOfAllTeleOp {
         p1LeftStickXCurrent = gamepad1.left_stick_x;
         p1LeftStickYCurrent = gamepad1.left_stick_y;
         p1RightStickXCurrent = gamepad1.right_stick_x;
+        rightStickButtonCurrent = gamepad1.right_stick_button || gamepad2.right_stick_button;
     }
     // halfSpeed (calling this will be handled by the big teleop, so we don't need to deal with checking if we should switch here)
     public void toggleHalfSpeed(){
@@ -93,9 +103,27 @@ public class MecanumDrive extends GodFatherOfAllTeleOp {
             this.reverse = false;
         }
     }
-    //changes direction for big method later
+    //changes direction based on gyro direction for big method later
     public void changeDirection() {
-
+        this.angle = getAngle();
+        if (this.angle >= -45 && this.angle <= 45){
+            this.directionMecanum = 0;
+        }
+        else if (this.angle > 45 && this.angle <= 135){
+            this.directionMecanum = 1;
+        }
+        else if (this.angle < -45 && this.angle >= -135){
+            this.directionMecanum = 3;
+        }
+        else{
+            this.directionMecanum = 2;
+        }
+        if (this.angle > 90 || this.angle < -90) {
+            this.directionTurn = 1;
+        }
+        else {
+            this.directionTurn = 0;
+        }
     }
     // given polar coordinates, calculate mecanum drive power
     public void calculateMecanumDrivePower(double radius, double theta){
@@ -196,16 +224,37 @@ public class MecanumDrive extends GodFatherOfAllTeleOp {
     public void updateCurrentValues() {
         this.xButtonCurrent = gamepad1.x || gamepad2.x;
         this.yButtonCurrent = gamepad1.y || gamepad2.y;
-        this.p1LeftStickXCurrent = gamepad1.left_stick_x;
-        this.p1LeftStickYCurrent = gamepad1.left_stick_y;
-        this.p1RightStickXCurrent = gamepad1.right_stick_x;
+        if (this.directionMecanum == 0){
+            this.p1LeftStickXCurrent = gamepad1.left_stick_x;
+            this.p1LeftStickYCurrent = gamepad1.left_stick_y;
+        }
+        else if (this.directionMecanum == 1) {
+            this.p1LeftStickXCurrent = -gamepad1.left_stick_y;
+            this.p1LeftStickYCurrent = gamepad1.left_stick_x;
+        }
+        else if (this.directionMecanum == 2) {
+            this.p1LeftStickXCurrent = -gamepad1.left_stick_x;
+            this.p1LeftStickYCurrent = -gamepad1.left_stick_y;
+        }
+        else if (this.directionMecanum == 3) {
+            this.p1LeftStickXCurrent = gamepad1.left_stick_y;
+            this.p1LeftStickYCurrent = -gamepad1.left_stick_x;
+        }
+        if (this.directionTurn == 0) {
+            this.p1RightStickXCurrent = gamepad1.right_stick_x;
+        }
+        else (this.directionTurn == 1) {
+            this.p1RightStickXCurrent = -gamepad1.right_stick_x;
+        }
+        this.rightStickButtonCurrent = gamepad1.right_stick_button || gamepad2.right_stick_button;
     }
     public void updatePreviousValues() {
         this.xButtonPrevious = this.xButtonCurrent;
         this.yButtonPrevious = this.yButtonCurrent;
         this.p1LeftStickXPrevious = this.p1LeftStickXCurrent;
         this.p1LeftStickYPrevious = this.p1LeftStickYCurrent;
-        this.p1RightStickXCurrent = this.p1RightStickXCurrent;
+        this.p1RightStickXPrevious = this.p1RightStickXCurrent;
+        this.rightStickButtonPrevious = this.rightStickButtonCurrent;
     }
     public void checkRunHalfSpeed(){
         if (this.xButtonCurrent != this.xButtonPrevious){
@@ -217,6 +266,11 @@ public class MecanumDrive extends GodFatherOfAllTeleOp {
             this.toggleReverse();
         }
     }
+    public void checkRunDirection() {
+        if (this.rightStickButtonCurrent != this.rightStickButtonPrevious) {
+            this.changeDirection();
+        }
+    }
     public void checkRunDrive() {
         if ((this.p1LeftStickYCurrent != this.p1LeftStickYPrevious) || (this.p1LeftStickXCurrent != this.p1LeftStickXPrevious) || (this.p1RightStickXCurrent != this.p1RightStickXPrevious)){
             this.updateAndPushPowers(p1LeftStickXCurrent, p1LeftStickYCurrent, p1RightStickXCurrent);
@@ -224,10 +278,17 @@ public class MecanumDrive extends GodFatherOfAllTeleOp {
     }
     public void checkRunMecanumSystem() {
         this.updateCurrentValues();
+        this.checkRunDirection();
         this.checkRunHalfSpeed();
         this.checkRunReverse();
         this.checkRunDrive();
         this.updatePreviousValues();
+    }
+    public void stop() {
+        this.leftMotorFront.setPower(0);
+        this.leftMotorBack.setPower(0);
+        this.rightMotorFront.setPower(0);
+        this.rightMotorBack.setPower(0);
     }
     public boolean getHalfSpeed() {
         return this.halfSpeed;

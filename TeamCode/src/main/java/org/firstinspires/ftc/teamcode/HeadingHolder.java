@@ -2,12 +2,12 @@
 @Disabled
 public class HeadingHolder extends LinearOpMode {
     //set a static heading variable
-    private static int lastHeading = 0;
+    private static double lastHeading = 0;
     //set method
-    public void setLastHeading(int heading) {
+    public static void setLastHeading(int heading) {
         this.lastHeading = heading;
     }
-    public int getLastHeading() {
+    public static int getLastHeading() {
         return this.lastHeading;
     }
 }

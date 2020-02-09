@@ -20,19 +20,25 @@ public class GodFatherOfAllTeleOp extends LinearOpMode {
     //some angle measuring stuff
     public BNO055IMU imu;
     public ElapsedTime angleRuntime = new ElapsedTime();
-    BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-    parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-    parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-    parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-    parameters.loggingEnabled = true;
-    parameters.loggingTag = "IMU";
-    parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-
-    imu = hardwareMap.get(BNO055IMU.class, "imu");
-    imu.initialize(parameters);
-
     public double heading = null;
     public double angles = null;
+    public double angleAdjust = null;
+
+    public void telinitialization() {
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
+        angleAdjust = HeadingHolder.getLastHeading();
+
+    }
     //getAngle
     public double getAngle() {
         heading = 0;
@@ -41,7 +47,7 @@ public class GodFatherOfAllTeleOp extends LinearOpMode {
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             heading = formatAngle(angles.angleUnit, angles.firstAngle);
         }
-        return heading;
+        return heading - angleAdjust;
     }
     // converts cartesian coordinates to polar coordinates
     public double[] toPolar(double x, double y){

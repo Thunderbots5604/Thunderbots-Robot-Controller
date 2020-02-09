@@ -41,6 +41,8 @@ public class SpinnyBoys extends GodFatherOfAllTeleOp {
         this.leftBumperPrevious = false;
         //set current value
         this.leftBumperCurrent = gamepad1.left_bumper || gamepad2.left_bumper;
+        //apparently this is necessary
+        this.spinnyBoy1.setDirection(Servo.Direction.REVERSE);
     }
     public SpinnyBoys(String spinnyBoy1, String spinnyBoy2, double up, double down){
         this.SpinnyBoys(spinnyBoy1, spinnyBoy2, up, up, down, down);
