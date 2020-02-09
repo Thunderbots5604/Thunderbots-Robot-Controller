@@ -25,6 +25,10 @@ public class SpinnyBoys extends GodFatherOfAllTeleOp {
     private double downSpinny1 = null;
     private double downSpinny2 = null;
 
+    //previous and current left bumper values
+    private boolean leftBumperPrevious = null;
+    private boolean leftBumperCurrent = null;
+
     // constructor sets everything to what it should be by default and takes servo names
     public SpinnyBoys(String spinnyBoy1, String spinnyBoy2, double up1, double up2, double down1, double down2){
         this.spinnyBoy1 = hardwareMap.get(Servo.class, spinnyBoy1);
@@ -33,6 +37,10 @@ public class SpinnyBoys extends GodFatherOfAllTeleOp {
         this.upSpinny2 = up2;
         this.downSpinny1 = down1;
         this.downSpinny2 = down2;
+        //set previous to false
+        this.leftBumperPrevious = false;
+        //set current value
+        this.leftBumperCurrent = gamepad1.left_bumper || gamepad2.left_bumper;
     }
     public SpinnyBoys(String spinnyBoy1, String spinnyBoy2, double up, double down){
         this.SpinnyBoys(spinnyBoy1, spinnyBoy2, up, up, down, down);
@@ -60,5 +68,18 @@ public class SpinnyBoys extends GodFatherOfAllTeleOp {
     }
     public boolean isDown() {
         return this.spinnyBoysDown;
+    }
+    public void updateCurrentValues() {
+        this.leftBumperCurrent = gamepad1.left_bumper || gamepad2.left_bumper;
+    }
+    public void updatePreviousValues() {
+        this.leftBumperPrevious = this.leftBumperCurrent;
+    }
+    public void checkRun() {
+        this.updateCurrentValues();
+        if (this.leftBumperCurrent != this.leftBumperPrevious){
+            this.spinnyBoysToggle();
+        }
+        this.updatePreviousValues();
     }
 }

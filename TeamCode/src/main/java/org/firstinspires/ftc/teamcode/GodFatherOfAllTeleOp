@@ -8,11 +8,41 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import java.util.Arrays;
 
 @Disabled
 @TeleOp(name "No Use", group="TeleOp Competition")
 public class GodFatherOfAllTeleOp extends LinearOpMode {
+    //some angle measuring stuff
+    public BNO055IMU imu;
+    public ElapsedTime angleRuntime = new ElapsedTime();
+    BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+    parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+    parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+    parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+    parameters.loggingEnabled = true;
+    parameters.loggingTag = "IMU";
+    parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+    imu = hardwareMap.get(BNO055IMU.class, "imu");
+    imu.initialize(parameters);
+
+    public double heading = null;
+    public double angles = null;
+    //getAngle
+    public double getAngle() {
+        heading = 0;
+        angleRuntime.reset();
+        while (angleRuntime.milliseconds() < 1500 && heading == 0) {
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            heading = formatAngle(angles.angleUnit, angles.firstAngle);
+        }
+        return heading;
+    }
     // converts cartesian coordinates to polar coordinates
     public double[] toPolar(double x, double y){
         double[] polarCoordinates = new double[2];
