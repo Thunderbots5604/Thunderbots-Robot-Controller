@@ -66,7 +66,7 @@ public class CapstoneArm extends GodFatherOfAllTeleOp {
     }
     public void checkRun() {
         this.updateCurrentValues();
-        if (this.rightBumperCurrent != this.rightBumperPrevious){
+        if (this.rightBumperCurrent != this.rightBumperPrevious && this.rightBumperCurrent == true){
             this.toggleArmPosition();
         }
         this.updatePreviousValues();

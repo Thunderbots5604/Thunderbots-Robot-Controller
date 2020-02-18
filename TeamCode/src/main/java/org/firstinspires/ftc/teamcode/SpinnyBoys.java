@@ -78,7 +78,7 @@ public class SpinnyBoys extends GodFatherOfAllTeleOp {
     }
     public void checkRun() {
         this.updateCurrentValues();
-        if (this.leftBumperCurrent != this.leftBumperPrevious){
+        if (this.leftBumperCurrent != this.leftBumperPrevious && this.leftBumperCurrent == true){
             this.spinnyBoysToggle();
         }
         this.updatePreviousValues();

@@ -256,17 +256,17 @@ public class MecanumDrive extends GodFatherOfAllTeleOp {
         this.rightStickButtonPrevious = this.rightStickButtonCurrent;
     }
     public void checkRunHalfSpeed(){
-        if (this.xButtonCurrent != this.xButtonPrevious){
+        if (this.xButtonCurrent != this.xButtonPrevious && this.xButtonCurrent == true){
             this.toggleHalfSpeed();
         }
     }
     public void checkRunReverse() {
-        if (this.yButtonCurrent != this.yButtonPrevious) {
+        if (this.yButtonCurrent != this.yButtonPrevious && this.yButtonCurrent == true) {
             this.toggleReverse();
         }
     }
     public void checkRunDirection() {
-        if (this.rightStickButtonCurrent != this.rightStickButtonPrevious) {
+        if (this.rightStickButtonCurrent != this.rightStickButtonPrevious && this.rightStickButtonCurrent == true) {
             this.changeDirection();
         }
     }

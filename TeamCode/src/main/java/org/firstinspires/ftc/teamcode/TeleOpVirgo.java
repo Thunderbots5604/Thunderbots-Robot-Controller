@@ -18,15 +18,18 @@ public class TeleOpVirgo extends GodFatherOfAllTeleOp {
         MecanumDrive mecanumDrive = null;
         SpinnyBoys spinnyBoys = null;
         CapstoneArm capstoneArm = null;
+        ParkingTape parkingTape = null;
 
         mecanumDrive = new MecanumDrive("left_motor_front", "left_motor_back", "right_motor_front", "right_motor_back");
         spinnyBoys = new SpinnyBoys("spin1", "spin2");
         capstoneArm = new CapstoneArm("markServo", .9, .1);
+        parkingTape = new ParkingTape("tapeServo", .75);
 
         while(opModeIsActive()){
             mecanumDrive.checkRunMecanumSystem();
             spinnyBoys.checkRun();
             capstoneArm.checkRun();
+            parkingTape.checkRun();
         }
         mecanumDrive.Stop();
     }
